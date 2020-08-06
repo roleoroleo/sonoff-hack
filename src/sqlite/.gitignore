@@ -1,3 +1,4 @@
 # Ignore the install dir
+sqlite-autoconf-*/
 _install/
 

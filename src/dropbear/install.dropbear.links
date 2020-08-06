@@ -1,0 +1,24 @@
+#!/bin/bash
+
+SCRIPT_DIR=$(cd `dirname $0` && pwd)
+cd $SCRIPT_DIR
+
+# Compress the file
+# upx ./_install/*
+
+mkdir -p ../../build/sonoff-hack/bin/
+mkdir -p ../../build/sonoff-hack/sbin/
+mkdir -p ../../build/sonoff-hack/usr/bin/
+
+arm-sonoff-linux-uclibcgnueabi-strip ./_install/dropbearmulti
+rsync -a ./_install/dropbearmulti ../../build/sonoff-hack/bin/
+
+ln -fs /mnt/mmc/sonoff-hack/bin/dropbearmulti ../../build/sonoff-hack/bin/dbclient
+ln -fs /mnt/mmc/sonoff-hack/bin/dropbearmulti ../../build/sonoff-hack/bin/dropbearconvert
+ln -fs /mnt/mmc/sonoff-hack/bin/dropbearmulti ../../build/sonoff-hack/bin/dropbearkey
+ln -fs /mnt/mmc/sonoff-hack/bin/dropbearmulti ../../build/sonoff-hack/bin/scp
+ln -fs dbclient ../../build/sonoff-hack/bin/ssh
+
+ln -fs /bin/dbclient ../../build/sonoff-hack/usr/bin/dbclient
+
+ln -fs /mnt/mmc/sonoff-hack/bin/dropbearmulti ../../build/sonoff-hack/sbin/dropbear

@@ -1,0 +1,202 @@
+sqlite3.lo: sqlite3.c \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../lib/gcc/arm-sonoff-linux-uclibcgnueabi/4.7.2/include/stdarg.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../lib/gcc/arm-sonoff-linux-uclibcgnueabi/4.7.2/include/stdint.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/stdint.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/features.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_config.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/sys/cdefs.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/wchar.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/wordsize.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/inttypes.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/stdio.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../lib/gcc/arm-sonoff-linux-uclibcgnueabi/4.7.2/include/stddef.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/types.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/typesizes.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/pthreadtypes.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/endian.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/endian.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/byteswap.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/byteswap.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/byteswap-common.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_stdio.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/wchar.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_mutex.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/pthread.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/sched.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/time.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/sched.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/time.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_clk_tck.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/signal.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/sigset.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/setjmp.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_pthread.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/stdio_lim.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/stdlib.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/waitflags.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/waitstatus.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/sys/types.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/sys/select.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/select.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/sys/sysmacros.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/alloca.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/string.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/assert.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/ctype.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_touplow.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/sys/stat.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/stat.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/fcntl.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/fcntl.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/uio.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/unistd.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/posix_opt.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/environments.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/confname.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/getopt.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/sys/time.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/errno.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/errno.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/linux/errno.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/asm/errno.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/asm-generic/errno.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/asm-generic/errno-base.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/sys/mman.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/mman.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/mman-common.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/dlfcn.h \
+ /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/dlfcn.h
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../lib/gcc/arm-sonoff-linux-uclibcgnueabi/4.7.2/include/stdarg.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../lib/gcc/arm-sonoff-linux-uclibcgnueabi/4.7.2/include/stdint.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/stdint.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/features.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_config.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/sys/cdefs.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/wchar.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/wordsize.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/inttypes.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/stdio.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../lib/gcc/arm-sonoff-linux-uclibcgnueabi/4.7.2/include/stddef.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/types.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/typesizes.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/pthreadtypes.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/endian.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/endian.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/byteswap.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/byteswap.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/byteswap-common.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_stdio.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/wchar.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_mutex.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/pthread.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/sched.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/time.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/sched.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/time.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_clk_tck.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/signal.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/sigset.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/setjmp.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_pthread.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/stdio_lim.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/stdlib.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/waitflags.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/waitstatus.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/sys/types.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/sys/select.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/select.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/sys/sysmacros.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/alloca.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/string.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/assert.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/ctype.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/uClibc_touplow.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/sys/stat.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/stat.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/fcntl.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/fcntl.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/uio.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/unistd.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/posix_opt.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/environments.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/confname.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/getopt.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/sys/time.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/errno.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/errno.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/linux/errno.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/asm/errno.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/asm-generic/errno.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/asm-generic/errno-base.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/sys/mman.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/mman.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/mman-common.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/dlfcn.h:
+
+/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin/../arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include/bits/dlfcn.h:

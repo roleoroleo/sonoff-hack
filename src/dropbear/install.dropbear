@@ -1,0 +1,23 @@
+#!/bin/bash
+
+SCRIPT_DIR=$(cd `dirname $0` && pwd)
+cd $SCRIPT_DIR
+
+# Compress the file
+# upx ./_install/*
+
+mkdir -p ../../build/sonoff-hack/bin/
+mkdir -p ../../build/sonoff-hack/sbin/
+mkdir -p ../../build/sonoff-hack/usr/bin/
+
+arm-sonoff-linux-uclibcgnueabi-strip ./_install/dropbearmulti
+rsync -a ./_install/dropbearmulti ../../build/sonoff-hack/bin/
+
+# Copy binary with different names: fat32 doesn't support symbolic links
+cp -f ../../build/sonoff-hack/bin/dropbearmulti ../../build/sonoff-hack/bin/dbclient
+cp -f ../../build/sonoff-hack/bin/dropbearmulti ../../build/sonoff-hack/bin/dropbearconvert
+cp -f ../../build/sonoff-hack/bin/dropbearmulti ../../build/sonoff-hack/bin/dropbearkey
+cp -f ../../build/sonoff-hack/bin/dropbearmulti ../../build/sonoff-hack/bin/scp
+cp -f ../../build/sonoff-hack/bin/dbclient ../../build/sonoff-hack/bin/ssh
+
+cp -f ../../build/sonoff-hack/bin/dropbearmulti ../../build/sonoff-hack/sbin/dropbear

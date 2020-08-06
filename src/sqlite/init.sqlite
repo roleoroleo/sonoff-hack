@@ -1,0 +1,17 @@
+#!/bin/bash
+
+SQLITE_VER="3080701"
+ARCHIVE=sqlite-autoconf-$SQLITE_VER
+
+SCRIPT_DIR=$(cd `dirname $0` && pwd)
+cd $SCRIPT_DIR
+
+rm -rf ./_install
+
+if [ ! -f $ARCHIVE.tar.gz ]; then
+    wget https://www.sqlite.org/2014/$ARCHIVE.tar.gz
+fi
+tar zxvf $ARCHIVE.tar.gz
+cd $ARCHIVE || exit 1
+
+./configure --host=arm-sonoff-linux-uclibcgnueabi

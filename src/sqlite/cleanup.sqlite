@@ -1,0 +1,11 @@
+#!/bin/bash
+
+SQLITE_VER="3080701"
+ARCHIVE=sqlite-autoconf-$SQLITE_VER
+
+SCRIPT_DIR=$(cd `dirname $0` && pwd)
+cd $SCRIPT_DIR
+
+cd $ARCHIVE
+
+make clean

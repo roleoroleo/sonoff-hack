@@ -1,0 +1,20 @@
+#!/bin/bash
+
+SCRIPT_DIR=$(cd `dirname $0` && pwd)
+cd $SCRIPT_DIR
+
+rm -rf ./_install
+
+cd pure-ftpd || exit 1
+git reset --hard || exit 1
+
+./autogen.sh || exit 1
+
+./configure CC=arm-sonoff-linux-uclibcgnueabi-gcc \
+    --prefix=$SCRIPT_DIR/_install \
+    USER_CFLAGS="-I/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include -L/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/arm-sonoff-linux-uclibcgnueabi/sysroot/lib" \
+    AR=arm-sonoff-linux-uclibcgnueabi-ar \
+    RANLIB=arm-sonoff-linux-uclibcgnueabi-ranlib \
+    --host=arm \
+    --with-minimal \
+    || exit 1

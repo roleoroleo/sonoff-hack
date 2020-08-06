@@ -1,0 +1,11 @@
+#!/bin/bash
+
+SCRIPT_DIR=$(cd `dirname $0` && pwd)
+cd $SCRIPT_DIR
+
+# Compress the file
+#upx ./_install/sbin/pure-ftpd
+
+mkdir -p ../../build/sonoff-hack/bin/
+
+rsync -a ./_install/bin/onvif_srvd ../../build/sonoff-hack/bin/

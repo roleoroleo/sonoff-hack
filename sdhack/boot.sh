@@ -2,4 +2,4 @@
 
 echo "############## Starting Hack ##############"
 
-/mnt/mmc/sonoff-hack/script/system.sh
+(sleep 30 && /mnt/mmc/sonoff-hack/script/system.sh) &

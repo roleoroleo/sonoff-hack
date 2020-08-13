@@ -49,6 +49,7 @@ This firmware contains the following features.
 The performance of the cam is not so good (CPU, RAM, etc...).
 If you enable all the services you may have some problems.
 Disable cloud is recommended to save resources.
+
 If you notice problems and you have a SD to waste, try to enable swap file.
 
 ## Supported cameras
@@ -70,7 +71,7 @@ USE AT YOUR OWN RISK.
 
 5. Remove power to the camera, insert the microSD card, turn the power back ON.
 
-6. Wait for a minute.
+6. Wait a minute.
 
 7. Go in the browser and access the web interface of the camera as a website (http://IP-CAM:8080). Find the IP address using your mobile app (Camera Settings --> Network Info --> IP Address). If the mobile app can't be paired, you may look for the IP on your router's portal (see connected devices).
 
@@ -90,7 +91,7 @@ Quick explanation:
 
 ## Unbricking
 If your camera doesn't start, no panic.
-This hack is not a permanent change, remove your SD card and the came will come back to the original state.
+This hack is not a permanent change, remove your SD card and the cam will come back to the original state.
 
 ## Acknowledgments
 Special thanks to the following people for the previous projects I started from.

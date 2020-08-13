@@ -39,11 +39,25 @@ if [ -f $SONOFF_HACK_PREFIX/.fw_upgrade_in_progress ]; then
     rm -r /tmp/sd/.fw_upgrade
 fi
 
-#$SONOFF_HACK_PREFIX/script/check_conf.sh
+$SONOFF_HACK_PREFIX/script/check_conf.sh
 
 cp -f $SONOFF_HACK_PREFIX/etc/hostname /etc/hostname
 hostname -F /etc/hostname
 export TZ=$(get_config TIMEZONE)
+
+if [[ $(get_config SWAP_FILE) == "yes" ]] ; then
+    SD_PRESENT=$(mount | grep mmc | grep -c ^)
+    if [[ $SD_PRESENT -eq 1 ]]; then
+        if [[ -f /mnt/mmc/swapfile ]]; then
+            swapon /mnt/mmc/swapfile
+        else
+            dd if=/dev/zero of=/mnt/mmc/swapfile bs=1M count=64
+            chmod 0600 /mnt/mmc/swapfile
+            mkswap /mnt/mmc/swapfile
+            swapon /mnt/mmc/swapfile
+        fi
+    fi
+fi
 
 if [[ x$(get_config USERNAME) != "x" ]] ; then
     USERNAME=$(get_config USERNAME)
@@ -64,10 +78,10 @@ if [[ x$CUR_PASSWORD_MD5 != x$PASSWORD_MD5 ]] ; then
     sed -i 's|^\(root:\)[^:]*:|root:'${PASSWORD_MD5}':|g' "/etc/shadow"
 fi
 
-#case $(get_config RTSP_PORT) in
-#    ''|*[!0-9]*) RTSP_PORT=554 ;;
-#    *) RTSP_PORT=$(get_config RTSP_PORT) ;;
-#esac
+case $(get_config RTSP_PORT) in
+    ''|*[!0-9]*) RTSP_PORT=554 ;;
+    *) RTSP_PORT=$(get_config RTSP_PORT) ;;
+esac
 case $(get_config ONVIF_PORT) in
     ''|*[!0-9]*) ONVIF_PORT=80 ;;
     *) ONVIF_PORT=$(get_config ONVIF_PORT) ;;
@@ -76,6 +90,19 @@ case $(get_config HTTPD_PORT) in
     ''|*[!0-9]*) HTTPD_PORT=8080 ;;
     *) HTTPD_PORT=$(get_config HTTPD_PORT) ;;
 esac
+
+if [[ $(get_config DISABLE_CLOUD) == "yes" ]] ; then
+    echo "127.0.0.1               eu-dispd.coolkit.cc" >> /etc/hosts
+    echo "127.0.0.1               eu-api.coolkit.cn" >> /etc/hosts
+    echo "127.0.0.1               push.iotcare.cn" >> /etc/hosts
+
+    # Kill ProcessGuard
+    touch /tmp/bProcessGuardExit
+    killall colinkwtg.sh
+    killall colink.sh
+    killall colink
+    killall IOTCare
+fi
 
 if [[ $(get_config HTTPD) == "yes" ]] ; then
     httpd -p $HTTPD_PORT -h $SONOFF_HACK_PREFIX/www/ -c /tmp/httpd.conf
@@ -94,14 +121,15 @@ if [[ $(get_config FTPD) == "yes" ]] ; then
 fi
 
 if [[ $(get_config SSHD) == "yes" ]] ; then
+    if [ ! -f $SONOFF_HACK_PREFIX/etc/dropbear/dropbear_ecdsa_host_key ]; then
+        dropbearkey -t ecdsa -f /tmp/dropbear_ecdsa_host_key
+        mv /tmp/dropbear_ecdsa_host_key $SONOFF_HACK_PREFIX/etc/dropbear/
+    fi
     # Restore keys
     mkdir -p /etc/dropbear
     cp -f $SONOFF_HACK_PREFIX/etc/dropbear/* /etc/dropbear/
     chmod 0600 /etc/dropbear/*
     dropbear -R
-    # Backup keys
-    mkdir -p $SONOFF_HACK_PREFIX/etc/dropbear
-    cp -f /etc/dropbear/* $SONOFF_HACK_PREFIX/etc/dropbear
 fi
 
 if [[ $(get_config NTPD) == "yes" ]] ; then
@@ -109,22 +137,20 @@ if [[ $(get_config NTPD) == "yes" ]] ; then
     sleep 5 && ntpd -p $(get_config NTP_SERVER) &
 fi
 
-#if [[ $(get_config MQTT) == "yes" ]] ; then
-#    mqttv4 &
-#fi
-#
-#sleep 5
+if [[ $(get_config MQTT) == "yes" ]] ; then
+    $SONOFF_HACK_PREFIX/bin/mqtt-sonoff &
+fi
 
 if [[ $RTSP_PORT != "554" ]] ; then
     D_RTSP_PORT=:$RTSP_PORT
 fi
 
-if [[ $HTTPD_PORT != "80" ]] ; then
-    D_HTTPD_PORT=:$HTTPD_PORT
-fi
-
 if [[ $ONVIF_PORT != "80" ]] ; then
     D_ONVIF_PORT=:$ONVIF_PORT
+fi
+
+if [[ $HTTPD_PORT != "80" ]] ; then
+    D_HTTPD_PORT=:$HTTPD_PORT
 fi
 
 #if [[ $(get_config ONVIF_WM_SNAPSHOT) == "yes" ]] ; then
@@ -137,8 +163,8 @@ else
     ONVIF_NETIF="eth0"
 fi
 
-ONVIF_PROFILE_1="--name Profile_1 --width 640 --height 360 --url rtsp://%s$D_RTSP_PORT/ch0_1.h264 --snapurl http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh?res=low --type H264"
-ONVIF_PROFILE_0="--name Profile_0 --width 1920 --height 1080 --url rtsp://%s$D_RTSP_PORT/ch0_0.h264 --snapurl http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh?res=high --type H264"
+ONVIF_PROFILE_1="--name Profile_1 --width 640 --height 360 --url rtsp://%s$D_RTSP_PORT/ch0_1.h264 --snapurl http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh --type H264"
+ONVIF_PROFILE_0="--name Profile_0 --width 1920 --height 1080 --url rtsp://%s$D_RTSP_PORT/ch0_0.h264 --snapurl http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh --type H264"
 
 if [[ $(get_config ONVIF) == "yes" ]] ; then
     onvif_srvd --pid_file /var/run/onvif_srvd.pid --model "Sonoff Hack" --manufacturer "Sonoff" --firmware_ver "$SONOFF_HACK_VER" --hardware_id $HW_ID --serial_num $SERIAL_NUMBER --ifs $ONVIF_NETIF --port $ONVIF_PORT --scope onvif://www.onvif.org/Profile/S $ONVIF_PROFILE_0 $ONVIF_PROFILE_1 $ONVIF_USERPWD --ptz --move_left "/mnt/mmc/sonoff-hack/bin/ptz -a left" --move_right "/mnt/mmc/sonoff-hack/bin/ptz -a right" --move_up "/mnt/mmc/sonoff-hack/bin/ptz -a up" --move_down "/mnt/mmc/sonoff-hack/bin/ptz -a down" --move_stop "/mnt/mmc/sonoff-hack/bin/ptz -a stop"

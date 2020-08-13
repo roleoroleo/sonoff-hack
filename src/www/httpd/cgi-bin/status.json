@@ -22,12 +22,26 @@ fi
 
 LOCAL_IP_E=$(ifconfig eth0 | awk '/inet addr/{print substr($2,6)}')
 NETMASK_E=$(ifconfig eth0 | awk '/inet addr/{print substr($4,6)}')
+if [ -z $LOCAL_IP_E ]; then
+    LOCAL_IP_E="N/A"
+    NETMASK_E="N/A"
+fi
 LOCAL_IP_W=$(ifconfig ra0 | awk '/inet addr/{print substr($2,6)}')
 NETMASK_W=$(ifconfig ra0 | awk '/inet addr/{print substr($4,6)}')
+if [ -z $LOCAL_IP_W ]; then
+    LOCAL_IP_W="N/A"
+    NETMASK_W="N/A"
+fi
 GATEWAY=$(route -n | awk 'NR==3{print $2}')
+if [ -z $GATEWAY ]; then
+    GATEWAY="N/A"
+fi
 MAC_ADDR_E=$(ifconfig eth0 | awk '/HWaddr/{print substr($5,1)}')
 MAC_ADDR_W=$(ifconfig ra0 | awk '/HWaddr/{print substr($5,1)}')
 WLAN_ESSID=$(iwconfig ra0 | grep ESSID | cut -d\" -f2)
+if [ -z $WLAN_ESSID ]; then
+    WLAN_ESSID="N/A"
+fi
 
 # Yeah, it's pretty ugly.. but hey, it works.
 

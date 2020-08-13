@@ -7,9 +7,9 @@ APP.snapshot = (function ($) {
     }
 
     function initPage() {
-        jQuery.get('/cgi-bin/snapshot.sh?res=high&base64=yes&watermark=yes', function(data) {
+        jQuery.get('/cgi-bin/snapshot.sh?base64=yes', function(data) {
         image = document.getElementById('imgSnap');
-        image.src = 'data:image/png;base64,' + data;
+        image.src = 'data:image/jpeg;base64,' + data;
         image.style = 'width:100%;';
         })
     }

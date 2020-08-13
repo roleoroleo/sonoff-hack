@@ -1,7 +1,7 @@
 #!/bin/sh
 
-YI_HACK_PREFIX="/home/yi-hack"
-CONF_FILE="$YI_HACK_PREFIX/etc/camera.conf"
+SONOFF_HACK_PREFIX="/mnt/mmc/sonoff-hack"
+CONF_FILE="$SONOFF_HACK_PREFIX/etc/camera.conf"
 
 CONF_LAST="CONF_LAST"
 

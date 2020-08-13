@@ -1,16 +1,15 @@
 #!/bin/sh
 
-cd /home/yi-hack/etc
+cd /mnt/mmc/sonoff-hack/etc
 
-rm -f /etc/hostname
-rm -f /etc/TZ
+rm hostname
 
 rm camera.conf
 rm mqttv4.conf
-rm proxychains.conf
+#rm proxychains.conf
 rm system.conf
 
-7za x defaults.7z > /dev/null
+tar zxvf defaults.tar.gz > /dev/null 2>&1
 
 printf "Content-type: application/json\r\n\r\n"
 printf "{\n"

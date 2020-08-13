@@ -2,14 +2,14 @@
 
 CONF_FILE="etc/system.conf"
 
-YI_HACK_PREFIX="/home/yi-hack"
+SONOFF_HACK_PREFIX="/mnt/mmc/sonoff-hack"
 
-MODEL_SUFFIX=$(cat /home/yi-hack/model_suffix)
+MODEL=$(cat /mnt/mtd/ipc/cfg/config_cst.cfg | grep model | cut -d'=' -f2 | cut -d'"' -f2)
 
 get_config()
 {
     key=$1
-    grep -w $1 $YI_HACK_PREFIX/$CONF_FILE | cut -d "=" -f2
+    grep -w $1 $SONOFF_HACK_PREFIX/$CONF_FILE | cut -d "=" -f2
 }
 
 init_config()
@@ -37,49 +37,52 @@ init_config()
         D_RTSP_PORT=:$RTSP_PORT
     fi
 
+    if [[ $ONVIF_PORT != "80" ]] ; then
+        D_ONVIF_PORT=:$ONVIF_PORT
+    fi
+
     if [[ $HTTPD_PORT != "80" ]] ; then
         D_HTTPD_PORT=:$HTTPD_PORT
     fi
-}
 
-start_rtsp()
-{
-    RRTSP_RES=$1 RRTSP_PORT=$RTSP_PORT RRTSP_USER=$USERNAME RRTSP_PWD=$PASSWORD rRTSPServer >/dev/null &
-    $YI_HACK_PREFIX/script/wd_rtsp.sh >/dev/null &
-}
-
-stop_rtsp()
-{
-    killall wd_rtsp.sh
-    killall rRTSPServer
+    if [[ $(get_config ONVIF_NETIF) == "ra0" ]] ; then
+        ONVIF_NETIF="ra0"
+    else
+        ONVIF_NETIF="eth0"
+    fi
 }
 
 start_onvif()
 {
-    if [[ $2 == "yes" ]; then
-        WATERMARK="&watermark=yes"
-    fi
     if [[ $1 == "high" ]]; then
-        ONVIF_PROFILE_0="--name Profile_0 --width 1920 --height 1080 --url rtsp://%s$D_RTSP_PORT/ch0_0.h264 --snapurl http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh?res=high$WATERMARK --type H264"
+        ONVIF_PROFILE_0="--name Profile_0 --width 1920 --height 1080 --url rtsp://%s$D_RTSP_PORT/ch0_0.h264 --snapurl http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh --type H264"
     fi
     if [[ $1 == "low" ]]; then
-        ONVIF_PROFILE_1="--name Profile_1 --width 640 --height 360 --url rtsp://%s$D_RTSP_PORT/ch0_1.h264 --snapurl http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh?res=low$WATERMARK --type H264"
+        ONVIF_PROFILE_1="--name Profile_1 --width 640 --height 360 --url rtsp://%s$D_RTSP_PORT/ch0_1.h264 --snapurl http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh --type H264"
     fi
     if [[ $1 == "both" ]]; then
-        ONVIF_PROFILE_0="--name Profile_0 --width 1920 --height 1080 --url rtsp://%s$D_RTSP_PORT/ch0_0.h264 --snapurl http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh?res=high$WATERMARK --type H264"
-        ONVIF_PROFILE_1="--name Profile_1 --width 640 --height 360 --url rtsp://%s$D_RTSP_PORT/ch0_1.h264 --snapurl http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh?res=low$WATERMARK --type H264"
+        ONVIF_PROFILE_0="--name Profile_0 --width 1920 --height 1080 --url rtsp://%s$D_RTSP_PORT/ch0_0.h264 --snapurl http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh --type H264"
+        ONVIF_PROFILE_1="--name Profile_1 --width 640 --height 360 --url rtsp://%s$D_RTSP_PORT/ch0_1.h264 --snapurl http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh --type H264"
     fi
 
-    if [[ $MODEL_SUFFIX == "h201c" ]] ; then
-        onvif_srvd --pid_file /var/run/onvif_srvd.pid --model "Yi Hack" --manufacturer "Yi" --ifs wlan0 --port $ONVIF_PORT --scope onvif://www.onvif.org/Profile/S $ONVIF_PROFILE_0 $ONVIF_PROFILE_1 $ONVIF_USERPWD --ptz --move_left "/home/yi-hack/bin/ipc_cmd -m left" --move_right "/home/yi-hack/bin/ipc_cmd -m right" --move_up "/home/yi-hack/bin/ipc_cmd -m up" --move_down "/home/yi-hack/bin/ipc_cmd -m down" --move_stop "/home/yi-hack/bin/ipc_cmd -m stop" --move_preset "/home/yi-hack/bin/ipc_cmd -p"
-    else
-        onvif_srvd --pid_file /var/run/onvif_srvd.pid --model "Yi Hack" --manufacturer "Yi" --ifs wlan0 --port $ONVIF_PORT --scope onvif://www.onvif.org/Profile/S $ONVIF_PROFILE_0 $ONVIF_PROFILE_1 $ONVIF_USERPWD
-    fi
+    onvif_srvd --pid_file /var/run/onvif_srvd.pid --model "Sonoff Hack" --manufacturer "Sonoff" --firmware_ver "$SONOFF_HACK_VER" --hardware_id $HW_ID --serial_num $SERIAL_NUMBER --ifs $ONVIF_NETIF --port $ONVIF_PORT --scope onvif://www.onvif.org/Profile/S $ONVIF_PROFILE_0 $ONVIF_PROFILE_1 $ONVIF_USERPWD --ptz --move_left "/home/yi-hack/bin/ptz -a left" --move_right "/home/yi-hack/bin/ptz -a right" --move_up "/home/yi-hack/bin/ptz -a up" --move_down "/home/yi-hack/bin/ptz -a down" --move_stop "/home/yi-hack/bin/ptz -a stop"
+# --move_preset "/home/yi-hack/bin/ipc_cmd -p"
+    wsdd --pid_file /var/run/wsdd.pid --if_name $ONVIF_NETIF --type tdn:NetworkVideoTransmitter --xaddr http://%s$D_ONVIF_PORT --scope "onvif://www.onvif.org/name/Unknown onvif://www.onvif.org/Profile/Streaming"
 }
 
 stop_onvif()
 {
     killall onvif_srvd
+}
+
+start_wsdd()
+{
+    wsdd --pid_file /var/run/wsdd.pid --if_name $ONVIF_NETIF --type tdn:NetworkVideoTransmitter --xaddr http://%s$D_ONVIF_PORT --scope "onvif://www.onvif.org/name/Unknown onvif://www.onvif.org/Profile/Streaming"
+}
+
+stop_wsdd()
+{
+    killall wsdd
 }
 
 start_ftpd()
@@ -105,7 +108,7 @@ ACTION="none"
 PARAM1="none"
 PARAM2="none"
 
-for I in 1 2 3 4
+for I in 1 2 3
 do
     CONF="$(echo $QUERY_STRING | cut -d'&' -f$I | cut -d'=' -f1)"
     VAL="$(echo $QUERY_STRING | cut -d'&' -f$I | cut -d'=' -f2)"
@@ -116,28 +119,26 @@ do
         ACTION="$VAL"
     elif [ "$CONF" == "param1" ] ; then
         PARAM1="$VAL"
-    elif [ "$CONF" == "param2" ] ; then
-        PARAM2="$VAL"
     fi
 done
 
 init_config
 
 if [ "$ACTION" == "start" ] ; then
-    if [ "$NAME" == "rtsp" ]; then
-        start_rtsp $PARAM1
-    elif [ "$NAME" == "onvif" ]; then
-        start_onvif $PARAM1 $PARAM2
-    elif [ "$NAME" == "ftpd" ]; then
+    if [ "$NAME" == "onvif" ]; then
+        start_onvif $PARAM1
+    elif [ "$NAME" == "wsdd" ]; then
+        start_wsdd
+	elif [ "$NAME" == "ftpd" ]; then
         start_ftpd $PARAM1
     elif [ "$NAME" == "mqtt" ]; then
         mqttv4 >/dev/null &
     fi
 elif [ "$ACTION" == "stop" ] ; then
-    if [ "$NAME" == "rtsp" ]; then
-        stop_rtsp $PARAM1
-    elif [ "$NAME" == "onvif" ]; then
+    if [ "$NAME" == "onvif" ]; then
         stop_onvif $PARAM1
+    elif [ "$NAME" == "wsdd" ]; then
+        stop_wsdd
     elif [ "$NAME" == "ftpd" ]; then
         stop_ftpd $PARAM1
     elif [ "$NAME" == "mqtt" ]; then

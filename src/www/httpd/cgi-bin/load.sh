@@ -2,22 +2,22 @@
 
 # Conf
 CONF_FILE="etc/camera.conf"
-YI_HACK_PREFIX="/home/yi-hack"
+SONOFF_HACK_PREFIX="/mnt/mmc/sonoff-hack"
 
 get_config()
 {
     key=$1
-    grep -w $1 $YI_HACK_PREFIX/$CONF_FILE | cut -d "=" -f2
+    grep -w $1 $SONOFF_HACK_PREFIX/$CONF_FILE | cut -d "=" -f2
 }
 
 # Files
-TMPOUT=/tmp/config.7z.dl
+TMPOUT=/tmp/config.tar.gz.dl
 TMPDIR=/tmp/workdir.tmp
-TMPOUT7z=$TMPDIR/config.7z
+TMPOUTgz=$TMPDIR/config.tar.gz
 
 # Cleaning
 rm -f $TMPOUT
-rm -f $TMPOUT7z
+rm -f $TMPOUTgz
 rm -rf $TMPDIR
 
 mkdir -p $TMPDIR
@@ -32,7 +32,7 @@ if [ "$REQUEST_METHOD" = "POST" ]; then
     # Get the line count
     LINES=$(grep -c "" $TMPOUT)
 
-    touch $TMPOUT7z
+    touch $TMPOUTgz
     l=1
     LENSKIP=0
 
@@ -57,25 +57,21 @@ if [ "$REQUEST_METHOD" = "POST" ]; then
     done
 fi
 
-# Extract 7z file
+# Extract tar.gz file
 LEN=$((CONTENT_LENGTH-LENSKIPSTART-LENSKIPEND+2))
-dd if=$TMPOUT of=$TMPOUT7z bs=1 skip=$LENSKIPSTART count=$LEN >/dev/null 2>&1
+dd if=$TMPOUT of=$TMPOUTgz bs=1 skip=$LENSKIPSTART count=$LEN >/dev/null 2>&1
 cd $TMPDIR
-7za x -y $TMPOUT7z >/dev/null 2>&1
+tar zxvf $TMPOUTgz >/dev/null 2>&1
 RES=$?
 
-# Verify result of 7za command and copy files to destination
+# Verify result of tar.bz2 command and copy files to destination
 if [ $RES -eq 0 ]; then
     if [ \( -f "system.conf" \) -a \( -f "camera.conf" \) ]; then
-        mv -f *.conf /home/yi-hack/etc/
-        chmod 0644 /home/yi-hack/etc/*.conf
-        if [ -f TZ ]; then
-            mv -f TZ /etc/
-            chmod 0644 /etc/TZ
-        fi
+        mv -f *.conf /mnt/mmc/sonoff-hack/etc/
+        chmod 0644 /mnt/mmc/sonoff-hack/etc/*.conf
         if [ -f hostname ]; then
-            mv -f hostname /etc/
-            chmod 0644 /etc/hostname
+            mv -f hostname /mnt/mmc/sonoff-hack/etc/
+            chmod 0644 /mnt/mmc/sonoff-hack/etc/hostname
         fi
         RES=0
     else
@@ -87,7 +83,7 @@ fi
 cd ..
 rm -rf $TMPDIR
 rm -f $TMPOUT
-rm -f $TMPOUT7z
+rm -f $TMPOUTgz
 
 # Print response
 printf "Content-type: text/html\r\n\r\n"
@@ -97,39 +93,6 @@ else
     printf "Upload failed\r\n"
 fi
 
-if [ ! -f "$YI_HACK_PREFIX/$CONF_FILE" ]; then
+if [ ! -f "$SONOFF_HACK_PREFIX/$CONF_FILE" ]; then
     exit
-fi
-
-# Set camera settings
-if [[ $(get_config SWITCH_ON) == "no" ]] ; then
-    ipc_cmd -t off
-else
-    ipc_cmd -t on
-fi
-
-if [[ $(get_config SAVE_VIDEO_ON_MOTION) == "no" ]] ; then
-    ipc_cmd -v always
-else
-    ipc_cmd -v detect
-fi
-
-ipc_cmd -s $(get_config SENSITIVITY)
-
-if [[ $(get_config LED) == "no" ]] ; then
-    ipc_cmd -l off
-else
-    ipc_cmd -l on
-fi
-
-if [[ $(get_config IR) == "no" ]] ; then
-    ipc_cmd -i off
-else
-    ipc_cmd -i on
-fi
-
-if [[ $(get_config ROTATE) == "no" ]] ; then
-    ipc_cmd -r off
-else
-    ipc_cmd -r o
 fi

@@ -62,9 +62,9 @@ APP.ptz = (function ($) {
         interval = 1000;
 
         (function p() {
-            jQuery.get('/cgi-bin/snapshot.sh?res=low&base64=yes', function(data) {
+            jQuery.get('/cgi-bin/snapshot.sh?base64=yes', function(data) {
                 image = document.getElementById('imgSnap');
-                image.src = 'data:image/png;base64,' + data;
+                image.src = 'data:image/jpeg;base64,' + data;
             })
             setTimeout(p, interval);
         })();
@@ -77,8 +77,8 @@ APP.ptz = (function ($) {
             dataType: "json",
             success: function(data) {
                 for (let key in data) {
-                    if (key == "model_suffix") {
-                        if (data[key] == "h201c") {
+                    if (key == "model") {
+                        if (data[key] == "GK-200MP2B") {
                             $('#ptz_description').show();
                             $('#ptz_available').hide();
                             $('#ptz_main').show();

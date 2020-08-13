@@ -39,7 +39,7 @@ APP.maintenance = (function ($) {
                 var url = URL.createObjectURL(myBlob);
                 var $a = $('<a />', {
                     'href': url,
-                    'download': 'config.7z',
+                    'download': 'config.tar.gz',
                     'text': "click"
                 }).hide().appendTo("body")[0].click();
                 URL.revokeObjectURL(url);

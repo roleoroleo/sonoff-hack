@@ -26,7 +26,7 @@ CONF_TYPE="$(get_conf_type)"
 CONF_FILE=""
 
 if [ "$CONF_TYPE" == "mqtt" ] ; then
-    CONF_FILE="$SONOFF_HACK_PREFIX/etc/mqttv4.conf"
+    CONF_FILE="$SONOFF_HACK_PREFIX/etc/mqtt-sonoff.conf"
 else
     CONF_FILE="$SONOFF_HACK_PREFIX/etc/$CONF_TYPE.conf"
 fi
@@ -53,19 +53,17 @@ for S in $PARAMS ; do
         if [ -z $VALUE ] ; then
 
             # Use 2 last MAC address numbers to set a different hostname
-            MAC=$(cat /sys/class/net/wlan0/address|cut -d ':' -f 5,6|sed 's/://g')
+            MAC=$(cat /sys/class/net/ra0/address|cut -d ':' -f 5,6|sed 's/://g')
             if [ "$MAC" != "" ]; then
-                hostname yi-$MAC
+                hostname sonoff-$MAC
             else
-                hostname yi-hack
+                hostname sonoff-hack
             fi
-            hostname > /etc/hostname
+            hostname > $SONOFF_HACK_PREFIX/etc/hostname
         else
             hostname $VALUE
-            echo "$VALUE" > /etc/hostname
+            echo "$VALUE" > $SONOFF_HACK_PREFIX/etc/hostname
         fi
-    elif [ "$KEY" == "TIMEZONE" ] ; then
-        echo $VALUE > /etc/TZ
     else
         VALUE=$(echo "$VALUE" | sedencode)
         sed -i "s/^\(${KEY}\s*=\s*\).*$/\1${VALUE}/" $CONF_FILE

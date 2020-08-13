@@ -18,7 +18,7 @@ CONF_TYPE="$(get_conf_type)"
 CONF_FILE=""
 
 if [ "$CONF_TYPE" == "mqtt" ] ; then
-    CONF_FILE="$SONOFF_HACK_PREFIX/etc/mqttv4.conf"
+    CONF_FILE="$SONOFF_HACK_PREFIX/etc/mqtt-sonoff.conf"
 else
     CONF_FILE="$SONOFF_HACK_PREFIX/etc/$CONF_TYPE.conf"
 fi
@@ -34,8 +34,7 @@ while IFS= read -r LINE ; do
 done < "$CONF_FILE"
 
 if [ "$CONF_TYPE" == "system" ] ; then
-    printf "\"%s\":\"%s\",\n"  "HOSTNAME" "$(cat /etc/hostname)"
-    printf "\"%s\":\"%s\",\n"  "TIMEZONE" "$(cat /etc/TZ)"
+    printf "\"%s\":\"%s\",\n"  "HOSTNAME" "$(cat $SONOFF_HACK_PREFIX/etc/hostname)"
 fi
 
 # Empty values to "close" the json

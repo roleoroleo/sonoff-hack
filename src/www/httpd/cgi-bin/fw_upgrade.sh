@@ -65,6 +65,9 @@ elif [ "$VAL" == "upgrade" ] ; then
     if [ -f $SONOFF_HACK_PREFIX/etc/hostname ]; then
         cp -f $SONOFF_HACK_PREFIX/etc/hostname .
     fi
+    cp -f $SONOFF_HACK_PREFIX/etc/passwd .
+    cp -f $SONOFF_HACK_PREFIX/etc/shadow .
+    cp -rf $SONOFF_HACK_PREFIX/etc/dropbear .
 
     # Report the status to the caller
     printf "Content-type: text/html\r\n\r\n"

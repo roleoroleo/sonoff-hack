@@ -22,15 +22,12 @@ touch /tmp/httpd.conf
 # Restore configuration after a firmware upgrade
 if [ -f $SONOFF_HACK_PREFIX/.fw_upgrade_in_progress ]; then
     cp -f /tmp/sd/.fw_upgrade/*.conf $SONOFF_HACK_PREFIX/etc/
-    chmod 0644 $SONOFF_HACK_PREFIX/etc/*.conf
     if [ -f /tmp/sd/.fw_upgrade/hostname ]; then
         cp -f /tmp/sd/.fw_upgrade/hostname /etc/
-        chmod 0644 /etc/hostname
     fi
-    if [ -f /tmp/sd/.fw_upgrade/TZ ]; then
-        cp -f /tmp/sd/.fw_upgrade/TZ /etc/
-        chmod 0644 /etc/TZ
-    fi
+    cp -f /tmp/sd/.fw_upgrade/passwd /etc/
+    cp -f /tmp/sd/.fw_upgrade/shadow /etc/
+    cp -rf /tmp/sd/.fw_upgrade/dropbear /etc/
     rm $SONOFF_HACK_PREFIX/.fw_upgrade_in_progress
     rm -r /tmp/sd/.fw_upgrade
 fi

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+SCRIPT_DIR=$(cd `dirname $0` && pwd)
+cd $SCRIPT_DIR
+
+#rsync -a ./_install/* ../../build/sonoff-hack
+mkdir -p ../../build/sonoff-hack/bin
+cp -f ./_install/bin/busybox ../../build/sonoff-hack/bin/tar
+cp -f ./_install/bin/busybox ../../build/sonoff-hack/bin/gzip

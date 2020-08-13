@@ -13,3 +13,6 @@
 [submodule "src/wsdd/wsdd"]
 	path = src/wsdd/wsdd
 	url = https://github.com/KoynovStas/wsdd
+[submodule "src/busybox/busybox"]
+	path = src/busybox/busybox
+	url = https://github.com/mirror/busybox

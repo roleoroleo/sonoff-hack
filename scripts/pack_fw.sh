@@ -120,9 +120,9 @@ cp -R $BUILD_DIR/sonoff-hack/* $TMP_DIR/sonoff-hack || exit 1
 echo "done!"
 
 # adding defaults
-#echo -n ">>> Adding defaults... "
-#7za a $TMP_DIR/sonoff-hack/etc/defaults.7z $TMP_DIR/home/yi-hack/etc/*.conf > /dev/null
-#echo "done!"
+echo -n ">>> Adding defaults... "
+(cd $TMP_DIR/sonoff-hack/etc/ && tar zcvf $TMP_DIR/sonoff-hack/etc/defaults.tar.gz * > /dev/null 2>&1)
+echo "done!"
 
 # insert the version file
 echo -n ">>> Copying the version file... "
@@ -131,7 +131,7 @@ echo "done!"
 
 # insert the model suffix file
 echo -n ">>> Creating the model suffix file... "
-echo $CAMERA_ID > $TMP_DIR/sonoff-hack/model_suffix
+echo $CAMERA_ID > $TMP_DIR/sonoff-hack/model
 echo "done!"
 
 # fix the files ownership
@@ -147,10 +147,7 @@ echo "    done!"
 
 # create tar.gz
 rm -f $TMP_DIR/*.tgz
-CURDIR=$(pwd)
-cd $TMP_DIR
-tar zcvf ${CAMERA_NAME}_${VER}.tgz *
-cd $CURDIR
+(cd $TMP_DIR && tar zcvf ${CAMERA_NAME}_${VER}.tgz *)
 
 # copy files to the output dir
 echo ">>> Copying files to $OUT_DIR... "

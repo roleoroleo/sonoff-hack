@@ -26,6 +26,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include "ptz.h"
+#include "libptz.h"
 
 void print_usage(char *progname)
 {

@@ -3,9 +3,6 @@
 SCRIPT_DIR=$(cd `dirname $0` && pwd)
 cd $SCRIPT_DIR
 
-# Compress the file
-# upx ./_install/*
-
 mkdir -p ../../build/sonoff-hack/bin/
 mkdir -p ../../build/sonoff-hack/sbin/
 mkdir -p ../../build/sonoff-hack/usr/bin/

@@ -20,5 +20,9 @@ make clean
 make || exit 1
 mkdir -p $SCRIPT_DIR/_install/bin
 cp .libs/sqlite3 $SCRIPT_DIR/_install/bin/
+mkdir -p $SCRIPT_DIR/_install/lib
+cp .libs/libsqlite3.so.0.8.6 $SCRIPT_DIR/_install/lib/
+ln -s libsqlite3.so.0.8.6 $SCRIPT_DIR/_install/lib/libsqlite3.so.0
+ln -s libsqlite3.so.0.8.6 $SCRIPT_DIR/_install/lib/libsqlite3.so
 
 arm-sonoff-linux-uclibcgnueabi-strip ../_install/bin/*

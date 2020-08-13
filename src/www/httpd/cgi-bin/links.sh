@@ -27,7 +27,7 @@ if [[ $HTTPD_PORT != "80" ]] ; then
 fi
 
 RTSP_USER="rtsp"
-RTSP_PWD=$(/mnt/mmc/bin/sqlite3 /mnt/mtd/db/ipcsys.db "select c_PassWord from t_user where c_UserName='$RTSP_USER';")
+RTSP_PWD=$(/mnt/mmc/sonoff-hack/bin/sqlite3 /mnt/mtd/db/ipcsys.db "select c_PassWord from t_user where c_UserName='$RTSP_USER';")
 
 printf "Content-type: application/json\r\n\r\n"
 printf "{\n"

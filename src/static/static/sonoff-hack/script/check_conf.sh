@@ -2,7 +2,7 @@
 
 SYSTEM_CONF_FILE="/mnt/mmc/sonoff-hack/etc/system.conf"
 CAMERA_CONF_FILE="/mnt/mmc/sonoff-hack/etc/camera.conf"
-MQTTS_CONF_FILE="/mnt/mmc/sonoff-hack/etc/mqtts.conf"
+MQTTS_CONF_FILE="/mnt/mmc/sonoff-hack/etc/mqtt-sonoff.conf"
 
 PARMS1="
 HTTPD=yes
@@ -28,16 +28,13 @@ FTP_UPLOAD=no
 FTP_HOST=
 FTP_USERNAME=
 FTP_PASSWORD=
-SSH_PASSWORD="
+SSH_PASSWORD=
+TIMEZONE=
+SWAP_FILE=no"
 
 PARMS2="
-SWITCH_ON=yes
-SAVE_VIDEO_ON_MOTION=yes
 SENSITIVITY=low
-BABY_CRYING_DETECT=no
-LED=no
-ROTATE=no
-IR=yes"
+ROTATE=no"
 
 PARMS3="
 MQTT_IP=0.0.0.0

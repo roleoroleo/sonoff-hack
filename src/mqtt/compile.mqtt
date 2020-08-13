@@ -1,0 +1,19 @@
+#!/bin/bash
+
+set -e
+
+SCRIPT_DIR=$(cd `dirname $0` && pwd)
+cd $SCRIPT_DIR
+
+cd mqtt-sonoff
+
+make clean
+make
+
+mkdir -p ../_install/bin
+mkdir -p ../_install/etc
+
+cp ./mqtt-sonoff ../_install/bin
+cp ./conf/mqtt-sonoff.conf ../_install/etc
+
+arm-sonoff-linux-uclibcgnueabi-strip ../_install/bin/*

@@ -5,6 +5,7 @@ CONF_FILE="etc/system.conf"
 SONOFF_HACK_PREFIX="/mnt/mmc/sonoff-hack"
 
 MODEL=$(cat /mnt/mtd/ipc/cfg/config_cst.cfg | grep model | cut -d'=' -f2 | cut -d'"' -f2)
+DEVICE_ID=$(cat /mnt/mtd/ipc/cfg/colink.conf | grep devid | cut -d'=' -f2 | cut -d'"' -f2)
 
 get_config()
 {
@@ -65,7 +66,7 @@ start_onvif()
         ONVIF_PROFILE_1="--name Profile_1 --width 640 --height 360 --url rtsp://%s$D_RTSP_PORT/ch0_1.h264 --snapurl http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh --type H264"
     fi
 
-    onvif_srvd --pid_file /var/run/onvif_srvd.pid --model "Sonoff Hack" --manufacturer "Sonoff" --firmware_ver "$SONOFF_HACK_VER" --hardware_id $HW_ID --serial_num $SERIAL_NUMBER --ifs $ONVIF_NETIF --port $ONVIF_PORT --scope onvif://www.onvif.org/Profile/S $ONVIF_PROFILE_0 $ONVIF_PROFILE_1 $ONVIF_USERPWD --ptz --move_left "/home/yi-hack/bin/ptz -a left" --move_right "/home/yi-hack/bin/ptz -a right" --move_up "/home/yi-hack/bin/ptz -a up" --move_down "/home/yi-hack/bin/ptz -a down" --move_stop "/home/yi-hack/bin/ptz -a stop"
+    onvif_srvd --pid_file /var/run/onvif_srvd.pid --model "Sonoff Hack" --manufacturer "Sonoff" --firmware_ver "$SONOFF_HACK_VER" --hardware_id $MODEL --serial_num $DEVICE_ID --ifs $ONVIF_NETIF --port $ONVIF_PORT --scope onvif://www.onvif.org/Profile/S $ONVIF_PROFILE_0 $ONVIF_PROFILE_1 $ONVIF_USERPWD --ptz --move_left "/home/yi-hack/bin/ptz -a left" --move_right "/home/yi-hack/bin/ptz -a right" --move_up "/home/yi-hack/bin/ptz -a up" --move_down "/home/yi-hack/bin/ptz -a down" --move_stop "/home/yi-hack/bin/ptz -a stop"
 # --move_preset "/home/yi-hack/bin/ipc_cmd -p"
     wsdd --pid_file /var/run/wsdd.pid --if_name $ONVIF_NETIF --type tdn:NetworkVideoTransmitter --xaddr http://%s$D_ONVIF_PORT --scope "onvif://www.onvif.org/name/Unknown onvif://www.onvif.org/Profile/Streaming"
 }

@@ -95,6 +95,7 @@ This hack is not a permanent change, remove your SD card and the cam will come b
 
 ## Acknowledgments
 Special thanks to the following people for the previous projects I started from.
+- @EpicLPer - [https://github.com/EpicLPer/Sonoff_GK-200MP2-B_Dump](https://github.com/EpicLPer/Sonoff_GK-200MP2-B_Dump)
 - @TheCrypt0 - [https://github.com/TheCrypt0/yi-hack-v4](https://github.com/TheCrypt0/yi-hack-v4)
 - All the people who worked on the previous projects "yi-hack".
 

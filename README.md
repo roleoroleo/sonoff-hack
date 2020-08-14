@@ -7,9 +7,9 @@
 This firmware is based on the yi-hack-Allwinner project.
 https://github.com/roleoroleo/yi-hack-Allwinner
 
-Thanks to @EpicLPer for writing the hack guide for this cam: https://github.com/EpicLPer/Sonoff_GK-200MP2-B_Dump
-
 It's a clone made for Sonoff camera based on Goke platform.
+
+Thanks to @EpicLPer for writing the hack guide for this cam: https://github.com/EpicLPer/Sonoff_GK-200MP2-B_Dump
 
 I have no time to support the project, so feel free to clone/fork this git and modify it as you want.
 

@@ -1,10 +1,13 @@
-OBJECTS = ptz.o
+OBJECTS = ptz.o config.o
 INCLUDE = -I./dummylib
 LIB = -L./dummylib -lptz
 
 all: libptz ptz
 
 ptz.o: ptz.c $(HEADERS)
+	$(CC) $(INCLUDE) -c $< -fPIC -O2 -o $@
+
+config.o: config.c $(HEADERS)
 	$(CC) $(INCLUDE) -c $< -fPIC -O2 -o $@
 
 ptz: $(OBJECTS)

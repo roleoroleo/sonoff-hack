@@ -12,5 +12,6 @@ cd ..
 
 patch -p0 < lock_error.patch
 patch -p0 < old_gcc.patch
+patch -p0 < sonoff.patch
 
 cp Makefile.onvif_srvd onvif_srvd/Makefile

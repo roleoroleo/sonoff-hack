@@ -24,6 +24,9 @@ APP.ptz = (function ($) {
         $(document).on("click", '#button-goto', function (e) {
             gotoPreset('#button-goto', '#select-goto');
         });
+        $(document).on("click", '#button-set', function (e) {
+            setPreset('#button-set', '#select-set');
+        });
     }
 
     function move(button, dir) {
@@ -46,7 +49,23 @@ APP.ptz = (function ($) {
         $(button).attr("disabled", true);
         $.ajax({
             type: "GET",
-            url: 'cgi-bin/preset.sh?num='+$(select + " option:selected").text(),
+            url: 'cgi-bin/preset.sh?action=go_preset&num='+$(select + " option:selected").val(),
+            dataType: "json",
+            error: function(response) {
+                console.log('error', response);
+                $(button).attr("disabled", false);
+            },
+            success: function(data) {
+                $(button).attr("disabled", false);
+            }
+        });
+    }
+
+    function setPreset(button, select) {
+        $(button).attr("disabled", true);
+        $.ajax({
+            type: "GET",
+            url: 'cgi-bin/preset.sh?action=set_preset&num='+$(select + " option:selected").text(),
             dataType: "json",
             error: function(response) {
                 console.log('error', response);

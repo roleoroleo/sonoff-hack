@@ -18,12 +18,31 @@
  * Send PTZ commands to /dev/ptz using libptz.so
  */
 
-#define ACTION_STOP    0
-#define ACTION_RIGHT   1
-#define ACTION_LEFT    2
-#define ACTION_DOWN    3
-#define ACTION_UP      4
+#define ACTION_NONE            -1
+#define ACTION_STOP            0
+#define ACTION_RIGHT           1
+#define ACTION_LEFT            2
+#define ACTION_DOWN            3
+#define ACTION_UP              4
+#define ACTION_GO              14
 
-#define ACTION_TIME    500
+#define ACTION_SET_PRESET      114
+#define ACTION_GO_PRESET       214
 
-int hw_ptz_sendptz(int *ptz_arg);
+#define DEFAULT_ACTION_TIME    500
+
+#define MAXLINE                100
+
+#define PRESET_NUM             10
+
+#define MIN_X                  0
+#define MAX_X                  3500
+#define MIN_Y                  0
+#define MAX_Y                  900
+
+struct preset {
+    int x;
+    int y;
+};
+
+//int hw_ptz_sendptz(int *ptz_arg);

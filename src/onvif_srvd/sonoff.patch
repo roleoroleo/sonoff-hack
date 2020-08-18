@@ -1,0 +1,48 @@
+diff -Naur onvif_srvd.ori/src/ServicePTZ.cpp onvif_srvd/src/ServicePTZ.cpp
+--- onvif_srvd.ori/src/ServicePTZ.cpp	2020-08-13 19:36:25.000000000 +0200
++++ onvif_srvd/src/ServicePTZ.cpp	2020-08-18 17:39:00.820070701 +0200
+@@ -54,7 +54,7 @@
+     DEBUG_MSG("PTZ: %s\n", __FUNCTION__);
+ 
+     soap_default_std__vectorTemplateOfPointerTott__PTZPreset(soap, &tptz__GetPresetsResponse._tptz__GetPresetsResponse::Preset);
+-    for (i = 0; i < 8; i++) {
++    for (i = 0; i < 15; i++) {
+         tt__PTZPreset* ptzp;
+         ptzp = soap_new_tt__PTZPreset(soap);
+         tptz__GetPresetsResponse.Preset.push_back(ptzp);
+@@ -79,6 +79,7 @@
+ int PTZBindingService::GotoPreset(_tptz__GotoPreset *tptz__GotoPreset, _tptz__GotoPresetResponse &tptz__GotoPresetResponse)
+ {
+     char cmd[1024];
++    int preset;
+ 
+     DEBUG_MSG("PTZ: %s\n", __FUNCTION__);
+ 
+@@ -94,11 +95,15 @@
+         return SOAP_OK;
+     }
+ 
+-    if ((tptz__GotoPreset->PresetToken.back() >= '0') && (tptz__GotoPreset->PresetToken.back() <= '9')) {
+-        sprintf(cmd, "%s %c", ctx->get_ptz_node()->get_move_preset().c_str(), tptz__GotoPreset->PresetToken.back());
+-        system(cmd);
++    preset = atoi(tptz__GotoPreset->ProfileToken.c_str());
++    // atoi conversion error
++    if ((preset == 0) && (tptz__GotoPreset->ProfileToken.compare("0") != 0)) {
++        return SOAP_OK;
+     }
+ 
++    sprintf(cmd, "%s %d", ctx->get_ptz_node()->get_move_preset().c_str(), preset);
++    system(cmd);
++
+     return SOAP_OK;
+ }
+ 
+@@ -188,7 +193,7 @@
+     ptzs6->XRange->Min    = 0.0;
+     ptzs6->XRange->Max    = 1.0;
+ 
+-    ptzn->MaximumNumberOfPresets = 8;
++    ptzn->MaximumNumberOfPresets = 14;
+     ptzn->HomeSupported = true;
+     ptzn->FixedHomePosition = (bool *)soap_malloc(soap, sizeof(bool));
+     soap_s2bool(soap, "true", ptzn->FixedHomePosition);

@@ -6,7 +6,10 @@
 
 This firmware is based on the yi-hack-Allwinner project.
 https://github.com/roleoroleo/yi-hack-Allwinner
+
 It's a clone made for Sonoff camera based on Goke platform.
+
+Thanks to @EpicLPer for writing the hack guide for this cam: https://github.com/EpicLPer/Sonoff_GK-200MP2-B_Dump
 
 I have no time to support the project, so feel free to clone/fork this git and modify it as you want.
 
@@ -73,7 +76,7 @@ USE AT YOUR OWN RISK.
 
 6. Wait a minute.
 
-7. Go in the browser and access the web interface of the camera as a website (http://IP-CAM:8080). Find the IP address using your mobile app (Camera Settings --> Network Info --> IP Address). If the mobile app can't be paired, you may look for the IP on your router's portal (see connected devices).
+7. Go in the browser and access the web interface of the camera as a website (http://IP-CAM:8080). Find the IP address on your router's portal (see connected devices).
 
 8. Don't remove the microSD card (yes this hack requires a dedicated microSD card).
 
@@ -95,6 +98,7 @@ This hack is not a permanent change, remove your SD card and the cam will come b
 
 ## Acknowledgments
 Special thanks to the following people for the previous projects I started from.
+- @EpicLPer - [https://github.com/EpicLPer/Sonoff_GK-200MP2-B_Dump](https://github.com/EpicLPer/Sonoff_GK-200MP2-B_Dump)
 - @TheCrypt0 - [https://github.com/TheCrypt0/yi-hack-v4](https://github.com/TheCrypt0/yi-hack-v4)
 - All the people who worked on the previous projects "yi-hack".
 

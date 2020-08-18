@@ -1,3 +1,5 @@
 # Ignore the install dir
 _install/
-
+mqtt-sonoff/mqtt-sonoff
+mqtt-sonoff/lib/libmosquitto.so
+mqtt-sonoff/lib/libsqlite3.so

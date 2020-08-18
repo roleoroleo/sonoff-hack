@@ -61,7 +61,7 @@ Currently this project supports only GK-200MP2B camera with firmware version V25
 
 USE AT YOUR OWN RISK.
 
-**Do not try to use an fw on an another model**
+**Do not try to use this fw on an another model**
 
 ## Getting Started
 1. Check that you have a correct Sonoff camera.

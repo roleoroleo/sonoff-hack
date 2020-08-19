@@ -33,7 +33,7 @@ See [CONTRIBUTING](CONTRIBUTING.md)
 This firmware contains the following features.
 
 - FEATURES
-  - ONVIF server (with support for h264 stream, snapshot, ptz, and WS-Discovery) - standardized interfaces for IP cameras.
+  - ONVIF server (with support for h264 stream, snapshot, ptz, presets and WS-Discovery) - standardized interfaces for IP cameras.
   - Snapshot service - allows to get a jpg (1920x1080) with a web request.
     - http://IP-CAM:8080/cgi-bin/snapshot.sh
   - MQTT - Motion detection through mqtt protocol.
@@ -66,7 +66,7 @@ USE AT YOUR OWN RISK.
 ## Getting Started
 1. Check that you have a correct Sonoff camera.
 
-2. Get a microSD card, 16gb or less, and format it by selecting File System as FAT32.
+2. Get a microSD card, 16gb or less, and format it by selecting FAT32 File System.
 
 3. Get the correct firmware file from the releases section (https://github.com/roleoroleo/sonoff-hack/releases).
 

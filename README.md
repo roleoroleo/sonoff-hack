@@ -40,8 +40,9 @@ This firmware contains the following features.
   - Web server - web configutation interface (port 8080).
   - SSH server - dropbear.
   - FTP server.
-  - Authentication for HTTP, RTSP and ONVIF server (work in progress).
+  - Authentication for HTTP, RTSP and ONVIF server.
   - PTZ support through a web page.
+  - Goto and set presets through a web page.
   - The possibility to disable all the cloud features.
   - Swap File on SD
   - Online firmware upgrade (work in progress).

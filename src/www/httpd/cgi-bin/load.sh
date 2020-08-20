@@ -68,10 +68,8 @@ RES=$?
 if [ $RES -eq 0 ]; then
     if [ \( -f "system.conf" \) -a \( -f "camera.conf" \) ]; then
         mv -f *.conf /mnt/mmc/sonoff-hack/etc/
-        chmod 0644 /mnt/mmc/sonoff-hack/etc/*.conf
         if [ -f hostname ]; then
             mv -f hostname /mnt/mmc/sonoff-hack/etc/
-            chmod 0644 /mnt/mmc/sonoff-hack/etc/hostname
         fi
         RES=0
     else
@@ -91,8 +89,4 @@ if [ $RES -eq 0 ]; then
     printf "Upload completed successfully, restart your camera\r\n"
 else
     printf "Upload failed\r\n"
-fi
-
-if [ ! -f "$SONOFF_HACK_PREFIX/$CONF_FILE" ]; then
-    exit
 fi

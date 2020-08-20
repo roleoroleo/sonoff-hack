@@ -25,8 +25,6 @@ if [ -f $SONOFF_HACK_PREFIX/.fw_upgrade_in_progress ]; then
     if [ -f /tmp/sd/.fw_upgrade/hostname ]; then
         cp -f /tmp/sd/.fw_upgrade/hostname /etc/
     fi
-    cp -f /tmp/sd/.fw_upgrade/passwd /etc/
-    cp -f /tmp/sd/.fw_upgrade/shadow /etc/
     cp -rf /tmp/sd/.fw_upgrade/dropbear /etc/
     rm $SONOFF_HACK_PREFIX/.fw_upgrade_in_progress
     rm -r /tmp/sd/.fw_upgrade
@@ -52,9 +50,6 @@ if [[ $(get_config SWAP_FILE) == "yes" ]] ; then
     fi
 fi
 
-SQL_USER=$(sqlite3 /mnt/mtd/db/ipcsys.db "select C_UserName from t_user where C_UserID=10101;")
-SQL_PWD=$(sqlite3 /mnt/mtd/db/ipcsys.db "select C_PassWord from t_user where C_UserID=10101;")
-
 if [[ x$(get_config USERNAME) != "x" ]] ; then
     USERNAME=$(get_config USERNAME)
     PASSWORD=$(get_config PASSWORD)
@@ -77,10 +72,6 @@ if [[ x$CUR_PASSWORD_MD5 != x$PASSWORD_MD5 ]] ; then
     sed -i 's|^\(root:\)[^:]*:|root:'${PASSWORD_MD5}':|g' "/etc/shadow"
 fi
 
-case $(get_config RTSP_PORT) in
-    ''|*[!0-9]*) RTSP_PORT=554 ;;
-    *) RTSP_PORT=$(get_config RTSP_PORT) ;;
-esac
 case $(get_config ONVIF_PORT) in
     ''|*[!0-9]*) ONVIF_PORT=80 ;;
     *) ONVIF_PORT=$(get_config ONVIF_PORT) ;;
@@ -146,10 +137,6 @@ if [[ $(get_config MQTT) == "yes" ]] ; then
     $SONOFF_HACK_PREFIX/bin/mqtt-sonoff &
 fi
 
-if [[ $RTSP_PORT != "554" ]] ; then
-    D_RTSP_PORT=:$RTSP_PORT
-fi
-
 if [[ $ONVIF_PORT != "80" ]] ; then
     D_ONVIF_PORT=:$ONVIF_PORT
 fi
@@ -158,10 +145,6 @@ if [[ $HTTPD_PORT != "80" ]] ; then
     D_HTTPD_PORT=:$HTTPD_PORT
 fi
 
-#if [[ $(get_config ONVIF_WM_SNAPSHOT) == "yes" ]] ; then
-#    WATERMARK="&watermark=yes"
-#fi
-
 if [[ $(get_config ONVIF) == "yes" ]] ; then
     if [[ $(get_config ONVIF_NETIF) == "ra0" ]] ; then
         ONVIF_NETIF="ra0"
@@ -169,8 +152,8 @@ if [[ $(get_config ONVIF) == "yes" ]] ; then
         ONVIF_NETIF="eth0"
     fi
 
-    ONVIF_PROFILE_1="--name Profile_1 --width 640 --height 360 --url rtsp://$RTSP_USERPWD%s$D_RTSP_PORT/av_stream/ch1 --snapurl http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh --type H264"
-    ONVIF_PROFILE_0="--name Profile_0 --width 1920 --height 1080 --url rtsp://$RTSP_USERPWD%s$D_RTSP_PORT/av_stream/ch0 --snapurl http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh --type H264"
+    ONVIF_PROFILE_1="--name Profile_1 --width 640 --height 360 --url rtsp://$RTSP_USERPWD%s/av_stream/ch1 --snapurl http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh --type H264"
+    ONVIF_PROFILE_0="--name Profile_0 --width 1920 --height 1080 --url rtsp://$RTSP_USERPWD%s/av_stream/ch0 --snapurl http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh --type H264"
 
     onvif_srvd --pid_file /var/run/onvif_srvd.pid --model "Sonoff Hack" --manufacturer "Sonoff" --firmware_ver "$SONOFF_HACK_VER" --hardware_id $MODEL --serial_num $DEVICE_ID --ifs $ONVIF_NETIF --port $ONVIF_PORT --scope onvif://www.onvif.org/Profile/S $ONVIF_PROFILE_0 $ONVIF_PROFILE_1 $ONVIF_USERPWD --ptz --move_left "/mnt/mmc/sonoff-hack/bin/ptz -a left" --move_right "/mnt/mmc/sonoff-hack/bin/ptz -a right" --move_up "/mnt/mmc/sonoff-hack/bin/ptz -a up" --move_down "/mnt/mmc/sonoff-hack/bin/ptz -a down" --move_stop "/mnt/mmc/sonoff-hack/bin/ptz -a stop" --move_preset "/mnt/mmc/sonoff-hack/bin/ptz -f /mnt/mmc/sonoff-hack/etc/ptz_presets.conf -a go_preset -n"
     if [[ $(get_config ONVIF_WSDD) == "yes" ]] ; then

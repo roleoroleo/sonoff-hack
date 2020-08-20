@@ -16,7 +16,7 @@ if [ "$VAL" == "info" ] ; then
     printf "Content-type: application/json\r\n\r\n"
 
     FW_VERSION=`cat /mnt/mmc/sonoff-hack/version`
-    LATEST_FW=`wget -O -  https://api.github.com/repos/roleoroleo/sonoff-hack/releases/latest 2>&1 | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'`
+    LATEST_FW=`/mnt/mmc/sonoff-hack/usr/bin/wget -O -  https://api.github.com/repos/roleoroleo/sonoff-hack/releases/latest 2>&1 | grep '"tag_name":' | sed -r 's/.*"([^"]+)".*/\1/'`
 
     printf "{\n"
     printf "\"%s\":\"%s\",\n" "fw_version"      "$FW_VERSION"
@@ -44,14 +44,14 @@ elif [ "$VAL" == "upgrade" ] ; then
 
     MODEL=$(cat /mnt/mtd/ipc/cfg/config_cst.cfg | grep model | cut -d'=' -f2 | cut -d'"' -f2)
     FW_VERSION=`cat /mnt/mmc/sonoff-hack/version`
-    LATEST_FW=`wget -O -  https://api.github.com/repos/roleoroleo/sonoff-hack/releases/latest 2>&1 | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'`
+    LATEST_FW=`/mnt/mmc/sonoff-hack/usr/bin/wget -O -  https://api.github.com/repos/roleoroleo/sonoff-hack/releases/latest 2>&1 | grep '"tag_name":' | sed -r 's/.*"([^"]+)".*/\1/'`
     if [ "$FW_VERSION" == "$LATEST_FW" ]; then
         printf "Content-type: text/html\r\n\r\n"
         printf "No new firmware available."
         exit
     fi
 
-    wget https://github.com/roleoroleo/sonoff-hack/releases/download/$LATEST_FW/${MODEL}_${LATEST_FW}.tgz
+    /mnt/mmc/sonoff-hack/usr/bin/wget https://github.com/roleoroleo/sonoff-hack/releases/download/$LATEST_FW/${MODEL}_${LATEST_FW}.tgz
     if [ ! -f ${MODEL}_${LATEST_FW}.tgz ]; then
         printf "Content-type: text/html\r\n\r\n"
         printf "Unable to download firmware file."
@@ -65,8 +65,6 @@ elif [ "$VAL" == "upgrade" ] ; then
     if [ -f $SONOFF_HACK_PREFIX/etc/hostname ]; then
         cp -f $SONOFF_HACK_PREFIX/etc/hostname .
     fi
-    cp -f $SONOFF_HACK_PREFIX/etc/passwd .
-    cp -f $SONOFF_HACK_PREFIX/etc/shadow .
     cp -rf $SONOFF_HACK_PREFIX/etc/dropbear .
 
     # Report the status to the caller

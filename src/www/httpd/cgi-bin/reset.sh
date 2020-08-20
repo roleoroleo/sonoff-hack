@@ -5,9 +5,10 @@ cd /mnt/mmc/sonoff-hack/etc
 rm hostname
 
 rm camera.conf
-rm mqttv4.conf
-#rm proxychains.conf
+rm mqtt-sonoff.conf
 rm system.conf
+rm ptz_presets.conf
+rm -r dropbear
 
 tar zxvf defaults.tar.gz > /dev/null 2>&1
 

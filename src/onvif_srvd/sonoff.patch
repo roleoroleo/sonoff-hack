@@ -25,9 +25,9 @@ diff -Naur onvif_srvd.ori/src/ServicePTZ.cpp onvif_srvd/src/ServicePTZ.cpp
 -    if ((tptz__GotoPreset->PresetToken.back() >= '0') && (tptz__GotoPreset->PresetToken.back() <= '9')) {
 -        sprintf(cmd, "%s %c", ctx->get_ptz_node()->get_move_preset().c_str(), tptz__GotoPreset->PresetToken.back());
 -        system(cmd);
-+    preset = atoi(tptz__GotoPreset->ProfileToken.c_str());
++    preset = atoi(tptz__GotoPreset->PresetToken.c_str());
 +    // atoi conversion error
-+    if ((preset == 0) && (tptz__GotoPreset->ProfileToken.compare("0") != 0)) {
++    if ((preset == 0) && (tptz__GotoPreset->PresetToken.compare("0") != 0)) {
 +        return SOAP_OK;
      }
  

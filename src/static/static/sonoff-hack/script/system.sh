@@ -19,17 +19,6 @@ export PATH=$PATH:/mnt/mmc/sonoff-hack/bin:/mnt/mmc/sonoff-hack/sbin:/mnt/mmc/so
 
 touch /tmp/httpd.conf
 
-# Restore configuration after a firmware upgrade
-if [ -f $SONOFF_HACK_PREFIX/.fw_upgrade_in_progress ]; then
-    cp -f /tmp/sd/.fw_upgrade/*.conf $SONOFF_HACK_PREFIX/etc/
-    if [ -f /tmp/sd/.fw_upgrade/hostname ]; then
-        cp -f /tmp/sd/.fw_upgrade/hostname /etc/
-    fi
-    cp -rf /tmp/sd/.fw_upgrade/dropbear /etc/
-    rm $SONOFF_HACK_PREFIX/.fw_upgrade_in_progress
-    rm -r /tmp/sd/.fw_upgrade
-fi
-
 $SONOFF_HACK_PREFIX/script/check_conf.sh
 
 cp -f $SONOFF_HACK_PREFIX/etc/hostname /etc/hostname
@@ -82,7 +71,7 @@ case $(get_config HTTPD_PORT) in
 esac
 
 # Restart ptz driver
-rmmod ptz_drv_ko
+rmmod ptz_drv.ko
 sleep 1
 insmod /mnt/mtd/ipc//app/drive/ptz_drv.ko factory="Links" AutoRun=1 Horizontal=3500 Vertical=900
 

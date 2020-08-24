@@ -41,6 +41,8 @@ elif [ "$VAL" == "upgrade" ] ; then
     rm -rf /mnt/mmc/.fw_upgrade
     mkdir -p /mnt/mmc/.fw_upgrade
     cd /mnt/mmc/.fw_upgrade
+    rm -rf /mnt/mmc/.fw_upgrade.conf
+    mkdir -p /mnt/mmc/.fw_upgrade.conf
 
     MODEL=$(cat /mnt/mtd/ipc/cfg/config_cst.cfg | grep model | cut -d'=' -f2 | cut -d'"' -f2)
     FW_VERSION=`cat /mnt/mmc/sonoff-hack/version`
@@ -51,25 +53,49 @@ elif [ "$VAL" == "upgrade" ] ; then
         exit
     fi
 
-    /mnt/mmc/sonoff-hack/usr/bin/wget https://github.com/roleoroleo/sonoff-hack/releases/download/$LATEST_FW/${MODEL}_${LATEST_FW}.tgz
+    $SONOFF_HACK_PREFIX/usr/bin/wget https://github.com/roleoroleo/sonoff-hack/releases/download/$LATEST_FW/${MODEL}_${LATEST_FW}.tgz
     if [ ! -f ${MODEL}_${LATEST_FW}.tgz ]; then
         printf "Content-type: text/html\r\n\r\n"
         printf "Unable to download firmware file."
         exit
     fi
 
-    tar zxvf ${MODEL}_${LATEST_FW}.tgz
-    rm ${MODEL}_${LATEST_FW}.tgz
-    mv -f * ..
-    cp -f $SONOFF_HACK_PREFIX/etc/*.conf .
+    # Backup configuration
+    cp -f $SONOFF_HACK_PREFIX/etc/*.conf /mnt/mmc/.fw_upgrade.conf/
     if [ -f $SONOFF_HACK_PREFIX/etc/hostname ]; then
-        cp -f $SONOFF_HACK_PREFIX/etc/hostname .
+        cp -f $SONOFF_HACK_PREFIX/etc/hostname /mnt/mmc/.fw_upgrade.conf/
     fi
-    cp -rf $SONOFF_HACK_PREFIX/etc/dropbear .
+    cp -rf $SONOFF_HACK_PREFIX/etc/dropbear /mnt/mmc/.fw_upgrade.conf/
+
+    # Killall processes
+    killall wsdd
+    killall onvif_srvd
+    killall mqtt-sonoff
+    killall pure-ftpd
+    killall dropbear
+    sleep 1
+
+    # Copy new hack
+    $SONOFF_HACK_PREFIX/bin/tar zxvf ${MODEL}_${LATEST_FW}.tgz
+    rm ${MODEL}_${LATEST_FW}.tgz
+    rm -rf $SONOFF_HACK_PREFIX.old
+    mv $SONOFF_HACK_PREFIX $SONOFF_HACK_PREFIX.old
+    mv -f * ..
+
+    # Restore configuration
+    cp -f /mnt/mmc/.fw_upgrade.conf/*.conf $SONOFF_HACK_PREFIX/etc/
+    if [ -f /mnt/mmc/.fw_upgrade.conf/hostname ]; then
+        cp -f /mnt/mmc/.fw_upgrade.conf/hostname $SONOFF_HACK_PREFIX/etc/hostname
+    fi
+    cp -rf /mnt/mmc/.fw_upgrade.conf/dropbear $SONOFF_HACK_PREFIX/etc/
+    cd /mnt/mmc
+    rm -rf /mnt/mmc/.fw_upgrade
+    rm -rf /mnt/mmc/.fw_upgrade.conf
+
 
     # Report the status to the caller
     printf "Content-type: text/html\r\n\r\n"
-    printf "Download completed, rebooting and upgrading."
+    printf "Upgrade completed, rebooting."
 
     sync
     sync

@@ -79,7 +79,7 @@ for S in $PARAMS ; do
 
 done
 
-if [ "$CONF_TYPE" == "system" ] && [ x$USERNAME != "none" ]; then
+if [ "$CONF_TYPE" == "system" ] && [ x$USERNAME != "xnone" ] ; then
     # Add username and password to t_user table
     # If we don't add user now we need 2 reboots
     SQL_USER=$(sqlite3 /mnt/mtd/db/ipcsys.db "select C_UserName from t_user where C_UserID=10101;")

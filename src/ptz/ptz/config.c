@@ -2,7 +2,7 @@
 
 static int open_conf_file(const char* filename, char *mode);
 
-static void (*fconf_handler)(const char* key, const char* value);
+static void (*fconf_handler)(char* key, char* value);
 
 static FILE *fp;
 
@@ -20,7 +20,7 @@ void stop_config()
         fclose(fp);
 }
 
-void config_set_handler(void (*f)(const char* key, const char* value))
+void config_set_handler(void (*f)(char* key, char* value))
 {
     if (f != NULL)
         fconf_handler = f;
@@ -31,6 +31,7 @@ void config_parse()
     char buf[MAX_LINE_LENGTH];
     char key[128];
     char value[128];
+    char *p;
 
     int parsed;
 
@@ -41,19 +42,25 @@ void config_parse()
         fgets(buf, MAX_LINE_LENGTH, fp);
         if (buf[0] != '#') // ignore the comments
         {
-            parsed = sscanf(buf, "%[^=] = %s", key, value);
-            if(parsed == 2 && fconf_handler != NULL)
-                (*fconf_handler)(key, value);
+            p = strtok(buf, " =\n");
+            if (p != NULL) {
+                strcpy(key, p);
+                p = strtok(NULL, "=\n");
+                if (p != NULL) {
+                    strcpy(value, p);
+                    (*fconf_handler)(key, value);
+                }
+            }
         }
     }
 }
 
-void config_save(struct param_value config[], int size)
+void config_save(struct preset pr[], int size)
 {
     int i;
 
     for (i=0; i<size; i++) {
-        fprintf(fp, "%s=%s\n", config[i].param, config[i].value);
+        fprintf(fp, "%d=%s|%d|%d\n", i, pr[i].desc, pr[i].x, pr[i].y);
     }
 }
 

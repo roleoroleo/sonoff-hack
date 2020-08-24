@@ -30,6 +30,7 @@
 #include "libptz.h"
 
 struct preset presets[PRESET_NUM];
+int debug;
 
 void print_usage(char *progname)
 {
@@ -49,35 +50,72 @@ void print_usage(char *progname)
     fprintf(stderr, "\t\t                 12 upper right corner\n");
     fprintf(stderr, "\t\t                 13 lower right corner\n");
     fprintf(stderr, "\t\t                 14 lower left corner\n");
-    fprintf(stderr, "\t-d,     --debug\n");
+    fprintf(stderr, "\t-c, --clear\n");
+    fprintf(stderr, "\t\tclear preset (used with set_preset action)\n");
+    fprintf(stderr, "\t-e DESCRIPTION, --desc DESCRIPTION\n");
+    fprintf(stderr, "\t\tset description (used with set_preset action)\n");
+    fprintf(stderr, "\t-d, --debug\n");
     fprintf(stderr, "\t\tenable debug\n");
-    fprintf(stderr, "\t-h,     --help\n");
+    fprintf(stderr, "\t-h, --help\n");
     fprintf(stderr, "\t\tprint this help\n");
 }
 
-void handle_config(const char *key, const char *value)
+void handle_config(char *key, char *value)
 {
+    char *p;
     int nvalue;
-    int i;
+    int ikey;
 
-    char param_name[256];
-    for(i=0; i<PRESET_NUM; i++) {
-        sprintf(param_name, "PRESET_%d_X", i);
-        if(strcmp(key, param_name) == 0) {
-            errno=0;
-            nvalue=strtol(value, NULL, 10);
-            if(errno==0)
-                presets[i].x = nvalue;
-        }
+    if (debug) fprintf(stderr, "key=%s, value=%s\n", key, value);
+
+    errno = 0;
+    nvalue = strtol(key, NULL, 10);
+    if (errno == 0) {
+        ikey = nvalue;
+    } else {
+        printf("Error reading configuration file\n");
+        exit(EXIT_FAILURE);
     }
-    for(i=0; i<PRESET_NUM; i++) {
-        sprintf(param_name, "PRESET_%d_Y", i);
-        if(strcmp(key, param_name) == 0) {
-            errno=0;
-            nvalue=strtol(value, NULL, 10);
-            if(errno==0)
-                presets[i].y = nvalue;
+
+    p = strtok(value, "|");
+    if (p != NULL) {
+        strcpy(presets[ikey].desc, p);
+        p = strtok(NULL, "|");
+        if (p != NULL) {
+            errno = 0;
+            nvalue = strtol(p, NULL, 10);
+            if (errno == 0) {
+                presets[ikey].x = nvalue;
+            } else {
+                printf("Error reading configuration file\n");
+                exit(EXIT_FAILURE);
+            }
+            p = strtok(NULL, "|");
+            if (p != NULL) {
+                errno = 0;
+                nvalue = strtol(p, NULL, 10);
+                if (errno == 0) {
+                    presets[ikey].y = nvalue;
+                } else {
+                    printf("Error reading configuration file\n");
+                    exit(EXIT_FAILURE);
+                }
+                p = strtok(NULL, "|");
+                if (p != NULL) {
+                    printf("Error reading configuration file\n");
+                    exit(EXIT_FAILURE);
+                }
+            } else {
+                printf("Error reading configuration file\n");
+                exit(EXIT_FAILURE);
+            }
+        } else {
+            printf("Error reading configuration file\n");
+            exit(EXIT_FAILURE);
         }
+    } else {
+        printf("Error reading configuration file\n");
+        exit(EXIT_FAILURE);
     }
 }
 
@@ -98,7 +136,6 @@ int ptz_init_config(char *filename)
 
 int ptz_save_config(char *filename)
 {
-    struct param_value config[2 * PRESET_NUM];
     int i;
 
     if (init_config(filename, "w") != 0)
@@ -107,14 +144,7 @@ int ptz_save_config(char *filename)
         return -1;
     }
 
-    for(i=0; i<PRESET_NUM; i++) {
-        sprintf(config[2*i].param, "PRESET_%d_X", i);
-        sprintf(config[2*i].value, "%d", presets[i].x);
-        sprintf(config[(2*i)+1].param, "PRESET_%d_Y", i);
-        sprintf(config[(2*i)+1].value, "%d", presets[i].y);
-    }
-
-    config_save(&config, 2 * PRESET_NUM);
+    config_save(presets, PRESET_NUM);
     stop_config();
 
     return 0;
@@ -127,8 +157,9 @@ int main(int argc, char **argv)
     int x, y;
     char preset_file[1024];
     int preset_num;
-    int debug;
+    int clear;
     int c;
+    char desc[256];
     int errno;
     char *endptr;
     int ptz_arg[8];
@@ -142,6 +173,7 @@ int main(int argc, char **argv)
     y = 0;
     preset_file[0] = '\0';
     preset_num = -1;
+    clear = 0;
     debug = 0;
 
     while (1) {
@@ -153,6 +185,8 @@ int main(int argc, char **argv)
             {"y",  required_argument, 0, 'y'},
             {"preset_file",  required_argument, 0, 'f'},
             {"preset_num",  required_argument, 0, 'n'},
+            {"desc",  required_argument, 0, 'e'},
+            {"clear",  no_argument, 0, 'c'},
             {"debug",  no_argument, 0, 'd'},
             {"help",  no_argument, 0, 'h'},
             {0, 0, 0, 0}
@@ -160,7 +194,7 @@ int main(int argc, char **argv)
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long (argc, argv, "a:t:x:y:f:n:dh",
+        c = getopt_long (argc, argv, "a:t:x:y:f:n:e:cdh",
                          long_options, &option_index);
 
         /* Detect the end of the options. */
@@ -269,6 +303,18 @@ int main(int argc, char **argv)
             }
             break;
 
+        case 'e':
+            if (strlen(optarg) > sizeof(desc) - 1) {
+                print_usage(argv[0]);
+                exit(EXIT_FAILURE);
+            }
+            strcpy(desc, optarg);
+            break;
+
+        case 'c':
+            clear = 1;
+            break;
+
         case 'd':
             fprintf (stderr, "debug on\n");
             debug = 1;
@@ -310,22 +356,34 @@ int main(int argc, char **argv)
         print_usage(argv[0]);
         return -1;
     }
+    if ((clear == 1) && (action != ACTION_SET_PRESET)) {
+        printf("clear flag must be used with set_preset action.\n");
+        print_usage(argv[0]);
+        return -1;
+    }
 
     if (debug) fprintf(stderr, "Running action %d\n", action);
 
     if (action == ACTION_SET_PRESET) {
         ptz_init_config(preset_file);
         memset(preset_buffer, '\0', sizeof(preset_buffer));
-        if (hw_ptz_pos_read(0, preset_buffer, 0, 0) != 0) {
-            printf("Error reading position\n");
-            return -2;
+        if (clear == 1) {
+            x = -1;
+            y = -1;
+            strcpy(desc, "none");
+        } else {
+            if (hw_ptz_pos_read(0, preset_buffer, 0, 0) != 0) {
+                printf("Error reading position\n");
+                return -2;
+            }
+            x = preset_buffer[3];
+            y = preset_buffer[4];
+            if (debug) fprintf(stderr, "Current position: (%d, %d)\n", x, y);
         }
-        x = preset_buffer[3];
-        y = preset_buffer[4];
-        if (debug) fprintf(stderr, "Current position: (%d, %d)\n", x, y);
 
         presets[preset_num].x = x;
         presets[preset_num].y = y;
+        strcpy(presets[preset_num].desc, desc);
         ptz_save_config(preset_file);
 
         return 0;
@@ -336,7 +394,7 @@ int main(int argc, char **argv)
             ptz_init_config(preset_file);
             if (debug) {
                 for (i=0; i<PRESET_NUM; i++) {
-                    fprintf(stderr, "CONF: %d, %d, %d\n", i, presets[i].x, presets[i].y);
+                    fprintf(stderr, "CONF: %d - %s, %d, %d\n", i, presets[i].desc, presets[i].x, presets[i].y);
                 }
             }
             x = presets[preset_num].x;
@@ -365,7 +423,12 @@ int main(int argc, char **argv)
                     break;
             }
         }
-        if (debug) fprintf(stderr, "Go to preset %d: (%d, %d)\n", preset_num, presets[0].x, presets[0].y);
+        if ((x == -1) || (y == -1)) {
+            if (debug) fprintf(stderr, "No valid preset %d\n", preset_num);
+            return 0;
+        } else {
+            if (debug) fprintf(stderr, "Go to preset %d: (%d, %d)\n", preset_num, presets[0].x, presets[0].y);
+        }
     }
 
     ptz_arg[0] = action % 100;

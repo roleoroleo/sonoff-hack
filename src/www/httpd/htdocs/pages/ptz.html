@@ -1,6 +1,11 @@
 <div class="row">
-    <div class="twelf columns">
-        <h3 class="no-margin" id="header">PTZ</h3>
+    <div class="twelve columns">
+        <div class="row">
+            <div class="twelve columns">
+                <h3 class="no-margin inline-block" id="header">PTZ</h3>
+                <h6 id="loading-status" class="float-right loading-text"></h6>
+            </div>
+        </div>
         <hr class="tiny-margin"/>
         <div id="ptz_description" class="row">
             <p>
@@ -40,65 +45,64 @@
 
             <h4 class="no-margin">Go to Preset</h4>
             <hr class="tiny-margin"/>
-            <table class="u-full-width ptz-table-go">
-                <tbody>
-                <tr class="row">
-                    <td>
-                        <div class="standard-select">
-                            <select id="select-goto">
-                                <option value="0">0</option>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
-                                <option value="6">6</option>
-                                <option value="7">7</option>
-                                <option value="8">8</option>
-                                <option value="9">9</option>
-                                <option value="10">Center</option>
-                                <option value="11">Upper-Left</option>
-                                <option value="12">Upper-Right</option>
-                                <option value="13">Lower-Right</option>
-                                <option value="14">Lower-Left</option>
-                            </select>
-                        </div>
-                    </td>
-                    <td>
-                        <input class="button-primary" type="button" id="button-goto" value="Go to Preset"/>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+            <div class="row">
+                <div class="twelve columns configs-switch">
+                    <table class="u-full-width padded-table config-table">
+                        <tbody>
+                        <tr class="row">
+                            <td>Preset Number</td>
+                            <td>
+                                <div id="select-goto-container" class="standard-select">
+                                </div>
+                                <span class="switch-description">
+                                    Number of the preset.
+                                </span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="float-right">
+                <input class="button-primary" type="button" id="button-goto" value="Go To Preset"/>
+            </div>
+
+            <br/>
 
             <h4 class="no-margin">Set Preset</h4>
             <hr class="tiny-margin"/>
-            <table class="u-full-width ptz-table-set">
-                <tbody>
-                <tr class="row">
-                    <td>
-                        <div class="standard-select">
-                            <select id="select-set">
-                                <option value="0">0</option>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
-                                <option value="6">6</option>
-                                <option value="7">7</option>
-                                <option value="8">8</option>
-                                <option value="9">9</option>
-                            </select>
-                        </div>
-                    </td>
-                    <td>
-                        <input class="button-primary" type="button" id="button-set" value="Set Preset"/>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+            <div class="row">
+                <div class="twelve columns configs-switch">
+                    <table class="u-full-width padded-table config-table">
+                        <tbody>
+                        <tr class="row">
+                            <td>Preset Name</td>
+                            <td>
+                                <input class="u-full-width" type="text" placeholder="" data-key="PRESET_NAME" id="PRESET_NAME"/>
+                                <span class="switch-description">
+                                    Name of the preset.
+                                    <br>
+                                    Space char is not allowed.
+                                </span>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td>Preset Number</td>
+                            <td>
+                                <div id="select-set-container" class="standard-select">
+                                </div>
+                                <span class="switch-description">
+                                    Number of the preset.
+                                </span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
 
+            <div class="float-right">
+                <input class="button-primary" type="button" id="button-set" value="Set Preset"/>
+            </div>
         </div>
     </div>
 </div>

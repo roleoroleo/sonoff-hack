@@ -18,6 +18,9 @@
  * Send PTZ commands to /dev/ptz using libptz.so
  */
 
+#ifndef PTZ_H
+#define PTZ_H
+
 #define ACTION_NONE            -1
 #define ACTION_STOP            0
 #define ACTION_RIGHT           1
@@ -43,6 +46,7 @@
 struct preset {
     int x;
     int y;
+    char desc[256];
 };
 
-//int hw_ptz_sendptz(int *ptz_arg);
+#endif //PTZ_H

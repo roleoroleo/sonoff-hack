@@ -65,7 +65,7 @@ APP.ptz = (function ($) {
         $(button).attr("disabled", true);
         $.ajax({
             type: "GET",
-            url: 'cgi-bin/preset.sh?action=set_preset&num='+$(select + " option:selected").text(),
+            url: 'cgi-bin/preset.sh?action=set_preset&num='+$(select + " option:selected").val()+'&name='+$('input[type="text"][data-key="PRESET_NAME"]').prop('value'),
             dataType: "json",
             error: function(response) {
                 console.log('error', response);
@@ -78,6 +78,41 @@ APP.ptz = (function ($) {
     }
 
     function initPage() {
+        $.ajax({
+            type: "GET",
+            url: 'cgi-bin/get_configs.sh?conf=ptz_presets',
+            dataType: "json",
+            success: function(data) {
+                html = "<select id=\"select-goto\">\n";
+                for (let key in data) {
+                    if (key != "NULL") {
+                        splitted = data[key].split("|");
+                        html += "<option value=\"" + key + "\">" + key + " - " + splitted[0] + "</option>\n";
+                    }
+                }
+                html += "<option value=\"10\">10 - Center</option>\n";
+                html += "<option value=\"11\">11 - Upper-Left</option>\n";
+                html += "<option value=\"12\">12 - Upper-Right</option>\n";
+                html += "<option value=\"13\">13 - Lower-Right</option>\n";
+                html += "<option value=\"14\">14 - Lower-Left</option>\n";
+                html += "</select>\n";
+                document.getElementById("select-goto-container").innerHTML = html;
+
+                html = "<select id=\"select-set\">\n";
+                for (let key in data) {
+                    if (key != "NULL") {
+                        splitted = data[key].split("|");
+                        html += "<option value=\"" + key + "\">" + key + " - " + splitted[0] + "</option>\n";
+                    }
+                }
+                html += "</select>\n";
+                document.getElementById("select-set-container").innerHTML = html;
+            },
+            error: function(response) {
+                console.log('error', response);
+            }
+        });
+
         interval = 1000;
 
         (function p() {

@@ -73,7 +73,7 @@ void handle_config(char *key, char *value)
     if (errno == 0) {
         ikey = nvalue;
     } else {
-        printf("Error reading configuration file\n");
+        fprintf(stderr, "Error reading configuration file\n");
         exit(EXIT_FAILURE);
     }
 
@@ -87,7 +87,7 @@ void handle_config(char *key, char *value)
             if (errno == 0) {
                 presets[ikey].x = nvalue;
             } else {
-                printf("Error reading configuration file\n");
+                fprintf(stderr, "Error reading configuration file\n");
                 exit(EXIT_FAILURE);
             }
             p = strtok(NULL, "|");
@@ -97,24 +97,24 @@ void handle_config(char *key, char *value)
                 if (errno == 0) {
                     presets[ikey].y = nvalue;
                 } else {
-                    printf("Error reading configuration file\n");
+                    fprintf(stderr, "Error reading configuration file\n");
                     exit(EXIT_FAILURE);
                 }
                 p = strtok(NULL, "|");
                 if (p != NULL) {
-                    printf("Error reading configuration file\n");
+                    fprintf(stderr, "Error reading configuration file\n");
                     exit(EXIT_FAILURE);
                 }
             } else {
-                printf("Error reading configuration file\n");
+                fprintf(stderr, "Error reading configuration file\n");
                 exit(EXIT_FAILURE);
             }
         } else {
-            printf("Error reading configuration file\n");
+            fprintf(stderr, "Error reading configuration file\n");
             exit(EXIT_FAILURE);
         }
     } else {
-        printf("Error reading configuration file\n");
+        fprintf(stderr, "Error reading configuration file\n");
         exit(EXIT_FAILURE);
     }
 }
@@ -297,7 +297,7 @@ int main(int argc, char **argv)
                 print_usage(argv[0]);
                 exit(EXIT_FAILURE);
             }
-            if ((preset_num < 0) || (preset_num > 14)) {
+            if ((preset_num < -1) || (preset_num > 14)) {
                 print_usage(argv[0]);
                 exit(EXIT_FAILURE);
             }
@@ -339,25 +339,24 @@ int main(int argc, char **argv)
         print_usage(argv[0]);
         return -1;
     }
-    if (((action == ACTION_SET_PRESET) || (action == ACTION_GO_PRESET)) &&
-            (preset_num == -1)) {
-        printf("preset_num cannot be empty.\n");
-        print_usage(argv[0]);
-        return -1;
-    }
     if ((action == ACTION_SET_PRESET) && (preset_num > 9)) {
-        printf("preset_num must be between 0 and 9.\n");
+        fprintf(stderr, "preset_num must be between 0 and 9.\n");
         print_usage(argv[0]);
         return -1;
     }
     if (((action == ACTION_SET_PRESET) || (action == ACTION_GO_PRESET)) &&
             (preset_file[0] == '\0')) {
-        printf("preset_file cannot be empty.\n");
+        fprintf(stderr, "preset_file cannot be empty.\n");
         print_usage(argv[0]);
         return -1;
     }
     if ((clear == 1) && (action != ACTION_SET_PRESET)) {
-        printf("clear flag must be used with set_preset action.\n");
+        fprintf(stderr, "clear flag must be used with set_preset action.\n");
+        print_usage(argv[0]);
+        return -1;
+    }
+    if ((clear == 1) && (action == ACTION_SET_PRESET) && (preset_num == -1)) {
+        fprintf(stderr, "clear flag must be used with a valid preset number.\n");
         print_usage(argv[0]);
         return -1;
     }
@@ -365,15 +364,32 @@ int main(int argc, char **argv)
     if (debug) fprintf(stderr, "Running action %d\n", action);
 
     if (action == ACTION_SET_PRESET) {
+        // Load presets from config file
         ptz_init_config(preset_file);
+
+        // If no preset number is selected, check for free preset
+        if (preset_num == -1) {
+            for (i=0; i<10; i++) {
+                if (strcasecmp("empty", presets[i].desc) == 0) {
+                    preset_num = i;
+                    break;
+                }
+            }
+            if (preset_num == -1) {
+                fprintf(stderr, "No preset available\n");
+                printf("%d\n", preset_num);
+                return 0;
+            }
+        }
+
         memset(preset_buffer, '\0', sizeof(preset_buffer));
         if (clear == 1) {
             x = -1;
             y = -1;
-            strcpy(desc, "none");
+            strcpy(desc, "empty");
         } else {
             if (hw_ptz_pos_read(0, preset_buffer, 0, 0) != 0) {
-                printf("Error reading position\n");
+                fprintf(stderr, "Error reading position\n");
                 return -2;
             }
             x = preset_buffer[3];
@@ -385,6 +401,11 @@ int main(int argc, char **argv)
         presets[preset_num].y = y;
         strcpy(presets[preset_num].desc, desc);
         ptz_save_config(preset_file);
+
+        // Print the number of preset
+        if (clear != 1) {
+            printf("%d\n", preset_num);
+        }
 
         return 0;
     }
@@ -447,7 +468,7 @@ int main(int argc, char **argv)
 
         usleep(time * 1000);
 
-        if (debug) fprintf(stderr, "running stop\n");
+        if (debug) fprintf(stderr, "Running stop\n");
         ptz_arg[0] = ACTION_STOP;
         hw_ptz_sendptz(ptz_arg);
     }

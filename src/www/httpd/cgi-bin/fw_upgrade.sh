@@ -46,18 +46,23 @@ elif [ "$VAL" == "upgrade" ] ; then
 
     MODEL=$(cat /mnt/mtd/ipc/cfg/config_cst.cfg | grep model | cut -d'=' -f2 | cut -d'"' -f2)
     FW_VERSION=`cat /mnt/mmc/sonoff-hack/version`
-    LATEST_FW=`/mnt/mmc/sonoff-hack/usr/bin/wget -O -  https://api.github.com/repos/roleoroleo/sonoff-hack/releases/latest 2>&1 | grep '"tag_name":' | sed -r 's/.*"([^"]+)".*/\1/'`
-    if [ "$FW_VERSION" == "$LATEST_FW" ]; then
-        printf "Content-type: text/html\r\n\r\n"
-        printf "No new firmware available."
-        exit
-    fi
+    if [ -f /mnt/mmc/GK-200MP2B_x.x.x.tgz ]; then
+        cp /mnt/mmc/GK-200MP2B_x.x.x.tgz /mnt/mmc/.fw_upgrade/GK-200MP2B_x.x.x.tgz
+        LATEST_FW="x.x.x"
+    else
+        LATEST_FW=`/mnt/mmc/sonoff-hack/usr/bin/wget -O -  https://api.github.com/repos/roleoroleo/sonoff-hack/releases/latest 2>&1 | grep '"tag_name":' | sed -r 's/.*"([^"]+)".*/\1/'`
+        if [ "$FW_VERSION" == "$LATEST_FW" ]; then
+            printf "Content-type: text/html\r\n\r\n"
+            printf "No new firmware available."
+            exit
+        fi
 
-    $SONOFF_HACK_PREFIX/usr/bin/wget https://github.com/roleoroleo/sonoff-hack/releases/download/$LATEST_FW/${MODEL}_${LATEST_FW}.tgz
-    if [ ! -f ${MODEL}_${LATEST_FW}.tgz ]; then
-        printf "Content-type: text/html\r\n\r\n"
-        printf "Unable to download firmware file."
-        exit
+        $SONOFF_HACK_PREFIX/usr/bin/wget https://github.com/roleoroleo/sonoff-hack/releases/download/$LATEST_FW/${MODEL}_${LATEST_FW}.tgz
+        if [ ! -f ${MODEL}_${LATEST_FW}.tgz ]; then
+            printf "Content-type: text/html\r\n\r\n"
+            printf "Unable to download firmware file."
+            exit
+        fi
     fi
 
     # Backup configuration

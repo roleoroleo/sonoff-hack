@@ -2,7 +2,7 @@
 
 SYSTEM_CONF_FILE="/mnt/mmc/sonoff-hack/etc/system.conf"
 CAMERA_CONF_FILE="/mnt/mmc/sonoff-hack/etc/camera.conf"
-MQTTS_CONF_FILE="/mnt/mmc/sonoff-hack/etc/mqtt-sonoff.conf"
+MQTT_SONOFF_CONF_FILE="/mnt/mmc/sonoff-hack/etc/mqtt-sonoff.conf"
 
 PARMS1="
 HTTPD=yes
@@ -77,13 +77,13 @@ do
     fi
 done
 
-#for i in $PARMS3
-#do
-#    if [ ! -z "$i" ]; then
-#        PAR=$(echo "$i" | cut -d= -f1)
-#        MATCH=$(cat $MQTTV4_CONF_FILE | grep $PAR)
-#        if [ -z "$MATCH" ]; then
-#            echo "$i" >> $MQTTV4_CONF_FILE
-#        fi
-#    fi
-#done
+for i in $PARMS3
+do
+    if [ ! -z "$i" ]; then
+        PAR=$(echo "$i" | cut -d= -f1)
+        MATCH=$(cat $MQTT_SONOFF_CONF_FILE | grep $PAR)
+        if [ -z "$MATCH" ]; then
+            echo "$i" >> $MQTT_SONOFF_CONF_FILE
+        fi
+    fi
+done

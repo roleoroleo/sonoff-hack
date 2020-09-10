@@ -72,6 +72,10 @@ int main(int argc, char **argv)
         usleep(500*1000);
     }
 
+    sql_stop();
+    stop_mqtt();
+    stop_config();
+
     return 0;
 }
 
@@ -124,6 +128,20 @@ static void handle_config(const char *key, const char *value)
         if(errno==0)
             conf.qos=nvalue;
     }
+    else if(strcmp(key, "MQTT_RETAIN_BIRTH")==0)
+    {
+        errno=0;
+        nvalue=strtol(value, NULL, 10);
+        if(errno==0)
+            conf.retain_birth=nvalue;
+    }
+    else if(strcmp(key, "MQTT_RETAIN_WILL")==0)
+    {
+        errno=0;
+        nvalue=strtol(value, NULL, 10);
+        if(errno==0)
+            conf.retain_will=nvalue;
+    }
     else if(strcmp(key, "MQTT_RETAIN_MOTION")==0)
     {
         errno=0;
@@ -133,13 +151,43 @@ static void handle_config(const char *key, const char *value)
     }
     else if(strcmp(key, "MQTT_PREFIX")==0)
     {
+        conf.mqtt_prefix=malloc((char)strlen(value)+1);
+        strcpy(conf.mqtt_prefix, value);
         mqtt_sonoff_conf.mqtt_prefix=malloc((char)strlen(value)+1);
         strcpy(mqtt_sonoff_conf.mqtt_prefix, value);
+    }
+    else if(strcmp(key, "TOPIC_BIRTH")==0)
+    {
+        conf.topic_birth=malloc((char)strlen(value)+1);
+        strcpy(conf.topic_birth, value);
+        mqtt_sonoff_conf.topic_birth=malloc((char)strlen(value)+1);
+        strcpy(mqtt_sonoff_conf.topic_birth, value);
+    }
+    else if(strcmp(key, "TOPIC_WILL")==0)
+    {
+        conf.topic_will=malloc((char)strlen(value)+1);
+        strcpy(conf.topic_will, value);
+        mqtt_sonoff_conf.topic_will=malloc((char)strlen(value)+1);
+        strcpy(mqtt_sonoff_conf.topic_will, value);
     }
     else if(strcmp(key, "TOPIC_MOTION")==0)
     {
         mqtt_sonoff_conf.topic_motion=malloc((char)strlen(value)+1);
         strcpy(mqtt_sonoff_conf.topic_motion, value);
+    }
+    else if(strcmp(key, "BIRTH_MSG")==0)
+    {
+        conf.birth_msg=malloc((char)strlen(value)+1);
+        strcpy(conf.birth_msg, value);
+        mqtt_sonoff_conf.birth_msg=malloc((char)strlen(value)+1);
+        strcpy(mqtt_sonoff_conf.birth_msg, value);
+    }
+    else if(strcmp(key, "WILL_MSG")==0)
+    {
+        conf.will_msg=malloc((char)strlen(value)+1);
+        strcpy(conf.will_msg, value);
+        mqtt_sonoff_conf.will_msg=malloc((char)strlen(value)+1);
+        strcpy(mqtt_sonoff_conf.will_msg, value);
     }
     else if(strcmp(key, "MOTION_START_MSG")==0)
     {

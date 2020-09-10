@@ -33,7 +33,7 @@ See [CONTRIBUTING](CONTRIBUTING.md)
 This firmware contains the following features.
 
 - FEATURES
-  - ONVIF server (with support for h264 stream, snapshot, ptz, presets and WS-Discovery) - standardized interfaces for IP cameras.
+  - ONVIF server (with support for h264 stream, snapshot, ptz, presets, events and WS-Discovery) - standardized interfaces for IP cameras.
   - Snapshot service - allows to get a jpg (1920x1080) with a web request.
     - http://IP-CAM:8080/cgi-bin/snapshot.sh
   - MQTT - Motion detection through mqtt protocol.
@@ -41,6 +41,7 @@ This firmware contains the following features.
   - SSH server - dropbear.
   - FTP server.
   - Authentication for HTTP, RTSP and ONVIF server.
+  - Management of motion detect events and videos through a web page.
   - PTZ support through a web page.
   - Goto and set presets through a web page.
   - The possibility to disable all the cloud features.

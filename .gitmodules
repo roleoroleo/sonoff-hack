@@ -7,9 +7,6 @@
 [submodule "src/mosquitto/mosquitto"]
 	path = src/mosquitto/mosquitto
 	url = https://github.com/eclipse/mosquitto
-[submodule "src/onvif_srvd/onvif_srvd"]
-	path = src/onvif_srvd/onvif_srvd
-	url = https://github.com/roleoroleo/onvif_srvd
 [submodule "src/wsdd/wsdd"]
 	path = src/wsdd/wsdd
 	url = https://github.com/KoynovStas/wsdd

@@ -1,2 +1,9 @@
 # Ignore the install dir
 _install/
+onvif_srvd/SDK/
+onvif_srvd/generated/
+onvif_srvd/gsoap-2.8/
+onvif_srvd/lib/
+onvif_srvd/onvif_srvd
+onvif_srvd/openssl
+onvif_srvd/openssl-1.0.2u/

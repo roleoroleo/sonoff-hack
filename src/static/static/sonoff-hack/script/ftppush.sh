@@ -1,9 +1,9 @@
 #!/bin/ash
 #
 # Command line:
-# 	ash "/mnt/mmc/sonoff-hack/script/ftppush.sh" cron
-# 	ash "/mnt/mmc/sonoff-hack/script/ftppush.sh" start
-# 	ash "/mnt/mmc/sonoff-hack/script/ftppush.sh" stop
+# 	ash "/home/yi-hack/script/ftppush.sh" cron
+# 	ash "/home/yi-hack/script/ftppush.sh" start
+# 	ash "/home/yi-hack/script/ftppush.sh" stop
 #
 CONF_FILE="etc/system.conf"
 
@@ -19,7 +19,7 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/mnt/mmc/sonoff-hack/lib
 export PATH=$PATH:/mnt/mmc/sonoff-hack/bin:/mnt/mmc/sonoff-hack/sbin:/mnt/mmc/sonoff-hack/usr/bin:/mnt/mmc/sonoff-hack/usr/sbin
 #
 # Script Configuration.
-FOLDER_TO_WATCH="/tmp/sd/record"
+FOLDER_TO_WATCH="/mnt/mmc/alarm_record"
 FOLDER_MINDEPTH="1"
 FILE_DELETE_AFTER_UPLOAD="1"
 FILE_WATCH_PATTERN="*.mp4"
@@ -83,18 +83,8 @@ logAdd ()
 	TMP_DATETIME="$(date '+%Y-%m-%d [%H-%M-%S]')"
 	TMP_LOGSTREAM="$(tail -n ${LOG_MAX_LINES} ${LOGFILE} 2>/dev/null)"
 	echo "${TMP_LOGSTREAM}" > "$LOGFILE"
-	if [ "$1" = "-q" ]; then
-		#
-		# Quiet mode.
-		#
-		echo "${TMP_DATETIME} ${@:2}" >> "${LOGFILE}"
-	else
-		#
-		# Loud mode.
-		#
-		echo "${TMP_DATETIME} $*" >> "${LOGFILE}"
-		echo "${TMP_DATETIME} $*"
-	fi
+	echo "${TMP_DATETIME} $*" >> "${LOGFILE}"
+	echo "${TMP_DATETIME} $*"
 	return 0
 }
 
@@ -127,6 +117,7 @@ uploadToFtp ()
 	#
 	# Consts.
 	FTP_HOST="$(get_config FTP_HOST)"
+	FTP_DIR="$(get_config FTP_DIR)"
 	FTP_USERNAME="$(get_config FTP_USERNAME)"
 	FTP_PASSWORD="$(get_config FTP_PASSWORD)"
 	#
@@ -138,13 +129,18 @@ uploadToFtp ()
 		return 1
 	fi
 	#
+	if [ ! -z "${FTP_DIR}" ]; then
+		# Create directory on FTP server
+		echo -e "USER ${FTP_USERNAME}\r\nPASS ${FTP_PASSWORD}\r\nmkd ${FTP_DIR}\r\nquit\r\n" | nc -w 5 ${FTP_HOST} 21 | grep "${FTP_DIR}"
+		FTP_DIR="${FTP_DIR}/"
+	fi
+	#
 	if [ ! -f "${UTF_FULLFN}" ]; then
 		echo "[ERROR] uploadToFtp: File not found."
 		return 1
 	fi
 	#
-	
-	if ( ! ftpput -u "${FTP_USERNAME}" -p "${FTP_PASSWORD}" "${FTP_HOST}" "/$(lbasename "${UTF_FULLFN}")" "${UTF_FULLFN}" ); then
+	if ( ! ftpput -u "${FTP_USERNAME}" -p "${FTP_PASSWORD}" "${FTP_HOST}" "/${FTP_DIR}$(lbasename "${UTF_FULLFN}")" "${UTF_FULLFN}" ); then
 		echo "[ERROR] uploadToFtp: ftpput FAILED."
 		return 1
 	fi

@@ -19,8 +19,8 @@ fi
 USED_SPACE_LIMIT=$((100-$1))
 echo "$USED_SPACE_LIMIT"
 
-cd /tmp/sd/record
-USED_SPACE=`df -h /tmp/sd/ | grep mmc | awk '{print $5}' | tr -d '%'`
+cd /mnt/mmc/alarm_record
+USED_SPACE=`df -h /mnt/mmc/ | grep mmc | awk '{print $5}' | tr -d '%'`
 
 if [ -z "$USED_SPACE" ]; then
     exit
@@ -28,14 +28,14 @@ fi
 
 while [ "$USED_SPACE" -gt "$USED_SPACE_LIMIT" ]
 do
-    OLD_DIR=`ls -lt | grep -v tmp | tail -n1 | awk '{print $9}'`
+    OLD_DIR=`ls -lt | tail -n1 | awk '{print $9}'`
     if [ ! -z "$OLD_DIR" ]; then
         echo "Deleting dir $OLD_DIR"
         rm -rf $OLD_DIR
     else
         exit
     fi
-    USED_SPACE=`df -h /tmp/sd/ | grep mmc | awk '{print $5}' | tr -d '%'`
+    USED_SPACE=`df -h /mnt/mmc/ | grep mmc | awk '{print $5}' | tr -d '%'`
 done
 
 echo "Done!"

@@ -21,8 +21,11 @@ APP.eventsfile = (function ($) {
     }
 
     function registerEventHandler() {
-        $(document).on("click", '.button-primary', function (e) {
+        $(document).on("click", '.button-delete', function (e) {
             deleteFile();
+        });
+        $(document).on("click", '.button-play', function (e) {
+            playFile();
         });
     }
 
@@ -40,6 +43,13 @@ APP.eventsfile = (function ($) {
         });
     }
 
+    function playFile() {
+        var videoPlayer = $('#video');
+        videoPlayer.attr('src', event.target.id.substring(12));
+        videoPlayer.show();
+        $(window).scrollTop(0);
+    }
+
     function updateEventsFilePage() {
         $.ajax({
             type: "GET",
@@ -50,6 +60,7 @@ APP.eventsfile = (function ($) {
                 html = "<table class=\"u-full-width padded-table\"><tbody>";
                 html += "<tr><td><b>Time</b></td>";
                 html += "<td><b>File name</b></td>";
+                html += "<td><b>Play file</b></td>";
                 html += "<td><b>Delete file</b></td></tr>";
                 if (data.records.length == 0) {
                     html += "<tr><td>No events in this folder</td><td></td></tr>";
@@ -57,8 +68,9 @@ APP.eventsfile = (function ($) {
                     for (var i = 0; i < data.records.length; i++) {
                         var record = data.records[i];
                         html += "<tr><td>" + record.time + "</td>";
-                        html += "<td><a href=\"record/" + getUrlVar('dirname') + "/" + record.filename + "\">" +  record.filename + "</a></td>";
-                        html += "<td><input class=\"button-primary\" type=\"button\" id=\"button-delete-" + getUrlVar('dirname') + "/" + record.filename + "\" value=\"Delete\"/></td></tr>";
+                        html += "<td><a href=\"/alarm_record/" + getUrlVar('dirname') + "/" + record.filename + "\">" +  record.filename + "</a></td>";
+                        html += "<td><input class=\"button-primary button-play\" type=\"button\" id=\"button-play-" + "/alarm_record/" + getUrlVar('dirname') + "/" + record.filename + "\" value=\"Play\"/></td>";
+                        html += "<td><input class=\"button-primary button-delete\" type=\"button\" id=\"button-delete-" + getUrlVar('dirname') + "/" + record.filename + "\" value=\"Delete\"/></td></tr>";
                     }
                 }
                 html += "</tbody></table>";

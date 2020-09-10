@@ -2,25 +2,29 @@
 
 validateFile()
 {
-    if [ "Y${1:4:1}" != "YY" ] ; then
-        DIR = "none"
-    fi
-    if [ "M${1:7:1}" != "MM" ] ; then
-        DIR = "none"
-    fi
-    if [ "D${1:10:1}" != "DD" ] ; then
-        DIR = "none"
-    fi
-    if [ "H${1:13:1}" != "HH" ] ; then
-        DIR = "none"
+    if [ ${#1} != 33 ] ; then
+        DIR="none"
+        ARC="none"
     fi
 
-    if [ "M${1:17:1}" != "MM" ] ; then
-        FILE = "none"
+    case ${1:0:8} in
+        ''|*[!0-9]*) DIR="none" ;;
+        *) DIR=${1:0:8} ;;
+    esac
+
+    case ${1:9:2} in
+        ''|*[!0-9]*) DIR="none" ;;
+        *) DIR=$DIR/${1:9:2} ;;
+    esac
+
+    if [ ${1:12:3} != "ARC" } ; then
+        ARC="none"
     fi
-    if [ "S${1:20:1}" != "SS" ] ; then
-        FILE = "none"
-    fi
+
+    case ${1:15:14} in
+        ''|*[!0-9]*) ARC="none" ;;
+        *) ARC="ARC${1:15:14}.mp4" ;;
+    esac
 }
 
 case $QUERY_STRING in
@@ -28,6 +32,8 @@ case $QUERY_STRING in
 esac
 
 FILE="none"
+DIR="none"
+ARC="none"
 
 CONF="$(echo $QUERY_STRING | cut -d'=' -f1)"
 VAL="$(echo $QUERY_STRING | cut -d'=' -f2)"
@@ -38,8 +44,8 @@ fi
 
 validateFile $FILE
 
-if [ "$FILE" != "none" ] ; then
-    rm -f /tmp/sd/record/$FILE
+if [ "$DIR" != "none" ] && [ "$ARC" != "none" ] ; then
+    rm -f /mnt/mmc/alarm_record/$DIR/$ARC
 fi
 
 printf "Content-type: application/json\r\n\r\n"

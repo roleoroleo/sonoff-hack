@@ -2,18 +2,15 @@
 
 validateDir()
 {
-    if [ "Y${1:4:1}" != "YY" ] ; then
-        DIR = "none"
-    fi
-    if [ "M${1:7:1}" != "MM" ] ; then
-        DIR = "none"
-    fi
-    if [ "D${1:10:1}" != "DD" ] ; then
-        DIR = "none"
-    fi
-    if [ "H${1:13:1}" != "HH" ] ; then
-        DIR = "none"
-    fi
+    case ${1:0:8} in
+        ''|*[!0-9]*) DIR="none" ;;
+        *) DIR=$DIR ;;
+    esac
+
+    case ${1:9:2} in
+        ''|*[!0-9]*) DIR="none" ;;
+        *) DIR=$DIR ;;
+    esac
 }
 
 case $QUERY_STRING in
@@ -36,7 +33,7 @@ else
 fi
 
 if [ "$DIR" != "none" ] ; then
-    rm -rf /tmp/sd/record/$DIR
+    rm -rf /mnt/mmc/alarm_record/$DIR
 fi
 
 printf "Content-type: application/json\r\n\r\n"

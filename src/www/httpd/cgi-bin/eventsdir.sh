@@ -4,19 +4,23 @@ printf "Content-type: application/json\r\n\r\n"
 
 printf "{\"records\":[\n"
 
-COUNT=`ls -r /tmp/sd/record | grep H -c`
+COUNT=`ls -r /mnt/mmc/sonoff-hack/www/alarm_record/* | grep -v alarm | grep -v ^$ | grep ^ -c`
 IDX=1
-for f in `ls -r /tmp/sd/record | grep H`; do
-    if [ ${#f} == 14 ]; then
-        printf "{\n"
-        printf "\"%s\":\"%s\",\n" "datetime" "Date: ${f:0:4}-${f:5:2}-${f:8:2} Time: ${f:11:2}:00"
-        printf "\"%s\":\"%s\"\n" "dirname" "$f"
-        if [ "$IDX" == "$COUNT" ]; then
-            printf "}\n"
-        else
-            printf "},\n"
-        fi
-        IDX=$(($IDX+1))
+for f in `ls -r /mnt/mmc/sonoff-hack/www/alarm_record | grep ^`; do
+    if [ ${#f} == 8 ]; then
+        for f2 in `ls -r /mnt/mmc/sonoff-hack/www/alarm_record/$f | grep ^`; do
+            if [ ${#f2} == 2 ]; then
+                printf "{\n"
+                printf "\"%s\":\"%s\",\n" "datetime" "Date: ${f:0:4}-${f:4:2}-${f:6:2} Time: $f2:00"
+                printf "\"%s\":\"%s\"\n" "dirname" "$f/$f2"
+                if [ "$IDX" == "$COUNT" ]; then
+                    printf "}\n"
+                else
+                    printf "},\n"
+                fi
+                IDX=$(($IDX+1))
+            fi
+        done
     fi
 done
 

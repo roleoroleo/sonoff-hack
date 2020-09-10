@@ -33,12 +33,12 @@ fi
 
 read POST_DATA
 
-PARAMS=$(echo "$POST_DATA" | tr "\n\r" " " | tr -d " " | sed 's/{\"//g' | sed 's/\"}//g' | sed 's/\",\"/ /g' | sed 's/\":\"/=/g')
+PARAMS=$(echo "$POST_DATA" | tr "\n\r" " " | tr -d " " | sed 's/{\"//g' | sed 's/\"}//g' | sed 's/\",\"/ /g')
 USERNAME="none"
 PASSWORD="none"
 
 for S in $PARAMS ; do
-    PARAM=$(echo "$S" | tr "=" " ")
+    PARAM=$(echo "$S" | sed 's/\":\"/ /g')
     KEY=""
     VALUE=""
 
@@ -47,7 +47,6 @@ for S in $PARAMS ; do
             KEY=$SP
         else
             VALUE=$SP
-            VALUE=$(echo "$SP" | urldecode)
         fi
     done
 

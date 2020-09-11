@@ -18,15 +18,13 @@ void send_birth_msg()
     char topic[128];
     mqtt_msg_t msg;
 
-    printf("SEND BIRTH MESSAGE\n");
-
     msg.msg=mqtt_conf->birth_msg;
     msg.len=strlen(msg.msg);
     msg.topic=topic;
 
-    sprintf(topic, "%s/%s", mqtt_conf->mqtt_prefix, mqtt_conf->topic_birth);
+    sprintf(topic, "%s/%s", mqtt_conf->mqtt_prefix, mqtt_conf->topic_birth_will);
 
-    mqtt_send_message(&msg, mqtt_conf->retain_birth);
+    mqtt_send_message(&msg, mqtt_conf->retain_birth_will);
 }
 
 void send_will_msg()
@@ -34,15 +32,13 @@ void send_will_msg()
     char topic[128];
     mqtt_msg_t msg;
 
-    printf("SEND WILL MESSAGE\n");
-
     msg.msg=mqtt_conf->will_msg;
     msg.len=strlen(msg.msg);
     msg.topic=topic;
 
-    sprintf(topic, "%s/%s", mqtt_conf->mqtt_prefix, mqtt_conf->topic_will);
+    sprintf(topic, "%s/%s", mqtt_conf->mqtt_prefix, mqtt_conf->topic_birth_will);
 
-    mqtt_send_message(&msg, mqtt_conf->retain_will);
+    mqtt_send_message(&msg, mqtt_conf->retain_birth_will);
 }
 
 int init_mqtt(void)
@@ -96,8 +92,7 @@ void mqtt_init_conf(mqtt_conf_t *conf)
     conf->keepalive=120;
     conf->port=1883;
     conf->qos=1;
-    conf->retain_birth=1;
-    conf->retain_will=1;
+    conf->retain_birth_will=1;
     conf->retain_motion=1;
 }
 
@@ -108,8 +103,11 @@ void mqtt_set_conf(mqtt_conf_t *conf)
 
 void mqtt_check_connection()
 {
-    if (!is_connected)
+    if (!is_connected) {
+        mosquitto_will_set(mosq, mqtt_conf->topic_birth_will, strlen(mqtt_conf->will_msg),
+                    mqtt_conf->will_msg, mqtt_conf->qos, mqtt_conf->retain_birth_will);
         mqtt_connect();
+    }
 }
 
 int mqtt_connect()
@@ -131,6 +129,9 @@ int mqtt_connect()
     }
 
     retries=0;
+
+    ret=mosquitto_will_set(mosq, mqtt_conf->topic_birth_will, strlen(mqtt_conf->will_msg),
+                mqtt_conf->will_msg, mqtt_conf->qos, mqtt_conf->retain_birth_will == 1);
 
     do
     {

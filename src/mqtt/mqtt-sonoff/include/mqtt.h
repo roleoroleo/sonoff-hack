@@ -19,13 +19,11 @@ typedef struct
     int         keepalive;
     char        bind_address[32];
     int         qos;
-    int         retain_birth;
-    int         retain_will;
+    int         retain_birth_will;
     int         retain_motion;
 
     char       *mqtt_prefix;
-    char       *topic_birth;
-    char       *topic_will;
+    char       *topic_birth_will;
     char       *birth_msg;
     char       *will_msg;
 } mqtt_conf_t;

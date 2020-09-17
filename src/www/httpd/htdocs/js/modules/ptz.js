@@ -24,6 +24,9 @@ APP.ptz = (function ($) {
         $(document).on("click", '#button-goto', function (e) {
             gotoPreset('#button-goto', '#select-goto');
         });
+        $(document).on("click", '#button-save', function (e) {
+            gotoPresetBoot('#button-save', '#PTZ_PRESET_BOOT');
+        });
         $(document).on("click", '#button-set', function (e) {
             setPreset('#button-set', '#select-set');
         });
@@ -57,6 +60,35 @@ APP.ptz = (function ($) {
             },
             success: function(data) {
                 $(button).attr("disabled", false);
+            }
+        });
+    }
+
+    function gotoPresetBoot(button, select) {
+        var saveStatusElem;
+        let configs = {};
+
+        saveStatusElem = $('#save-status');
+
+        saveStatusElem.text("Saving...");
+
+        configs["PTZ_PRESET_BOOT"] = $('select[data-key="PTZ_PRESET_BOOT"]').prop('value');
+
+        var configData = JSON.stringify(configs);
+        var escapedConfigData = configData.replace(/\\/g,  "\\")
+                                          .replace(/\\"/g, '\\"');
+
+        $.ajax({
+            type: "POST",
+            url: 'cgi-bin/set_configs.sh?conf=system',
+            data: escapedConfigData,
+            dataType: "json",
+            success: function(response) {
+                saveStatusElem.text("Saved");
+            },
+            error: function(response) {
+                saveStatusElem.text("Error while saving");
+                console.log('error', response);
             }
         });
     }
@@ -98,6 +130,22 @@ APP.ptz = (function ($) {
                 html += "</select>\n";
                 document.getElementById("select-goto-container").innerHTML = html;
 
+                html = "<select data-key=\"PTZ_PRESET_BOOT\" id=\"PTZ_PRESET_BOOT\">\n";
+                html += "<option value=\"last\">Last position before reboot</option>\n";
+                for (let key in data) {
+                    if (key != "NULL") {
+                        splitted = data[key].split("|");
+                        html += "<option value=\"" + key + "\">" + key + " - " + splitted[0] + "</option>\n";
+                    }
+                }
+                html += "<option value=\"10\">10 - Center</option>\n";
+                html += "<option value=\"11\">11 - Upper-Left</option>\n";
+                html += "<option value=\"12\">12 - Upper-Right</option>\n";
+                html += "<option value=\"13\">13 - Lower-Right</option>\n";
+                html += "<option value=\"14\">14 - Lower-Left</option>\n";
+                html += "</select>\n";
+                document.getElementById("select-goto-boot-container").innerHTML = html;
+
                 html = "<select id=\"select-set\">\n";
                 for (let key in data) {
                     if (key != "NULL") {
@@ -107,6 +155,21 @@ APP.ptz = (function ($) {
                 }
                 html += "</select>\n";
                 document.getElementById("select-set-container").innerHTML = html;
+            },
+            error: function(response) {
+                console.log('error', response);
+            }
+        });
+
+        $.ajax({
+            type: "GET",
+            url: 'cgi-bin/get_configs.sh?conf=system',
+            dataType: "json",
+            success: function(response) {
+                $.each(response, function (key, state) {
+                    if(key=="PTZ_PRESET_BOOT")
+                        $('select[data-key="' + key +'"]').prop('value', state);
+                });
             },
             error: function(response) {
                 console.log('error', response);

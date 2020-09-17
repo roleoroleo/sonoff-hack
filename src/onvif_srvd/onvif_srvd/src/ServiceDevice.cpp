@@ -141,7 +141,7 @@ int DeviceBindingService::GetSystemDateAndTime(_tds__GetSystemDateAndTime *tds__
     tds__GetSystemDateAndTimeResponse.SystemDateAndTime->DateTimeType      = tt__SetDateTimeType__Manual;
     tds__GetSystemDateAndTimeResponse.SystemDateAndTime->DaylightSavings   = tm->tm_isdst;
     tds__GetSystemDateAndTimeResponse.SystemDateAndTime->TimeZone          = soap_new_tt__TimeZone(this->soap);
-    tds__GetSystemDateAndTimeResponse.SystemDateAndTime->TimeZone->TZ      = tm->tm_zone;
+    tds__GetSystemDateAndTimeResponse.SystemDateAndTime->TimeZone->TZ      = "GMT0";
     tds__GetSystemDateAndTimeResponse.SystemDateAndTime->UTCDateTime       = soap_new_tt__DateTime(this->soap);
     tds__GetSystemDateAndTimeResponse.SystemDateAndTime->UTCDateTime->Time = soap_new_req_tt__Time(this->soap, tm->tm_hour, tm->tm_min  , tm->tm_sec );
     tds__GetSystemDateAndTimeResponse.SystemDateAndTime->UTCDateTime->Date = soap_new_req_tt__Date(this->soap, tm->tm_year+1900, tm->tm_mon+1, tm->tm_mday);
@@ -170,6 +170,9 @@ int DeviceBindingService::UpgradeSystemFirmware(_tds__UpgradeSystemFirmware *tds
 int DeviceBindingService::SystemReboot(_tds__SystemReboot *tds__SystemReboot, _tds__SystemRebootResponse &tds__SystemRebootResponse)
 {
     DEBUG_MSG("Device: %s\n", __FUNCTION__);
+
+    system("reboot");
+
     return SOAP_OK;
 }
 
@@ -414,12 +417,6 @@ int DeviceBindingService::GetCapabilities(_tds__GetCapabilities *tds__GetCapabil
             {
                 tds__GetCapabilitiesResponse.Capabilities->Events  = soap_new_tt__EventCapabilities(this->soap);
                 tds__GetCapabilitiesResponse.Capabilities->Events->XAddr = XAddr;
-/*                tds__GetCapabilitiesResponse.Capabilities->Events->WSSubscriptionPolicySupport                    = (bool *)soap_malloc(soap, sizeof(bool));
-                soap_s2bool(soap, "false", tds__GetCapabilitiesResponse.Capabilities->Events->WSSubscriptionPolicySupport);
-                tds__GetCapabilitiesResponse.Capabilities->Events->WSPullPointSupport                             = (bool *)soap_malloc(soap, sizeof(bool));
-                soap_s2bool(soap, "true", tds__GetCapabilitiesResponse.Capabilities->Events->WSPullPointSupport);
-                tds__GetCapabilitiesResponse.Capabilities->Events->WSPausableSubscriptionManagerInterfaceSupport  = (bool *)soap_malloc(soap, sizeof(bool));
-                soap_s2bool(soap, "false", tds__GetCapabilitiesResponse.Capabilities->Events->WSPausableSubscriptionManagerInterfaceSupport); */
                 tds__GetCapabilitiesResponse.Capabilities->Events->WSSubscriptionPolicySupport                    = false;
                 tds__GetCapabilitiesResponse.Capabilities->Events->WSPullPointSupport                             = true;
                 tds__GetCapabilitiesResponse.Capabilities->Events->WSPausableSubscriptionManagerInterfaceSupport  = false;

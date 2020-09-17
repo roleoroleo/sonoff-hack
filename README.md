@@ -9,6 +9,9 @@ https://github.com/roleoroleo/yi-hack-Allwinner
 
 It's a clone made for Sonoff camera based on Goke platform.
 
+This firmware doesn't overwrite the original one, simply it add some features.
+For example: RTSP stream is provided through the sonoff original application.
+
 Thanks to @EpicLPer for writing the hack guide for this cam: https://github.com/EpicLPer/Sonoff_GK-200MP2-B_Dump
 
 I have no time to support the project, so feel free to clone/fork this git and modify it as you want.

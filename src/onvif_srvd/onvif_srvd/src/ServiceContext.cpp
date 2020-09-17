@@ -22,7 +22,8 @@ ServiceContext::ServiceContext():
     serial_number    ( "SerialNumber"   ),
     hardware_id      ( "HardwareId"     ),
 
-    last_motion_alarm ( 0 )
+    last_motion_alarm       ( 0         ),
+    last_motion_alarm_state ( false     )
 {
 }
 

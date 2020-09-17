@@ -279,7 +279,7 @@ int GetPTZNode(struct soap *soap, tt__PTZNode* ptzn)
     ptzs6->XRange->Min    = 0.0;
     ptzs6->XRange->Max    = 1.0;
 
-    ptzn->MaximumNumberOfPresets = 14;
+    ptzn->MaximumNumberOfPresets = 15;
     ptzn->HomeSupported = true;
     ptzn->FixedHomePosition = (bool *)soap_malloc(soap, sizeof(bool));
     soap_s2bool(soap, "true", ptzn->FixedHomePosition);

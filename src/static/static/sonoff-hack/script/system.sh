@@ -74,8 +74,8 @@ esac
 rmmod ptz_drv.ko
 sleep 1
 insmod /mnt/mtd/ipc//app/drive/ptz_drv.ko factory="Links" AutoRun=1 Horizontal=3500 Vertical=900
-if [[ $(get_config PTZ_PRESET_BOOT) != "last" ]] ; then
-    (sleep 20 && /mnt/mmc/sonoff-hack/bin/ptz -a go_preset -n $(get_config PTZ_PRESET_BOOT)
+if [[ $(get_config PTZ_PRESET_BOOT) != "default" ]] ; then
+    (sleep 20 && /mnt/mmc/sonoff-hack/bin/ptz -a go_preset -f $SONOFF_HACK_PREFIX/etc/ptz_presets.conf -n $(get_config PTZ_PRESET_BOOT)) &
 fi
 
 if [[ $(get_config DISABLE_CLOUD) == "yes" ]] ; then

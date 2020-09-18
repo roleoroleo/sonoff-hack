@@ -131,7 +131,7 @@ APP.ptz = (function ($) {
                 document.getElementById("select-goto-container").innerHTML = html;
 
                 html = "<select data-key=\"PTZ_PRESET_BOOT\" id=\"PTZ_PRESET_BOOT\">\n";
-                html += "<option value=\"last\">Last position before reboot</option>\n";
+                html += "<option value=\"default\">Default position</option>\n";
                 for (let key in data) {
                     if (key != "NULL") {
                         splitted = data[key].split("|");

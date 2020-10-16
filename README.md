@@ -87,6 +87,15 @@ USE AT YOUR OWN RISK.
 
 9. Done.
 
+## URLs, Ports and Default RTSP Password
+For both streams if you've set a custom username and password on the config screen don't forget to replace "hack" at the beginning of the URLs! First one is username, second is password. If you want to view the stream in, as example, VLC and haven't set a password you need to enter "hack" for both user and pass.
+* Configuration Website: `http://IP-CAM:8080`
+* High Res Stream: `rtsp://hack:hack@IP-CAM/av_stream/ch0`
+* Low Res Stream: `rtsp://hack:hack@IP-CAM/av_stream/ch1`
+* 1080p Snapshot URL: `http://IP-CAM:8080/cgi-bin/snapshot.sh`
+* PTZ Port: 80
+    * In Blue Iris you need to manually enable "PTZ Controls" and change it to "ONFIV (OXML)" in the camera settings. If PTZ doesn't work delete the camera and add it again, also try to set the port to "80" manually.
+
 ## Build your own firmware
 If you want to build your own firmware, clone this git and compile it using a linux machine.
 Quick explanation:

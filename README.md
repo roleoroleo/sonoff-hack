@@ -23,6 +23,7 @@ I have no time to support the project, so feel free to clone/fork this git and m
 - [Performance](#performance)
 - [Supported cameras](#supported-cameras)
 - [Getting started](#getting-started)
+- [URLs, Ports and Default RTSP Password](#urls-ports-and-default-rtsp-password)
 - [Build your own firmware](#build-your-own-firmware)
 - [Unbricking](#unbricking)
 - [Acknowledgments](#acknowledgments)

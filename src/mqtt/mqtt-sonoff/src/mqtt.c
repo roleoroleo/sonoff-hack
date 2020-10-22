@@ -89,11 +89,16 @@ void mqtt_init_conf(mqtt_conf_t *conf)
     strcpy(conf->host, "127.0.0.1");
     strcpy(conf->bind_address, "0.0.0.0");
 
-    conf->keepalive=120;
     conf->port=1883;
+    conf->keepalive=120;
     conf->qos=1;
     conf->retain_birth_will=1;
     conf->retain_motion=1;
+
+    conf->mqtt_prefix=NULL;
+    conf->topic_birth_will=NULL;
+    conf->birth_msg=NULL;
+    conf->will_msg=NULL;
 }
 
 void mqtt_set_conf(mqtt_conf_t *conf)

@@ -189,6 +189,14 @@ static void handle_config(const char *key, const char *value)
 
 static void init_mqtt_sonoff_config()
 {
+    // Setting conf vars to NULL
+    mqtt_sonoff_conf.mqtt_prefix=NULL;
+    mqtt_sonoff_conf.topic_birth_will=NULL;
+    mqtt_sonoff_conf.topic_motion=NULL;
+    mqtt_sonoff_conf.birth_msg=NULL;
+    mqtt_sonoff_conf.will_msg=NULL;
+    mqtt_sonoff_conf.motion_start_msg=NULL;
+
     if(init_config(MQTT_SONOFF_CONF_FILE)!=0)
     {
         printf("Cannot open config file. Skipping.\n");
@@ -197,4 +205,56 @@ static void init_mqtt_sonoff_config()
 
     config_set_handler(&handle_config);
     config_parse();
+
+    // Setting default for all char* vars
+    if(conf.mqtt_prefix == NULL)
+    {
+        conf.mqtt_prefix=malloc((char)strlen("yicam")+1);
+        strcpy(conf.mqtt_prefix, "yicam");
+    }
+    if(mqtt_sonoff_conf.mqtt_prefix == NULL)
+    {
+        mqtt_sonoff_conf.mqtt_prefix=malloc((char)strlen("yicam")+1);
+        strcpy(mqtt_sonoff_conf.mqtt_prefix, "yicam");
+    }
+    if(conf.topic_birth_will == NULL)
+    {
+        conf.topic_birth_will=malloc((char)strlen("status")+1);
+        strcpy(conf.topic_birth_will, "status");
+    }
+    if(mqtt_sonoff_conf.topic_birth_will == NULL)
+    {
+        mqtt_sonoff_conf.topic_birth_will=malloc((char)strlen("status")+1);
+        strcpy(mqtt_sonoff_conf.topic_birth_will, "status");
+    }
+    if(mqtt_sonoff_conf.topic_motion == NULL)
+    {
+        mqtt_sonoff_conf.topic_motion=malloc((char)strlen("motion_detection")+1);
+        strcpy(mqtt_sonoff_conf.topic_motion, "motion_detection");
+    }
+    if(conf.birth_msg == NULL)
+    {
+        conf.birth_msg=malloc((char)strlen("online")+1);
+        strcpy(conf.birth_msg, "online");
+    }
+    if(mqtt_sonoff_conf.birth_msg == NULL)
+    {
+        mqtt_sonoff_conf.birth_msg=malloc((char)strlen("online")+1);
+        strcpy(mqtt_sonoff_conf.birth_msg, "online");
+    }
+    if(conf.will_msg == NULL)
+    {
+        conf.will_msg=malloc((char)strlen("offline")+1);
+        strcpy(conf.will_msg, "offline");
+    }
+    if(mqtt_sonoff_conf.will_msg == NULL)
+    {
+        mqtt_sonoff_conf.will_msg=malloc((char)strlen("offline")+1);
+        strcpy(mqtt_sonoff_conf.will_msg, "offline");
+    }
+    if(mqtt_sonoff_conf.motion_start_msg == NULL)
+    {
+        mqtt_sonoff_conf.motion_start_msg=malloc((char)strlen("motion_start")+1);
+        strcpy(mqtt_sonoff_conf.motion_start_msg, "motion_start");
+    }
 }

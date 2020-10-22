@@ -9,3 +9,4 @@ mkdir -p ../../build/sonoff-hack/usr/bin
 cp -f ./_install/bin/busybox ../../build/sonoff-hack/bin/tar
 cp -f ./_install/bin/busybox ../../build/sonoff-hack/bin/gzip
 cp -f ./_install/bin/busybox ../../build/sonoff-hack/usr/bin/wget
+cp -f ./_install/bin/busybox ../../build/sonoff-hack/usr/bin/xargs

@@ -392,6 +392,10 @@ int main(int argc, char **argv)
                 fprintf(stderr, "Error reading position\n");
                 return -2;
             }
+            if (x < MIN_X) x = MIN_X;
+            if (x > MAX_X) x = MAX_X;
+            if (y < MIN_Y) y = MIN_Y;
+            if (y < MAX_Y) y = MAX_Y;
             x = preset_buffer[3];
             y = preset_buffer[4];
             if (debug) fprintf(stderr, "Current position: (%d, %d)\n", x, y);
@@ -444,8 +448,8 @@ int main(int argc, char **argv)
                     break;
             }
         }
-        if ((x == -1) || (y == -1)) {
-            if (debug) fprintf(stderr, "No valid preset %d\n", preset_num);
+        if ((x < 0) || (y < 0)) {
+            if (debug) fprintf(stderr, "Invalid preset: %d\n", preset_num);
             return 0;
         } else {
             if (debug) fprintf(stderr, "Go to preset %d: (%d, %d)\n", preset_num, presets[0].x, presets[0].y);

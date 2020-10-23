@@ -41,6 +41,7 @@ WLAN_ESSID=$(iwconfig ra0 | grep ESSID | cut -d\" -f2)
 if [ -z $WLAN_ESSID ]; then
     WLAN_ESSID="N/A"
 fi
+WLAN_STRENGTH=$(cat /proc/net/wireless | awk 'END { print $3 }' | sed 's/\.$//')
 
 # Yeah, it's pretty ugly.. but hey, it works.
 
@@ -64,6 +65,7 @@ printf "\"%s\":\"%s\",\n" "netmask_w"       "$NETMASK_W"
 printf "\"%s\":\"%s\",\n" "gateway"         "$GATEWAY"
 printf "\"%s\":\"%s\",\n" "mac_addr_e"      "$MAC_ADDR_E"
 printf "\"%s\":\"%s\",\n" "mac_addr_w"      "$MAC_ADDR_W"
-printf "\"%s\":\"%s\" \n" "wlan_essid"      "$WLAN_ESSID"
+printf "\"%s\":\"%s\",\n" "wlan_essid"      "$WLAN_ESSID"
+printf "\"%s\":\"%s\" \n" "wlan_strength"   "$WLAN_STRENGTH"
 
 printf "}"

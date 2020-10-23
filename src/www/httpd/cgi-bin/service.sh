@@ -4,6 +4,7 @@ CONF_FILE="etc/system.conf"
 
 SONOFF_HACK_PREFIX="/mnt/mmc/sonoff-hack"
 
+SONOFF_HACK_VER=$(cat /mnt/mmc/sonoff-hack/version)
 MODEL=$(cat /mnt/mtd/ipc/cfg/config_cst.cfg | grep model | cut -d'=' -f2 | cut -d'"' -f2)
 DEVICE_ID=$(cat /mnt/mtd/ipc/cfg/colink.conf | grep devid | cut -d'=' -f2 | cut -d'"' -f2)
 
@@ -62,7 +63,7 @@ start_onvif()
         ONVIF_PROFILE_1="--name Profile_1 --width 640 --height 360 --url rtsp://$RTSP_USERPWD%s/av_stream/ch1 --snapurl http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh --type H264"
     fi
 
-    onvif_srvd --pid_file /var/run/onvif_srvd.pid --model "Sonoff Hack" --manufacturer "Sonoff" --firmware_ver "$SONOFF_HACK_VER" --hardware_id $MODEL --serial_num $DEVICE_ID --ifs $ONVIF_NETIF --port $ONVIF_PORT --scope onvif://www.onvif.org/Profile/S $ONVIF_PROFILE_0 $ONVIF_PROFILE_1 $ONVIF_USERPWD --ptz --move_left "/mnt/mmc/sonoff-hack/bin/ptz -a left" --move_right "/mnt/mmc/sonoff-hack/bin/ptz -a right" --move_up "/mnt/mmc/sonoff-hack/bin/ptz -a up" --move_down "/mnt/mmc/sonoff-hack/bin/ptz -a down" --move_stop "/mnt/mmc/sonoff-hack/bin/ptz -a stop" --move_preset "/mnt/mmc/sonoff-hack/bin/ptz -f /mnt/mmc/sonoff-hack/etc/ptz_presets.conf -a go_preset -n"
+    onvif_srvd --pid_file /var/run/onvif_srvd.pid --model "Sonoff Hack" --manufacturer "Sonoff" --firmware_ver $SONOFF_HACK_VER --hardware_id $MODEL --serial_num $DEVICE_ID --ifs $ONVIF_NETIF --port $ONVIF_PORT --scope onvif://www.onvif.org/Profile/S $ONVIF_PROFILE_0 $ONVIF_PROFILE_1 $ONVIF_USERPWD --ptz --move_left "/mnt/mmc/sonoff-hack/bin/ptz -a left" --move_right "/mnt/mmc/sonoff-hack/bin/ptz -a right" --move_up "/mnt/mmc/sonoff-hack/bin/ptz -a up" --move_down "/mnt/mmc/sonoff-hack/bin/ptz -a down" --move_stop "/mnt/mmc/sonoff-hack/bin/ptz -a stop" --move_preset "/mnt/mmc/sonoff-hack/bin/ptz -f /mnt/mmc/sonoff-hack/etc/ptz_presets.conf -a go_preset -n %t" --set_preset "/mnt/mmc/sonoff-hack/bin/ptz -f /mnt/mmc/sonoff-hack/etc/ptz_presets.conf -a set_preset -e %n -n %t"
 }
 
 stop_onvif()
@@ -130,7 +131,7 @@ if [ "$ACTION" == "start" ] ; then
     fi
 elif [ "$ACTION" == "stop" ] ; then
     if [ "$NAME" == "onvif" ]; then
-        stop_onvif $PARAM1
+        stop_onvif
     elif [ "$NAME" == "wsdd" ]; then
         stop_wsdd
     elif [ "$NAME" == "ftpd" ]; then

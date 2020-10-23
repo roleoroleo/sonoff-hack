@@ -28,6 +28,10 @@ done
 if [ $ACTION == "none" ]; then
     exit
 fi
+if [ $ACTION != "go_preset" && $ACTION != "set_preset" ]; then
+    exit
+fi
+
 if [ $NUM -eq -1 ]; then
     exit
 fi

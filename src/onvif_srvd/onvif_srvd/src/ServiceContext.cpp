@@ -2,8 +2,8 @@
 
 #include <sstream>
 
-
 #include "ServiceContext.h"
+#include "stools.h"
 
 
 
@@ -20,11 +20,16 @@ ServiceContext::ServiceContext():
     model            ( "Model"          ),
     firmware_version ( "FirmwareVersion"),
     serial_number    ( "SerialNumber"   ),
-    hardware_id      ( "HardwareId"     ),
-
-    last_motion_alarm       ( 0         ),
-    last_motion_alarm_state ( false     )
+    hardware_id      ( "HardwareId"     )
 {
+    last_motion_alarm.set_time(0);
+    last_motion_alarm.set_b_value(false);
+    last_motion_alarm.set_sent(true);
+
+    sysinfo.set_time(0);
+    sysinfo.set_f_value(0);
+    sysinfo.set_t_value(0);
+    sysinfo.set_sent(true);
 }
 
 
@@ -195,17 +200,13 @@ trt__Capabilities *ServiceContext::getMediaServiceCapabilities(soap *soap)
         }
     }
 
-//    if( it != profiles.end() ) {
-//        capabilities->SnapshotUri = (bool *)soap_malloc(soap, sizeof(bool));
-//        soap_s2bool(soap, "true", capabilities->SnapshotUri);
-//        capabilities->SnapshotUri = soap_new_ptr(soap, true);
-//    }
-
     capabilities->ProfileCapabilities = soap_new_trt__ProfileCapabilities(soap);
-    capabilities->ProfileCapabilities->MaximumNumberOfProfiles =  soap_new_ptr(soap, 1);
+    capabilities->ProfileCapabilities->MaximumNumberOfProfiles = soap_new_ptr(soap, 1);
 
     capabilities->StreamingCapabilities = soap_new_trt__StreamingCapabilities(soap);
     capabilities->StreamingCapabilities->RTPMulticast = soap_new_ptr(soap, false);
+    capabilities->StreamingCapabilities->RTP_USCORETCP = soap_new_ptr(soap, false);
+    capabilities->StreamingCapabilities->RTP_USCORERTSP_USCORETCP = soap_new_ptr(soap, true);
 
 
     return capabilities;
@@ -225,6 +226,10 @@ tptz__Capabilities *ServiceContext::getPTZServiceCapabilities(soap *soap)
 tev__Capabilities *ServiceContext::getEventServiceCapabilities(soap* soap)
 {
     tev__Capabilities *capabilities = soap_new_tev__Capabilities(soap);
+
+    capabilities->WSSubscriptionPolicySupport                    = soap_new_ptr(soap, false);
+    capabilities->WSPullPointSupport                             = soap_new_ptr(soap, true);
+    capabilities->WSPausableSubscriptionManagerInterfaceSupport  = soap_new_ptr(soap, false);
 
     return capabilities;
 }
@@ -288,31 +293,21 @@ tt__PTZConfiguration* StreamProfile::get_ptz_cfg(struct soap *soap) const
     *ptz_cfg->DefaultContinuousZoomVelocitySpace     = "http://www.onvif.org/ver10/tptz/ZoomSpaces/VelocityGenericSpace";
 
     ptz_cfg->DefaultPTZSpeed                   = soap_new_tt__PTZSpeed(soap);
-    ptz_cfg->DefaultPTZSpeed->PanTilt          = soap_new_tt__Vector2D(soap);
-    ptz_cfg->DefaultPTZSpeed->PanTilt->x       = 0.1;
-    ptz_cfg->DefaultPTZSpeed->PanTilt->y       = 0.1;
-    ptz_cfg->DefaultPTZSpeed->Zoom             = soap_new_tt__Vector1D(soap);
-    ptz_cfg->DefaultPTZSpeed->Zoom->x          = 1;
+    ptz_cfg->DefaultPTZSpeed->PanTilt          = soap_new_req_tt__Vector2D(soap, 0.1f, 0.1f);
+    ptz_cfg->DefaultPTZSpeed->Zoom             = soap_new_req_tt__Vector1D(soap, 1.0f);
 
-    ptz_cfg->DefaultPTZTimeout  = (LONG64 *)soap_malloc(soap, sizeof(LONG64));
-    soap_s2xsd__duration(soap, "1000", ptz_cfg->DefaultPTZTimeout);
+    ptz_cfg->DefaultPTZTimeout                 = soap_new_ptr(soap, (LONG64)1000);
 
     ptz_cfg->PanTiltLimits                     = soap_new_tt__PanTiltLimits(soap);
     ptz_cfg->PanTiltLimits->Range              = soap_new_tt__Space2DDescription(soap);
     ptz_cfg->PanTiltLimits->Range->URI         = "http://www.onvif.org/ver10/tptz/PanTiltSpaces/PositionGenericSpace";
-    ptz_cfg->PanTiltLimits->Range->XRange      = soap_new_tt__FloatRange(soap);
-    ptz_cfg->PanTiltLimits->Range->XRange->Min = -INFINITY;
-    ptz_cfg->PanTiltLimits->Range->XRange->Max = INFINITY;
-    ptz_cfg->PanTiltLimits->Range->YRange      = soap_new_tt__FloatRange(soap);
-    ptz_cfg->PanTiltLimits->Range->YRange->Min = -INFINITY;
-    ptz_cfg->PanTiltLimits->Range->YRange->Max = INFINITY;
+    ptz_cfg->PanTiltLimits->Range->XRange      = soap_new_req_tt__FloatRange(soap, -INFINITY, INFINITY);
+    ptz_cfg->PanTiltLimits->Range->YRange      = soap_new_req_tt__FloatRange(soap, -INFINITY, INFINITY);
 
     ptz_cfg->ZoomLimits                        = soap_new_tt__ZoomLimits(soap);
     ptz_cfg->ZoomLimits->Range                 = soap_new_tt__Space1DDescription(soap);
     ptz_cfg->ZoomLimits->Range->URI            = "http://www.onvif.org/ver10/tptz/ZoomSpaces/PositionGenericSpace";
-    ptz_cfg->ZoomLimits->Range->XRange         = soap_new_tt__FloatRange(soap);
-    ptz_cfg->ZoomLimits->Range->XRange->Min    = -INFINITY;
-    ptz_cfg->ZoomLimits->Range->XRange->Max    = INFINITY;
+    ptz_cfg->ZoomLimits->Range->XRange         = soap_new_req_tt__FloatRange(soap, -INFINITY, INFINITY);
 
     return ptz_cfg;
 }
@@ -327,10 +322,11 @@ tt__Profile* StreamProfile::get_profile(struct soap *soap) const
 
     profile->Name  = name;
     profile->token = name;
+    profile->fixed = soap_new_ptr(soap, true);
 
     profile->VideoSourceConfiguration  = get_video_src_cnf(soap);
     profile->VideoEncoderConfiguration = get_video_enc_cfg(soap);
-    if (ctx->get_ptz_node()->get_enable() == true) {
+    if (ctx->get_ptz_node()->enable) {
         profile->PTZConfiguration = get_ptz_cfg(soap);
     }
 
@@ -486,116 +482,9 @@ bool StreamProfile::is_valid() const
 
 
 
-bool PTZNode::set_enable(bool val)
-{
-    enable = val;
-    return true;
-}
 
+// ------------------------------- PTZNode -------------------------------
 
-
-bool PTZNode::set_move_left(const char *new_val)
-{
-    if(!new_val)
-    {
-        str_err = "Process is empty";
-        return false;
-    }
-
-
-    move_left = new_val;
-    return true;
-}
-
-
-
-bool PTZNode::set_move_right(const char *new_val)
-{
-    if(!new_val)
-    {
-        str_err = "Process is empty";
-        return false;
-    }
-
-
-    move_right = new_val;
-    return true;
-}
-
-
-
-bool PTZNode::set_move_up(const char *new_val)
-{
-    if(!new_val)
-    {
-        str_err = "Process is empty";
-        return false;
-    }
-
-
-    move_up = new_val;
-    return true;
-}
-
-
-
-bool PTZNode::set_move_down(const char *new_val)
-{
-    if(!new_val)
-    {
-        str_err = "Process is empty";
-        return false;
-    }
-
-
-    move_down = new_val;
-    return true;
-}
-
-
-
-bool PTZNode::set_move_stop(const char *new_val)
-{
-    if(!new_val)
-    {
-        str_err = "Process is empty";
-        return false;
-    }
-
-
-    move_stop = new_val;
-    return true;
-}
-
-
-
-bool PTZNode::set_move_preset(const char *new_val)
-{
-    if(!new_val)
-    {
-        str_err = "Process is empty";
-        return false;
-    }
-
-
-    move_preset = new_val;
-    return true;
-}
-
-
-
-bool PTZNode::set_set_preset(const char *new_val)
-{
-    if(!new_val)
-    {
-        str_err = "Process is empty";
-        return false;
-    }
-
-
-    set_preset = new_val;
-    return true;
-}
 
 
 
@@ -610,4 +499,19 @@ void PTZNode::clear()
     move_stop.clear();
     move_preset.clear();
     set_preset.clear();
+}
+
+
+
+bool PTZNode::set_str_value(const char* new_val, std::string& value)
+{
+    if(!new_val)
+    {
+        str_err = "Process is empty";
+        return false;
+    }
+
+
+    value = new_val;
+    return true;
 }

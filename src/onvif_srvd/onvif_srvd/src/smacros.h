@@ -61,14 +61,14 @@
 
 
 
-#define  SET_BIT(reg, num_bit)   (reg |=  (1 << (num_bit)) )
-#define  CLR_BIT(reg, num_bit)   (reg &= ~(1 << (num_bit)) )
-#define  INV_BIT(reg, num_bit)   (reg ^=  (1 << (num_bit)) )
+#define  SET_BIT(reg, num_bit)   ( (reg) |=  (1 << (num_bit)) )
+#define  CLR_BIT(reg, num_bit)   ( (reg) &= ~(1 << (num_bit)) )
+#define  INV_BIT(reg, num_bit)   ( (reg) ^=  (1 << (num_bit)) )
 
 
-#define  SET_FLAG(reg, flag)   (reg |=  (flag) )
-#define  CLR_FLAG(reg, flag)   (reg &= ~(flag) )
-#define  INV_FLAG(reg, flag)   (reg ^=  (flag) )
+#define  SET_FLAG(reg, flag)   ( (reg) |=  (flag) )
+#define  CLR_FLAG(reg, flag)   ( (reg) &= ~(flag) )
+#define  INV_FLAG(reg, flag)   ( (reg) ^=  (flag) )
 
 
 
@@ -163,6 +163,8 @@
 
 
 
+#define UNUSED(var) (void)var
+
 
 
 // container_of - cast a member of a structure out to the containing structure
@@ -172,6 +174,23 @@
 //
 #define container_of( ptr, type, member ) \
     ({  (type *)( (const char *)ptr - offsetof(type, member) );  })
+
+
+
+
+/*
+ * gSOAP generate a lot of handlers(callbacks) for ONVIF
+ * Most of them are empty. Almost everyone takes two arguments,
+ * the second is named the first_name + Response.
+ * This macro allows you to write the basic behavior in one line:
+ * Disable the compiler warning about unused arguments and
+ * display a message for the Debug mode.
+ */
+#define  SOAP_EMPTY_HANDLER(arg1, str_prefix)      \
+    UNUSED(arg1);                                  \
+    UNUSED(arg1##Response);                        \
+    DEBUG_MSG(str_prefix ": %s\n", __FUNCTION__);  \
+    return SOAP_OK                                 \
 
 
 

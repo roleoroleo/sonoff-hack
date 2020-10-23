@@ -8,36 +8,45 @@
 This server (Service) has a minimal implementation. Use this server as a template for writing your ONVIF service for an IP camera.
 
 
-ONVIF official website: [http://www.onvif.org](http://www.onvif.org)
+ONVIF official website: [https://www.onvif.org](https://www.onvif.org)
+and their [github presence](https://github.com/onvif/).
 
-The web services data binding is generated using [gSOAP](http://www.genivia.com)
+The web services data binding is generated using [gSOAP](https://www.genivia.com)
 
 
 
 
 ## Build
 
-To start build you have to choose your compiler (or toolchain) in the [Makefile](./Makefile) (see variable `$GCC`).
+#### Dependencies
+Most Linux systems for building this project require the following packages to be installed: `make m4 flex bison byacc yacc`
 
-For build daemon in release and debug mode:
+If you need support for encryption and WS-Security then you also need: `openssl zlib libcrypto`
+
+
+For example, on ubuntu 20.04, you needed to install:
 ```console
-make all
+sudo apt install flex bison byacc make m4
+
+#for support encryption and WS-Security
+sudo apt install openssl libssl-dev libcrypto++6
 ```
 
-For build daemon in release mode (strip):
+To start build you have to choose your compiler (or toolchain) in the [Makefile](./Makefile) (see variable `$CXX`).
+
+For build use make for [Makefile](./Makefile):
 ```console
-make release
+make target
 ```
 
-For build daemon in debug mode (`#define DEBUG 1`):
-```console
-make debug
-```
+target is:
+ - `all`       -  build daemon in release and debug mode
+ - `debug`     -  build in debug mode (#define DEBUG 1)
+ - `release`   -  build in release mode (strip)
+ - `clean`     -  remove all generated files
+ - `distclean` -  clean + remove all SDK files
+ - `help`      -  show list support targets
 
-Show all supported commands(targets) for  [Makefile](./Makefile):
-```console
-make help
-```
 
 > **Note**: If you need WS-Security support, you need to call make with the `WSSE_ON=1` parameter.
 
@@ -46,9 +55,9 @@ Show how enable support WS-Security:
 make WSSE_ON=1
 ```
 
-If before make was done without WS-Security support, it is necessary to perform the cleanup:
+If before make was done without WS-Security support, **must cleanup** (We need to rebuild the gsoap with `openssl` support):
 ```console
-make clean
+make distclean
 ```
 
 

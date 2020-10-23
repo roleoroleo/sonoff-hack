@@ -590,3 +590,4 @@ wsrfrw  = "http://docs.oasis-open.org/wsrf/rw-2"
 wstop   = "http://docs.oasis-open.org/wsn/t-1"
 
 tns1    = <http://www.onvif.org/ver10/topics>
+ter     = <http://www.onvif.org/ver10/error>

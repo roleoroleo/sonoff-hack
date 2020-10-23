@@ -6,6 +6,10 @@
 #include <vector>
 #include <map>
 
+#include <pthread.h>
+#include <semaphore.h>
+#include <sqlite3.h>
+
 #include "soapH.h"
 #include "eth_dev_param.h"
 
@@ -30,6 +34,10 @@ class StreamProfile
 
         tt__Profile*     get_profile(struct soap *soap) const;
         tt__VideoSource* get_video_src(struct soap *soap) const;
+
+        tt__VideoSourceConfiguration*  get_video_src_cnf(struct soap *soap) const;
+        tt__VideoEncoderConfiguration* get_video_enc_cfg(struct soap *soap) const;
+        tt__PTZConfiguration*          get_ptz_cfg(struct soap *soap) const;
 
 
 
@@ -60,11 +68,6 @@ class StreamProfile
 
 
         std::string  str_err;
-
-
-        tt__VideoSourceConfiguration*  get_video_src_cnf(struct soap *soap) const;
-        tt__VideoEncoderConfiguration* get_video_enc_cfg(struct soap *soap) const;
-        tt__PTZConfiguration*          get_ptz_cfg(struct soap *soap) const;
 };
 
 
@@ -77,7 +80,8 @@ class PTZNode
 
         PTZNode() { clear(); }
 
-        bool         get_enable      (void) const { return enable;      }
+        bool         enable;
+
         std::string  get_move_left   (void) const { return move_left;   }
         std::string  get_move_right  (void) const { return move_right;  }
         std::string  get_move_up     (void) const { return move_up;     }
@@ -89,14 +93,13 @@ class PTZNode
 
 
         //methods for parsing opt from cmd
-        bool set_enable      (bool val);
-        bool set_move_left   (const char *new_val);
-        bool set_move_right  (const char *new_val);
-        bool set_move_up     (const char *new_val);
-        bool set_move_down   (const char *new_val);
-        bool set_move_stop   (const char *new_val);
-        bool set_move_preset (const char *new_val);
-        bool set_set_preset  (const char *new_val);
+        bool set_move_left   (const char *new_val) { return set_str_value(new_val, move_left  ); }
+        bool set_move_right  (const char *new_val) { return set_str_value(new_val, move_right ); }
+        bool set_move_up     (const char *new_val) { return set_str_value(new_val, move_up    ); }
+        bool set_move_down   (const char *new_val) { return set_str_value(new_val, move_down  ); }
+        bool set_move_stop   (const char *new_val) { return set_str_value(new_val, move_stop  ); }
+        bool set_move_preset (const char *new_val) { return set_str_value(new_val, move_preset); }
+        bool set_set_preset  (const char *new_val) { return set_str_value(new_val, set_preset ); }
 
 
         std::string get_str_err()  const { return str_err;         }
@@ -107,7 +110,6 @@ class PTZNode
 
     private:
 
-        bool         enable;
         std::string  move_left;
         std::string  move_right;
         std::string  move_up;
@@ -118,6 +120,8 @@ class PTZNode
 
 
         std::string  str_err;
+
+        bool set_str_value(const char *new_val, std::string& value);
 };
 
 
@@ -156,6 +160,39 @@ class Subscription
         std::string address;
         time_t      initial_termination_time;
         time_t      termination_time;
+};
+
+
+
+
+class DetectedEvent
+{
+    public:
+
+        DetectedEvent() {};
+
+
+        time_t get_time(void) { return event_time; }
+        bool get_b_value(void) { return b_value; }
+        float get_f_value(void) { return f_value; }
+        float get_t_value(void) { return t_value; }
+        bool get_sent(void) { return sent; }
+        sem_t *get_sem(void) { return &sem; }
+
+        void set_time(time_t tt) { event_time = tt; }
+        void set_b_value(bool v) { b_value = v; }
+        void set_f_value(float v) { f_value = v; }
+        void set_t_value(time_t t) { t_value = t; }
+        void set_sent(bool s) { sent = s; }
+
+    private:
+
+        time_t event_time;
+        bool b_value;
+        float f_value;
+        time_t t_value;
+        bool sent;
+        sem_t sem;
 };
 
 
@@ -206,11 +243,8 @@ class ServiceContext
         const std::map<std::string, StreamProfile> &get_profiles(void) { return profiles; }
         PTZNode* get_ptz_node(void) { return &ptz_node; }
         std::vector<Subscription>* get_subscriptions(void) { return &subscriptions; }
-        time_t get_last_motion_alarm(void) { return last_motion_alarm; }
-        bool get_last_motion_alarm_state(void) { return last_motion_alarm_state; }
-
-        void set_last_motion_alarm(time_t tt) { last_motion_alarm = tt; }
-        void set_last_motion_alarm_state(bool state) { last_motion_alarm_state = state; }
+        DetectedEvent *get_last_motion_alarm(void) { return &last_motion_alarm; }
+        DetectedEvent *get_sysinfo(void) { return &sysinfo; }
 
 
         // service capabilities
@@ -231,24 +265,11 @@ class ServiceContext
         std::map<std::string, StreamProfile> profiles;
         PTZNode ptz_node;
         std::vector<Subscription> subscriptions;
-        time_t last_motion_alarm;
-        bool last_motion_alarm_state;
+        DetectedEvent last_motion_alarm;
+        DetectedEvent sysinfo;
 
         std::string  str_err;
 };
-
-
-
-
-
-template<typename T>
-T* soap_new_ptr(struct soap* soap, T value)
-{
-    T* ptr = (T*)soap_malloc(soap, sizeof(T));
-    *ptr = value;
-
-    return ptr;
-}
 
 
 

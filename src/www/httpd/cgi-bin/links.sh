@@ -1,5 +1,15 @@
 #!/bin/sh
 
+CONF_FILE="etc/system.conf"
+
+SONOFF_HACK_PREFIX="/mnt/mmc/sonoff-hack"
+
+get_config()
+{
+    key=$1
+    grep -w $1 $SONOFF_HACK_PREFIX/$CONF_FILE | cut -d "=" -f2
+}
+
 LOCAL_IP_E=$(ifconfig eth0 | awk '/inet addr/{print substr($2,6)}')
 LOCAL_IP_W=$(ifconfig ra0 | awk '/inet addr/{print substr($2,6)}')
 

@@ -39,6 +39,12 @@ if [[ $(get_config SWAP_FILE) == "yes" ]] ; then
     fi
 fi
 
+# Create hack user if doesn't exist
+HACK_USER=$(sqlite3 /mnt/mtd/db/ipcsys.db "select count(*) from t_user where C_UserID=10101;")
+if [[ $HACK_USER -eq 0 ]]; then
+    sqlite3 /mnt/mtd/db/ipcsys.db "insert into t_user (C_UserID, c_role_id, C_UserName, C_PassWord) values (10101, 1, 'hack', 'hack');"
+fi
+
 if [[ x$(get_config USERNAME) != "x" ]] ; then
     USERNAME=$(get_config USERNAME)
     PASSWORD=$(get_config PASSWORD)

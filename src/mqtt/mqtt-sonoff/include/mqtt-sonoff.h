@@ -16,11 +16,14 @@
 #define MQTT_SONOFF_VERSION      "0.0.1"
 #define MQTT_SONOFF_CONF_FILE    "/mnt/mmc/sonoff-hack/etc/mqtt-sonoff.conf"
 
+#define MQTT_SONOFF_SNAPSHOT     "/mnt/mmc/sonoff-hack/bin/snapshot"
+
 typedef struct
 {
     char *mqtt_prefix;
     char *topic_birth_will;
     char *topic_motion;
+    char *topic_motion_image;
     char *birth_msg;
     char *will_msg;
     char *motion_start_msg;

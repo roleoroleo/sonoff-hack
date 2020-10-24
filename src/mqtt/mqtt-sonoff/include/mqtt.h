@@ -21,6 +21,7 @@ typedef struct
     int         qos;
     int         retain_birth_will;
     int         retain_motion;
+    int         retain_motion_image;
 
     char       *mqtt_prefix;
     char       *topic_birth_will;

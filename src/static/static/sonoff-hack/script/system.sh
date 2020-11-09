@@ -172,3 +172,7 @@ fi
 if [[ $(get_config FTP_UPLOAD) == "yes" ]] ; then
     /mnt/mmc/sonoff-hack/script/ftppush.sh start &
 fi
+
+if [ -f "/mnt/mmc/startup.sh" ]; then
+    /mnt/mmc/startup.sh
+fi

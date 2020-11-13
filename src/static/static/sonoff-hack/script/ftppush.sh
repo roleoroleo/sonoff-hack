@@ -21,7 +21,6 @@ export PATH=$PATH:/mnt/mmc/sonoff-hack/bin:/mnt/mmc/sonoff-hack/sbin:/mnt/mmc/so
 # Script Configuration.
 FOLDER_TO_WATCH="/mnt/mmc/alarm_record"
 FOLDER_MINDEPTH="1"
-FILE_DELETE_AFTER_UPLOAD="1"
 FILE_WATCH_PATTERN="*.mp4"
 SKIP_UPLOAD_TO_FTP="0"
 SLEEP_CYCLE_SECONDS="45"
@@ -37,6 +36,9 @@ LOG_MAX_LINES="200"
 # -----------------------------------------------------
 checkFiles ()
 {
+	#
+	FTP_FILE_DELETE_AFTER_UPLOAD="$(get_config FTP_FILE_DELETE_AFTER_UPLOAD)"
+	#
 	logAdd "[INFO] checkFiles"
 	#
 	# Search for new files.
@@ -57,7 +59,7 @@ checkFiles ()
 			continue
 		fi
 		logAdd "[INFO] checkFiles: uploadToFtp SUCCEEDED - [${file}]."
-		if [ "${FILE_DELETE_AFTER_UPLOAD}" = "1" ]; then
+		if [ "${FTP_FILE_DELETE_AFTER_UPLOAD}" == "yes" ]; then
 			rm -f "${file}"
 		fi
 		#
@@ -80,13 +82,13 @@ lbasename ()
 
 lgparentdir ()
 {
-    echo "${1}" | $SONOFF_HACK_PREFIX/usr/bin/xargs -I{} dirname {} | $SONOFF_HACK_PREFIX/usr/bin/xargs -I{} dirname {} | grep -o '[^/]*$'
+	echo "${1}" | $SONOFF_HACK_PREFIX/usr/bin/xargs -I{} dirname {} | $SONOFF_HACK_PREFIX/usr/bin/xargs -I{} dirname {} | grep -o '[^/]*$'
 }
 
 
 lparentdir ()
 {
-    echo "${1}" | $SONOFF_HACK_PREFIX/usr/bin/xargs -I{} dirname {}| grep -o '[^/]*$'
+	echo "${1}" | $SONOFF_HACK_PREFIX/usr/bin/xargs -I{} dirname {}| grep -o '[^/]*$'
 }
 
 
@@ -150,7 +152,7 @@ uploadToFtp ()
 		FTP_DIR="${FTP_DIR}/"
 	fi
 	#
-	if [ "${FTP_DIR_TREE}" == "yes" ] ; then
+	if [ "${FTP_DIR_TREE}" == "yes" ]; then
 		if [ ! -z "${FTP_DIR_DAY}" ]; then
 			# Create day directory on FTP server
 			echo -e "USER ${FTP_USERNAME}\r\nPASS ${FTP_PASSWORD}\r\nmkd ${FTP_DIR}/${FTP_DIR_DAY}\r\nquit\r\n" | nc -w 5 ${FTP_HOST} 21 | grep "${FTP_DIR_DAY}"
@@ -168,14 +170,14 @@ uploadToFtp ()
 		return 1
 	fi
 	#
-	if [ "${FTP_DIR_TREE}" == "yes" ] ; then
-		if ( ! ftpput -u "${FTP_USERNAME}" -p "${FTP_PASSWORD}" "${FTP_HOST}" "/${FTP_DIR}${FTP_DIR_DAY}${FTP_DIR_HOUR}$(lbasename "${UTF_FULLFN}")" "${UTF_FULLFN}" ); then
-			echo "[ERROR] uploadToFtp: ftpput FAILED."
+	if [ "${FTP_DIR_TREE}" == "yes" ]; then
+		if ( ! ftpput -u "${FTP_USERNAME}" -p "${FTP_PASSWORD}" "${FTP_HOST}" "${FTP_DIR}${FTP_DIR_DAY}${FTP_DIR_HOUR}$(lbasename "${UTF_FULLFN}")" "${UTF_FULLFN}" ); then
+			logAdd "[ERROR] uploadToFtp: ftpput FAILED."
 			return 1
 		fi
 	else
-		if ( ! ftpput -u "${FTP_USERNAME}" -p "${FTP_PASSWORD}" "${FTP_HOST}" "/${FTP_DIR}$(lbasename "${UTF_FULLFN}")" "${UTF_FULLFN}" ); then
-			echo "[ERROR] uploadToFtp: ftpput FAILED."
+		if ( ! ftpput -u "${FTP_USERNAME}" -p "${FTP_PASSWORD}" "${FTP_HOST}" "${FTP_DIR}$(lbasename "${UTF_FULLFN}")" "${UTF_FULLFN}" ); then
+			logAdd "[ERROR] uploadToFtp: ftpput FAILED."
 			return 1
 		fi
 	fi

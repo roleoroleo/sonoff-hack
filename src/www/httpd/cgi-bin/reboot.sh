@@ -9,4 +9,6 @@ printf "}\n"
 sync
 sync
 sync
+killall -q mqtt-sonoff
+sleep 1
 reboot

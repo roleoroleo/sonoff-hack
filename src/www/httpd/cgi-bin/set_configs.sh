@@ -36,6 +36,7 @@ read POST_DATA
 PARAMS=$(echo "$POST_DATA" | tr "\n\r" " " | tr -d " " | sed 's/{\"//g' | sed 's/\"}//g' | sed 's/\",\"/ /g')
 USERNAME="none"
 PASSWORD="none"
+TIMEZONE="none"
 
 for S in $PARAMS ; do
     PARAM=$(echo "$S" | sed 's/\":\"/ /g')
@@ -66,13 +67,20 @@ for S in $PARAMS ; do
             echo "$VALUE" > $SONOFF_HACK_PREFIX/etc/hostname
         fi
     else
-        VALUE=$(echo "$VALUE" | sedencode)
-        sed -i "s/^\(${KEY}\s*=\s*\).*$/\1${VALUE}/" $CONF_FILE
-
         if [ "$KEY" == "USERNAME" ] ; then
+            VALUE=$(echo "$VALUE" | sedencode)
+            sed -i "s/^\(${KEY}\s*=\s*\).*$/\1${VALUE}/" $CONF_FILE
             USERNAME=$VALUE
         elif [ "$KEY" == "PASSWORD" ] ; then
+            VALUE=$(echo "$VALUE" | sedencode)
+            sed -i "s/^\(${KEY}\s*=\s*\).*$/\1${VALUE}/" $CONF_FILE
             PASSWORD=$VALUE
+        elif [ "$KEY" == "TIMEZONE" ] ; then
+            # Don't save timezone
+            TIMEZONE=$VALUE
+        else
+            VALUE=$(echo "$VALUE" | sedencode)
+            sed -i "s/^\(${KEY}\s*=\s*\).*$/\1${VALUE}/" $CONF_FILE
         fi
     fi
 
@@ -92,6 +100,20 @@ if [ "$CONF_TYPE" == "system" ] && [ x$USERNAME != "xnone" ] ; then
             sqlite3 /mnt/mtd/db/ipcsys.db "insert into t_user (C_UserID, c_role_id, C_UserName, C_PassWord) values (10101, 1, 'hack', 'hack');"
         fi
     fi
+fi
+
+if [ "$CONF_TYPE" == "system" ] && [ x$TIMEZONE != "xnone" ] ; then
+    # Add timezone settings to t_sys_param table
+    TZS=$(sqlite3 /mnt/mtd/db/ipcsys.db "select * from t_zonetime_info;")
+    COUNTER=1
+    for TZR in $TZS; do
+        TZR1=$(echo $TZR | cut -d"|" -f1)
+        if [ "$TZR1" == "$TIMEZONE" ]; then
+            sqlite3 /mnt/mtd/db/ipcsys.db "update t_sys_param set c_param_value='$COUNTER' where c_param_name='ZoneTimeName';"
+            break
+        fi
+        let COUNTER=COUNTER+1
+    done
 fi
 
 # Yeah, it's pretty ugly.

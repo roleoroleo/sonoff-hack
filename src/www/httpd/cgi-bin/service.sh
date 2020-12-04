@@ -127,7 +127,7 @@ if [ "$ACTION" == "start" ] ; then
     elif [ "$NAME" == "ftpd" ]; then
         start_ftpd $PARAM1
     elif [ "$NAME" == "mqtt" ]; then
-        mqttv4 >/dev/null &
+        mqtt-sonoff >/dev/null &
     fi
 elif [ "$ACTION" == "stop" ] ; then
     if [ "$NAME" == "onvif" ]; then
@@ -137,7 +137,7 @@ elif [ "$ACTION" == "stop" ] ; then
     elif [ "$NAME" == "ftpd" ]; then
         stop_ftpd $PARAM1
     elif [ "$NAME" == "mqtt" ]; then
-        killall mqttv4
+        killall mqtt-sonoff
     fi
 fi
 

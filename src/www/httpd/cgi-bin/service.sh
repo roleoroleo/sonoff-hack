@@ -99,9 +99,20 @@ stop_ftpd()
     fi
 }
 
+ps_program()
+{
+    PS_PROGRAM=$(ps | grep $1 | grep -v grep | grep -c ^)
+    if [ $PS_PROGRAM -gt 0 ]; then
+        echo "started"
+    else
+        echo "stopped"
+    fi
+}
+
 NAME="none"
 ACTION="none"
 PARAM1="none"
+RES=""
 
 for I in 1 2 3
 do
@@ -139,9 +150,22 @@ elif [ "$ACTION" == "stop" ] ; then
     elif [ "$NAME" == "mqtt" ]; then
         killall mqtt-sonoff
     fi
+elif [ "$ACTION" == "status" ] ; then
+    if [ "$NAME" == "onvif" ]; then
+        RES=$(ps_program onvif_srvd)
+    elif [ "$NAME" == "wsdd" ]; then
+        RES=$(ps_program wsdd)
+    elif [ "$NAME" == "ftpd" ]; then
+        RES=$(ps_program ftpd)
+    elif [ "$NAME" == "mqtt" ]; then
+        RES=$(ps_program mqtt-sonoff)
+    fi
 fi
 
 printf "Content-type: application/json\r\n\r\n"
 
 printf "{\n"
+if [ ! -z "$RES" ]; then
+    printf "\"status\": \"$RES\"\n"
+fi
 printf "}"

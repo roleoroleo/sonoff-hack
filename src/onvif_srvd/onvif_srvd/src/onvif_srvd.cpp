@@ -5,7 +5,6 @@
 #include <string.h>
 #include <signal.h>
 #include <getopt.h>
-#include <sys/sysinfo.h>
 
 
 #include "daemon.h"
@@ -17,9 +16,6 @@
 #include "soapDeviceBindingService.h"
 #include "soapMediaBindingService.h"
 #include "soapPTZBindingService.h"
-#include "soapPullPointSubscriptionBindingService.h"
-
-#define IPCSYS_DB "/mnt/mtd/db/ipcsys.db"
 
 
 
@@ -179,7 +175,6 @@ static const struct option long_opts[] =
         APPLY(DeviceBindingService, soap)                \
         APPLY(MediaBindingService, soap)                 \
         APPLY(PTZBindingService, soap)                   \
-        APPLY(PullPointSubscriptionBindingService, soap) \
 
 
 /*
@@ -220,152 +215,13 @@ static struct soap *soap;
 
 ServiceContext service_ctx;
 
-int terminate_threads = 0;
-pthread_t events_thread, sysinfo_thread;
 
-
-
-
-
-
-void *process_sqlite_events(void *arg)
-{
-    // MotionAlarm
-    // Get last alarm from db in string format "2020-09-06 15:14:15" in local time
-    sqlite3 *dbc = NULL;
-    int ret;
-    sqlite3_stmt *stmt = NULL;
-    char buffer[1024];
-    std::string alarm;
-    time_t now_t;
-    DetectedEvent *event;
-
-    ret = sqlite3_open_v2(IPCSYS_DB, &dbc, SQLITE_OPEN_READONLY, NULL);
-    if (ret == SQLITE_OK) {
-
-        while (!terminate_threads) {
-            time(&now_t);
-            sprintf (buffer, "select max(c_alarm_time), c_alarm_context from t_alarm_log;");
-            ret = sqlite3_prepare_v2(dbc, buffer, -1, &stmt, NULL);
-            if (ret == SQLITE_OK) {
-                ret = sqlite3_step(stmt);
-                if (ret == SQLITE_ROW) {
-                    alarm = (char *) sqlite3_column_text(stmt, 0);
-                }
-
-                sqlite3_reset(stmt);
-                sqlite3_finalize(stmt);
-
-                // Check syntax
-                if ((alarm.size() == 19) && (alarm.at(4) == '-') && (alarm.at(7) == '-') && (alarm.at(10) == ' ') && (alarm.at(13) == ':') && (alarm.at(16) == ':')) {
-
-                    struct tm *timeinfo;
-                    int itmp;
-                    time_t alarm_t;
-
-                    timeinfo = localtime(&now_t);
-                    // Year
-                    itmp = atoi(alarm.substr(0, 4).c_str());
-                    if (itmp != 0) {
-                        timeinfo->tm_year = itmp - 1900;
-                        // Month
-                        itmp = atoi(alarm.substr(5, 2).c_str());
-                        if (itmp != 0) {
-                            timeinfo->tm_mon = itmp - 1;
-                            // Other
-                            timeinfo->tm_mday = atoi(alarm.substr(8, 2).c_str());
-                            timeinfo->tm_hour = atoi(alarm.substr(11, 2).c_str());
-                            timeinfo->tm_min = atoi(alarm.substr(14, 2).c_str());
-                            timeinfo->tm_sec = atoi(alarm.substr(17, 2).c_str());
-                            alarm_t = mktime(timeinfo);
-                            event = service_ctx.get_last_motion_alarm();
-                            sem_wait(event->get_sem());
-
-                            // If there is a new row in the alarm table, start new alarm
-                            // If there isn't a new row in the alarm table and the alarm state is true, wait 10 seconds and stop the alarm
-
-                            // The cam is started and the saved time is 0
-                            if ((alarm_t > event->get_time()) && (event->get_time() == 0)) {
-                                event->set_b_value(0);
-                                event->set_time(alarm_t);
-                                event->set_sent(1);
-                            // New event detected
-                            } else if (alarm_t > event->get_time()) {
-                                event->set_b_value(1);
-                                event->set_time(alarm_t);
-                                event->set_sent(0);
-                            // New event detected but the last event is running
-                            } else if ((alarm_t > event->get_time()) && (event->get_b_value() == 1)) {
-                                // Update alarm_t
-                                event->set_time(alarm_t);
-                            // Event running: wait 10 seconds and close the event
-                            } else if ((alarm_t == event->get_time()) && (event->get_b_value() == 1)) {
-                                if (now_t - alarm_t > 10) {
-                                    event->set_b_value(0);
-                                    event->set_time(now_t);
-                                    event->set_sent(0);
-                                }
-                            }
-                            sem_post(event->get_sem());
-                        }
-                    }
-                }
-            }
-            sleep(2);
-        }
-    }
-    if (dbc) {
-        sqlite3_close_v2(dbc);
-    }
-
-    return NULL;
-}
-
-
-
-void *process_sysinfo(void *arg)
-{
-    struct sysinfo s_info;
-    float f_load;
-    DetectedEvent *event;
-    time_t now_t;
-
-    // Infinite loop
-    while (!terminate_threads) {
-        time(&now_t);
-        if (sysinfo(&s_info) == 0) {
-            time_t lb_t = now_t - s_info.uptime;
-            f_load = 1.f / (1 << SI_LOAD_SHIFT);
-
-            event = service_ctx.get_sysinfo();
-            sem_wait(event->get_sem());
-            event->set_f_value(s_info.loads[0] * f_load);
-            event->set_t_value(lb_t);
-            event->set_time(now_t);
-            event->set_sent(0);
-            sem_post(event->get_sem());
-        }
-        sleep(10);
-    }
-
-    return NULL;
-}
 
 
 
 void daemon_exit_handler(int sig)
 {
     //Here we release resources
-
-    terminate_threads = 1;
-    if (pthread_join(events_thread, NULL) != 0) {
-        DEBUG_MSG("pthread_join() error\n");
-    }
-    sem_destroy(service_ctx.get_last_motion_alarm()->get_sem());
-    if (pthread_join(sysinfo_thread, NULL) != 0) {
-        DEBUG_MSG("pthread_join() error\n");
-    }
-    sem_destroy(service_ctx.get_sysinfo()->get_sem());
 
     UNUSED(sig);
     soap_destroy(soap); // delete managed C++ objects
@@ -662,15 +518,6 @@ int main(int argc, char *argv[])
     daemonize2(init, NULL);
 
     FOREACH_SERVICE(DECLARE_SERVICE, soap)
-
-    sem_init(service_ctx.get_last_motion_alarm()->get_sem(), 0, 1);
-    if (pthread_create(&events_thread, NULL, process_sqlite_events, NULL)) {
-        DEBUG_MSG("An error occured creating thread\n");
-    }
-    sem_init(service_ctx.get_sysinfo()->get_sem(), 0, 1);
-    if (pthread_create(&sysinfo_thread, NULL, process_sysinfo, NULL)) {
-        DEBUG_MSG("An error occured creating thread\n");
-    }
 
     while( true )
     {

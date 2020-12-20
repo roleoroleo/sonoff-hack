@@ -1,5 +1,6 @@
 # Ignore the install dir
 _install/
+onvif_srvd/.depend
 onvif_srvd/SDK/
 onvif_srvd/generated/
 onvif_srvd/gsoap-2.8/

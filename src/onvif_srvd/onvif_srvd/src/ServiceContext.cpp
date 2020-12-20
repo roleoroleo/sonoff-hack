@@ -22,14 +22,6 @@ ServiceContext::ServiceContext():
     serial_number    ( "SerialNumber"   ),
     hardware_id      ( "HardwareId"     )
 {
-    last_motion_alarm.set_time(0);
-    last_motion_alarm.set_b_value(false);
-    last_motion_alarm.set_sent(true);
-
-    sysinfo.set_time(0);
-    sysinfo.set_f_value(0);
-    sysinfo.set_t_value(0);
-    sysinfo.set_sent(true);
 }
 
 
@@ -221,18 +213,6 @@ tptz__Capabilities *ServiceContext::getPTZServiceCapabilities(soap *soap)
     return capabilities;
 }
 
-
-
-tev__Capabilities *ServiceContext::getEventServiceCapabilities(soap* soap)
-{
-    tev__Capabilities *capabilities = soap_new_tev__Capabilities(soap);
-
-    capabilities->WSSubscriptionPolicySupport                    = soap_new_ptr(soap, false);
-    capabilities->WSPullPointSupport                             = soap_new_ptr(soap, true);
-    capabilities->WSPausableSubscriptionManagerInterfaceSupport  = soap_new_ptr(soap, false);
-
-    return capabilities;
-}
 
 
 

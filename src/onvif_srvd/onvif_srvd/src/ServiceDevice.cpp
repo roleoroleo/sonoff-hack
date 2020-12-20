@@ -32,7 +32,7 @@ int DeviceBindingService::GetServices(_tds__GetServices *tds__GetServices, _tds_
     tds__GetServicesResponse.Service.push_back(soap_new_tds__Service(this->soap));
     tds__GetServicesResponse.Service.back()->Namespace  = "http://www.onvif.org/ver10/device/wsdl";
     tds__GetServicesResponse.Service.back()->XAddr      = XAddr;
-    tds__GetServicesResponse.Service.back()->Version    = soap_new_req_tt__OnvifVersion(this->soap, 19, 12);
+    tds__GetServicesResponse.Service.back()->Version    = soap_new_req_tt__OnvifVersion(this->soap, 2, 5);
     if( tds__GetServices->IncludeCapability )
     {
         tds__GetServicesResponse.Service.back()->Capabilities        = soap_new__tds__Service_Capabilities(this->soap);
@@ -44,7 +44,7 @@ int DeviceBindingService::GetServices(_tds__GetServices *tds__GetServices, _tds_
     tds__GetServicesResponse.Service.push_back(soap_new_tds__Service(this->soap));
     tds__GetServicesResponse.Service.back()->Namespace  = "http://www.onvif.org/ver10/media/wsdl";
     tds__GetServicesResponse.Service.back()->XAddr      = XAddr;
-    tds__GetServicesResponse.Service.back()->Version    = soap_new_req_tt__OnvifVersion(this->soap, 19, 6);
+    tds__GetServicesResponse.Service.back()->Version    = soap_new_req_tt__OnvifVersion(this->soap, 2, 6);
     if (tds__GetServices->IncludeCapability)
     {
         tds__GetServicesResponse.Service.back()->Capabilities        = soap_new__tds__Service_Capabilities(this->soap);
@@ -57,29 +57,12 @@ int DeviceBindingService::GetServices(_tds__GetServices *tds__GetServices, _tds_
         tds__GetServicesResponse.Service.push_back(soap_new_tds__Service(this->soap));
         tds__GetServicesResponse.Service.back()->Namespace  = "http://www.onvif.org/ver20/ptz/wsdl";
         tds__GetServicesResponse.Service.back()->XAddr      = XAddr;
-        tds__GetServicesResponse.Service.back()->Version    = soap_new_req_tt__OnvifVersion(this->soap, 17, 6);
+        tds__GetServicesResponse.Service.back()->Version    = soap_new_req_tt__OnvifVersion(this->soap, 2, 4);
         if (tds__GetServices->IncludeCapability)
         {
             tds__GetServicesResponse.Service.back()->Capabilities        = soap_new__tds__Service_Capabilities(this->soap);
             tptz__Capabilities *capabilities                             = ctx->getPTZServiceCapabilities(this->soap);
             tds__GetServicesResponse.Service.back()->Capabilities->__any = soap_dom_element(this->soap, NULL, "tptz:Capabilities", capabilities, capabilities->soap_type());
-        }
-    }
-
-
-    if (true) {
-        tds__GetServicesResponse.Service.push_back(soap_new_tds__Service(this->soap));
-        tds__GetServicesResponse.Service.back()->Namespace  = "http://www.onvif.org/ver10/events/wsdl";
-        tds__GetServicesResponse.Service.back()->XAddr      = XAddr;
-        tds__GetServicesResponse.Service.back()->Version    = soap_new_req_tt__OnvifVersion(this->soap, 20, 6);
-        if (tds__GetServices->IncludeCapability)
-        {
-            tds__GetServicesResponse.Service.back()->Capabilities        = soap_new__tds__Service_Capabilities(this->soap);
-            tev__Capabilities *capabilities                              = ctx->getEventServiceCapabilities(this->soap);
-            capabilities->WSSubscriptionPolicySupport                    = soap_new_ptr(soap, false);
-            capabilities->WSPullPointSupport                             = soap_new_ptr(soap, true);
-            capabilities->WSPausableSubscriptionManagerInterfaceSupport  = soap_new_ptr(soap, false);
-            tds__GetServicesResponse.Service.back()->Capabilities->__any = soap_dom_element(this->soap, NULL, "tev:Capabilities", capabilities, capabilities->soap_type());
         }
     }
 
@@ -402,31 +385,6 @@ int DeviceBindingService::GetCapabilities(_tds__GetCapabilities *tds__GetCapabil
             }
         }
 
-        if (true) {
-            if(!tds__GetCapabilitiesResponse.Capabilities->Events && ( (category == tt__CapabilityCategory__All) || (category == tt__CapabilityCategory__Events) ) )
-            {
-                tds__GetCapabilitiesResponse.Capabilities->Events  = soap_new_tt__EventCapabilities(this->soap);
-                tds__GetCapabilitiesResponse.Capabilities->Events->XAddr = XAddr;
-                tds__GetCapabilitiesResponse.Capabilities->Events->WSSubscriptionPolicySupport                    = false;
-                tds__GetCapabilitiesResponse.Capabilities->Events->WSPullPointSupport                             = true;
-                tds__GetCapabilitiesResponse.Capabilities->Events->WSPausableSubscriptionManagerInterfaceSupport  = false;
-            }
-        }
-
-        if (((category == tt__CapabilityCategory__Imaging) && (categories.size() == 1)) ||
-                ((category == tt__CapabilityCategory__Analytics) && (categories.size() == 1)))
-        {
-            struct SOAP_ENV__Code *subcode1 = soap_new_SOAP_ENV__Code(soap);
-            struct SOAP_ENV__Code *subcode2 = soap_new_SOAP_ENV__Code(soap);
-            soap_receiver_fault(soap, "Optional Action Not Implemented", NULL); 
-            subcode1->SOAP_ENV__Value = (char*)"ter:ActionNotSupported";
-            subcode1->SOAP_ENV__Subcode = subcode2;
-            subcode2->SOAP_ENV__Value = (char*)"ter:NoSuchService";
-            subcode2->SOAP_ENV__Subcode = NULL;
-            soap->fault->SOAP_ENV__Code->SOAP_ENV__Subcode = subcode1;
-
-            return SOAP_FAULT;
-        }
     }
 
 

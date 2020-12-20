@@ -17,7 +17,6 @@ GSOAP_IMPORT_DIR  = $(GSOAP_DIR)/import
 OPENSSL_DIR       = ./openssl
 
 
-
 SOAPCPP2          = $(GSOAP_DIR)/src/soapcpp2
 WSDL2H            = $(GSOAP_DIR)/wsdl/wsdl2h
 GSOAP_CONFIGURE   = --disable-c-locale
@@ -44,7 +43,7 @@ CXXFLAGS         += -DWITH_NO_C_LOCALE
 
 CXX              ?= g++
 
-LDFLAGS      += -Llib -lsqlite3 -lpthread -lrt
+LDFLAGS      += -Llib -lpthread -lrt
 
 
 
@@ -82,8 +81,7 @@ SOAP_SRC = $(GSOAP_DIR)/stdsoap2.cpp        \
 # We can't use wildcard func, this files will be generated
 SOAP_SERVICE_SRC = $(GENERATED_DIR)/soapDeviceBindingService.cpp \
                    $(GENERATED_DIR)/soapMediaBindingService.cpp  \
-                   $(GENERATED_DIR)/soapPTZBindingService.cpp \
-                   $(GENERATED_DIR)/soapPullPointSubscriptionBindingService.cpp
+                   $(GENERATED_DIR)/soapPTZBindingService.cpp
 
 
 
@@ -97,7 +95,6 @@ SOURCES  = $(COMMON_DIR)/daemon.c                         \
            $(COMMON_DIR)/ServiceDevice.cpp                \
            $(COMMON_DIR)/ServiceMedia.cpp                 \
            $(COMMON_DIR)/ServicePTZ.cpp                   \
-           $(COMMON_DIR)/ServicePullPointSubscription.cpp \
            $(GENERATED_DIR)/soapC.cpp                     \
            $(SOAP_SRC)                                    \
            $(SOAP_SERVICE_SRC)                            \
@@ -232,14 +229,8 @@ $(GENERATED_DIR)/onvif.h:
 
 
 
-# Fix tns1 and ter namespace with sed: very ugly workaround
-
 $(GENERATED_DIR)/soapC.cpp: $(GENERATED_DIR)/onvif.h
 	$(SOAPCPP2) -j -L -x -S -d $(GENERATED_DIR) -I$(GSOAP_DIR):$(GSOAP_IMPORT_DIR) $<
-	sed -i "/{ \"tt\", \"http:\\/\\/www.onvif.org\\/ver10\\/schema\", NULL, NULL },/a    {\"tns1\", \"http://www.onvif.org/ver10/topics\", NULL, NULL}," $(GENERATED_DIR)/PullPointSubscriptionBinding.nsmap
-	sed -i "/{ \"tt\", \"http:\\/\\/www.onvif.org\\/ver10\\/schema\", NULL, NULL },/a    {\"tns1\", \"http://www.onvif.org/ver10/topics\", NULL, NULL}," $(GENERATED_DIR)/soapPullPointSubscriptionBindingService.cpp
-	sed -i "/{ \"tt\", \"http:\\/\\/www.onvif.org\\/ver10\\/schema\", NULL, NULL },/a    {\"ter\", \"http://www.onvif.org/ver10/error\", NULL, NULL}," $(GENERATED_DIR)/DeviceBinding.nsmap
-	sed -i "/{ \"tt\", \"http:\\/\\/www.onvif.org\\/ver10\\/schema\", NULL, NULL },/a    {\"ter\", \"http://www.onvif.org/ver10/error\", NULL, NULL}," $(GENERATED_DIR)/soapDeviceBindingService.cpp
 
 
 

@@ -8,13 +8,4 @@ rm -rf ./_install
 cd onvif_srvd || exit 1
 make clean
 
-mkdir -p ./lib
-
-if [ ! -f ../../libsqlite/_install/lib/libsqlite3.so.0 ] ; then
-    echo "ERROR: mqtt-sonoff requires mosquitto to be compiled first."
-    exit 1
-fi
-
-ln -fs ../../../libsqlite/_install/lib/libsqlite3.so.0 ./lib/libsqlite3.so
-
 cd ..

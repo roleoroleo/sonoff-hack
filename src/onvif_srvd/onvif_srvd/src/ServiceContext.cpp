@@ -245,6 +245,10 @@ tt__VideoEncoderConfiguration* StreamProfile::get_video_enc_cfg(struct soap *soa
     enc_cfg->Multicast          = soap_new_tt__MulticastConfiguration(soap);
     enc_cfg->Multicast->Address = soap_new_tt__IPAddress(soap);
     enc_cfg->Encoding           = static_cast<tt__VideoEncoding>(type);
+//    enc_cfg->GuaranteedFrameRate= soap_new_ptr(soap, true);
+    enc_cfg->H264               = soap_new_tt__H264Configuration(soap);
+    enc_cfg->H264->GovLength    = 40;
+    enc_cfg->H264->H264Profile  = tt__H264Profile__Main;
 
     return enc_cfg;
 }

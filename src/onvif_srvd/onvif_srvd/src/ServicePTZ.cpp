@@ -63,7 +63,7 @@ int PTZBindingService::GetPresets(_tptz__GetPresets *tptz__GetPresets, _tptz__Ge
 
 
     soap_default_std__vectorTemplateOfPointerTott__PTZPreset(soap, &tptz__GetPresetsResponse._tptz__GetPresetsResponse::Preset);
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < 15; i++) {
         tt__PTZPreset* ptzp;
         ptzp = soap_new_tt__PTZPreset(soap);
         tptz__GetPresetsResponse.Preset.push_back(ptzp);
@@ -282,7 +282,7 @@ int GetPTZNode(struct soap *soap, tt__PTZNode* ptzn)
     ptzs6->XRange      = soap_new_req_tt__FloatRange(soap, 0.0f, 1.0f);
 
 
-    ptzn->MaximumNumberOfPresets = 8;
+    ptzn->MaximumNumberOfPresets = 15;
     ptzn->HomeSupported          = true;
     ptzn->FixedHomePosition      = (bool *)soap_malloc(soap, sizeof(bool));
     soap_s2bool(soap, "true", ptzn->FixedHomePosition);
@@ -565,11 +565,4 @@ int PTZBindingService::RemovePresetTour(_tptz__RemovePresetTour *tptz__RemovePre
 int PTZBindingService::GetCompatibleConfigurations(_tptz__GetCompatibleConfigurations *tptz__GetCompatibleConfigurations, _tptz__GetCompatibleConfigurationsResponse &tptz__GetCompatibleConfigurationsResponse)
 {
     SOAP_EMPTY_HANDLER(tptz__GetCompatibleConfigurations, "PTZ");
-}
-
-
-
-int PTZBindingService::GeoMove(_tptz__GeoMove *tptz__GeoMove, _tptz__GeoMoveResponse &tptz__GeoMoveResponse)
-{
-    SOAP_EMPTY_HANDLER(tptz__GeoMove, "PTZ");
 }

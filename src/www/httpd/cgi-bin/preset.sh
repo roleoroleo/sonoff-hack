@@ -8,7 +8,7 @@ urldecode(){
 
 ACTION="none"
 NUM=-1
-NAME=""
+NAME="none"
 
 for I in 1 2 3
 do
@@ -16,19 +16,16 @@ do
     VAL="$(echo $QUERY_STRING | cut -d'&' -f$I | cut -d'=' -f2)"
 
     if [ "$CONF" == "action" ] ; then
-        ACTION="-a $VAL"
+        ACTION="$VAL"
     elif [ "$CONF" == "num" ] ; then
-        NUM="-n $VAL"
+        NUM="$VAL"
     elif [ "$CONF" == "name" ] ; then
         VAL=$(echo "$VAL" | urldecode)
-        NAME="-e $VAL"
+        NAME="$VAL"
     fi
 done
 
-if [ $ACTION == "none" ]; then
-    exit
-fi
-if [ $ACTION != "go_preset" && $ACTION != "set_preset" ]; then
+if [ "$ACTION" != "go_preset" ] && [ "$ACTION" != "set_preset" ]; then
     exit
 fi
 
@@ -36,7 +33,21 @@ if [ $NUM -eq -1 ]; then
     exit
 fi
 
-$SONOFF_HACK_PREFIX/bin/ptz -f $SONOFF_HACK_PREFIX/etc/ptz_presets.conf $ACTION $NUM $NAME
+if [ "$ACTION" == "set_preset" ] && [ "$NAME" == "none" ]; then
+    exit
+fi
+
+ARG_ACTION="-a $ACTION"
+ARG_NUM="-n $NUM"
+if [ "$ACTION" == "set_preset" ] && [ "$NAME" == "" ]; then
+    # Remove entry
+    ARG_NAME="-c"
+else
+    ARG_NAME="-e $NAME"
+fi
+
+$SONOFF_HACK_PREFIX/bin/ptz -f $SONOFF_HACK_PREFIX/etc/ptz_presets.conf $ARG_ACTION $ARG_NUM $ARG_NAME
+echo "$SONOFF_HACK_PREFIX/bin/ptz -f $SONOFF_HACK_PREFIX/etc/ptz_presets.conf $ARG_ACTION $ARG_NUM $ARG_NAME"
 
 printf "Content-type: application/json\r\n\r\n"
 

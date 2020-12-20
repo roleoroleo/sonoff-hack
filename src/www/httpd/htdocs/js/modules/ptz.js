@@ -105,6 +105,7 @@ APP.ptz = (function ($) {
             },
             success: function(data) {
                 $(button).attr("disabled", false);
+                window.location.reload();
             }
         });
     }

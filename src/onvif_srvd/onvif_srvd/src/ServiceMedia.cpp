@@ -559,14 +559,157 @@ int MediaBindingService::SetAudioDecoderConfiguration(_trt__SetAudioDecoderConfi
 
 int MediaBindingService::GetVideoSourceConfigurationOptions(_trt__GetVideoSourceConfigurationOptions *trt__GetVideoSourceConfigurationOptions, _trt__GetVideoSourceConfigurationOptionsResponse &trt__GetVideoSourceConfigurationOptionsResponse)
 {
-    SOAP_EMPTY_HANDLER(trt__GetVideoSourceConfigurationOptions, "Media");
+    DEBUG_MSG("Media: %s\n", __FUNCTION__);
+
+    std::string token;
+    int width;
+    int height;
+    ServiceContext* ctx = (ServiceContext*)this->soap->user;
+
+    auto profiles = ctx->get_profiles();
+
+    if (trt__GetVideoSourceConfigurationOptions->ConfigurationToken != NULL) {
+        for( auto it = profiles.cbegin(); it != profiles.cend(); ++it )
+        {
+            if (*(trt__GetVideoSourceConfigurationOptions->ConfigurationToken) == it->second.get_video_enc_cfg(this->soap)->token) {
+                token.assign(it->second.get_video_enc_cfg(this->soap)->token);
+            }
+        }
+    } else if (trt__GetVideoSourceConfigurationOptions->ProfileToken != NULL) {
+        for( auto it = profiles.cbegin(); it != profiles.cend(); ++it )
+        {
+            if (*(trt__GetVideoSourceConfigurationOptions->ProfileToken) == it->second.get_video_src_cnf(this->soap)->token) {
+                token.assign(it->second.get_video_src_cnf(this->soap)->token);
+            }
+        }
+    }
+
+    for( auto it = profiles.cbegin(); it != profiles.cend(); ++it )
+    {
+        if ((token.empty()) || (token == it->second.get_video_src_cnf(this->soap)->token)) {
+            width = it->second.get_width();
+            height = it->second.get_height();
+
+            trt__GetVideoSourceConfigurationOptionsResponse.Options = soap_new_tt__VideoSourceConfigurationOptions(soap);
+
+            trt__GetVideoSourceConfigurationOptionsResponse.Options->BoundsRange = soap_new_tt__IntRectangleRange(soap);
+            trt__GetVideoSourceConfigurationOptionsResponse.Options->BoundsRange->XRange = soap_new_tt__IntRange(soap);
+            trt__GetVideoSourceConfigurationOptionsResponse.Options->BoundsRange->XRange->Min = 0; //dummy
+            trt__GetVideoSourceConfigurationOptionsResponse.Options->BoundsRange->XRange->Max = width; //dummy
+            trt__GetVideoSourceConfigurationOptionsResponse.Options->BoundsRange->YRange = soap_new_tt__IntRange(soap);
+            trt__GetVideoSourceConfigurationOptionsResponse.Options->BoundsRange->YRange->Min = 0; //dummy
+            trt__GetVideoSourceConfigurationOptionsResponse.Options->BoundsRange->YRange->Max = height; //dummy
+            trt__GetVideoSourceConfigurationOptionsResponse.Options->BoundsRange->WidthRange = soap_new_tt__IntRange(soap);
+            trt__GetVideoSourceConfigurationOptionsResponse.Options->BoundsRange->WidthRange->Min = 0; //dummy
+            trt__GetVideoSourceConfigurationOptionsResponse.Options->BoundsRange->WidthRange->Max = width; //dummy
+            trt__GetVideoSourceConfigurationOptionsResponse.Options->BoundsRange->HeightRange = soap_new_tt__IntRange(soap);
+            trt__GetVideoSourceConfigurationOptionsResponse.Options->BoundsRange->HeightRange->Min = 0; //dummy
+            trt__GetVideoSourceConfigurationOptionsResponse.Options->BoundsRange->HeightRange->Max = height; //dummy
+
+            trt__GetVideoSourceConfigurationOptionsResponse.Options->VideoSourceTokensAvailable.push_back(it->second.get_video_src_cnf(this->soap)->token);
+
+            break;
+        }
+    }
+
+    return SOAP_OK;
 }
 
 
 
 int MediaBindingService::GetVideoEncoderConfigurationOptions(_trt__GetVideoEncoderConfigurationOptions *trt__GetVideoEncoderConfigurationOptions, _trt__GetVideoEncoderConfigurationOptionsResponse &trt__GetVideoEncoderConfigurationOptionsResponse)
 {
-    SOAP_EMPTY_HANDLER(trt__GetVideoEncoderConfigurationOptions, "Media");
+    DEBUG_MSG("Media: %s\n", __FUNCTION__);
+
+    std::string token;
+    ServiceContext* ctx = (ServiceContext*)this->soap->user;
+
+    auto profiles = ctx->get_profiles();
+
+    if (trt__GetVideoEncoderConfigurationOptions->ConfigurationToken != NULL) {
+        for( auto it = profiles.cbegin(); it != profiles.cend(); ++it )
+        {
+            if (*(trt__GetVideoEncoderConfigurationOptions->ConfigurationToken) == it->second.get_video_enc_cfg(this->soap)->token) {
+                token.assign(it->second.get_video_enc_cfg(this->soap)->token);
+            }
+        }
+    } else if (trt__GetVideoEncoderConfigurationOptions->ProfileToken != NULL) {
+        for( auto it = profiles.cbegin(); it != profiles.cend(); ++it )
+        {
+            if (*(trt__GetVideoEncoderConfigurationOptions->ProfileToken) == it->second.get_video_src_cnf(this->soap)->token) {
+                token.assign(it->second.get_video_src_cnf(this->soap)->token);
+            }
+        }
+    }
+
+    trt__GetVideoEncoderConfigurationOptionsResponse.Options  = soap_new_tt__VideoEncoderConfigurationOptions(soap);
+    trt__GetVideoEncoderConfigurationOptionsResponse.Options->JPEG  = NULL;
+    trt__GetVideoEncoderConfigurationOptionsResponse.Options->MPEG4 = NULL;
+    trt__GetVideoEncoderConfigurationOptionsResponse.Options->H264  = NULL;
+    trt__GetVideoEncoderConfigurationOptionsResponse.Options->QualityRange  = soap_new_tt__IntRange(soap);
+    trt__GetVideoEncoderConfigurationOptionsResponse.Options->QualityRange->Min = 0; //dummy
+    trt__GetVideoEncoderConfigurationOptionsResponse.Options->QualityRange->Max = 100; //dummy
+    trt__GetVideoEncoderConfigurationOptionsResponse.Options->Extension  = NULL;
+
+    for( auto it = profiles.cbegin(); it != profiles.cend(); ++it ) {
+        if ((token.empty()) || (token == it->second.get_video_src_cnf(this->soap)->token)) {
+            if (it->second.get_type() == tt__VideoEncoding__JPEG) {
+                trt__GetVideoEncoderConfigurationOptionsResponse.Options->JPEG  = soap_new_tt__JpegOptions(soap);
+
+                tt__VideoResolution *vr = soap_new_tt__VideoResolution(soap);
+                vr->Width = it->second.get_width();
+                vr->Height = it->second.get_height();
+                trt__GetVideoEncoderConfigurationOptionsResponse.Options->JPEG->ResolutionsAvailable.push_back(vr);
+
+                trt__GetVideoEncoderConfigurationOptionsResponse.Options->JPEG->FrameRateRange  = soap_new_tt__IntRange(soap);
+                trt__GetVideoEncoderConfigurationOptionsResponse.Options->JPEG->FrameRateRange->Min = 0; //dummy
+                trt__GetVideoEncoderConfigurationOptionsResponse.Options->JPEG->FrameRateRange->Max = 20; //dummy
+                trt__GetVideoEncoderConfigurationOptionsResponse.Options->JPEG->EncodingIntervalRange  = soap_new_tt__IntRange(soap);
+                trt__GetVideoEncoderConfigurationOptionsResponse.Options->JPEG->EncodingIntervalRange->Min = 0; //dummy
+                trt__GetVideoEncoderConfigurationOptionsResponse.Options->JPEG->EncodingIntervalRange->Max = 3; //dummy
+            } else if (it->second.get_type() == tt__VideoEncoding__MPEG4) {
+                trt__GetVideoEncoderConfigurationOptionsResponse.Options->MPEG4  = soap_new_tt__Mpeg4Options(soap);
+
+                tt__VideoResolution *vr = soap_new_tt__VideoResolution(soap);
+                vr->Width = it->second.get_width();
+                vr->Height = it->second.get_height();
+                trt__GetVideoEncoderConfigurationOptionsResponse.Options->MPEG4->ResolutionsAvailable.push_back(vr);
+
+                trt__GetVideoEncoderConfigurationOptionsResponse.Options->MPEG4->GovLengthRange  = soap_new_tt__IntRange(soap);
+                trt__GetVideoEncoderConfigurationOptionsResponse.Options->MPEG4->GovLengthRange->Min = 0; //dummy
+                trt__GetVideoEncoderConfigurationOptionsResponse.Options->MPEG4->GovLengthRange->Max = 40; //dummy
+                trt__GetVideoEncoderConfigurationOptionsResponse.Options->MPEG4->FrameRateRange  = soap_new_tt__IntRange(soap);
+                trt__GetVideoEncoderConfigurationOptionsResponse.Options->MPEG4->FrameRateRange->Min = 0; //dummy
+                trt__GetVideoEncoderConfigurationOptionsResponse.Options->MPEG4->FrameRateRange->Max = 20; //dummy
+                trt__GetVideoEncoderConfigurationOptionsResponse.Options->MPEG4->EncodingIntervalRange  = soap_new_tt__IntRange(soap);
+                trt__GetVideoEncoderConfigurationOptionsResponse.Options->MPEG4->EncodingIntervalRange->Min = 0; //dummy
+                trt__GetVideoEncoderConfigurationOptionsResponse.Options->MPEG4->EncodingIntervalRange->Max = 3; //dummy
+                trt__GetVideoEncoderConfigurationOptionsResponse.Options->MPEG4->Mpeg4ProfilesSupported.push_back(tt__Mpeg4Profile__SP);
+            } else if (it->second.get_type() == tt__VideoEncoding__H264) {
+                trt__GetVideoEncoderConfigurationOptionsResponse.Options->H264 = soap_new_tt__H264Options(soap);
+
+                tt__VideoResolution *vr = soap_new_tt__VideoResolution(soap);
+                vr->Width = it->second.get_width();
+                vr->Height = it->second.get_height();
+                trt__GetVideoEncoderConfigurationOptionsResponse.Options->H264->ResolutionsAvailable.push_back(vr);
+
+                trt__GetVideoEncoderConfigurationOptionsResponse.Options->H264->GovLengthRange  = soap_new_tt__IntRange(soap);
+                trt__GetVideoEncoderConfigurationOptionsResponse.Options->H264->GovLengthRange->Min = 0; //dummy
+                trt__GetVideoEncoderConfigurationOptionsResponse.Options->H264->GovLengthRange->Max = 40; //dummy
+                trt__GetVideoEncoderConfigurationOptionsResponse.Options->H264->FrameRateRange  = soap_new_tt__IntRange(soap);
+                trt__GetVideoEncoderConfigurationOptionsResponse.Options->H264->FrameRateRange->Min = 0; //dummy
+                trt__GetVideoEncoderConfigurationOptionsResponse.Options->H264->FrameRateRange->Max = 20; //dummy
+                trt__GetVideoEncoderConfigurationOptionsResponse.Options->H264->EncodingIntervalRange  = soap_new_tt__IntRange(soap);
+                trt__GetVideoEncoderConfigurationOptionsResponse.Options->H264->EncodingIntervalRange->Min = 0; //dummy
+                trt__GetVideoEncoderConfigurationOptionsResponse.Options->H264->EncodingIntervalRange->Max = 3; //dummy
+                trt__GetVideoEncoderConfigurationOptionsResponse.Options->H264->H264ProfilesSupported.push_back(tt__H264Profile__Main);
+                trt__GetVideoEncoderConfigurationOptionsResponse.Options->H264->H264ProfilesSupported.push_back(tt__H264Profile__Main);
+            }
+        }
+    }
+
+
+    return SOAP_OK; 
 }
 
 
@@ -619,23 +762,19 @@ int MediaBindingService::GetGuaranteedNumberOfVideoEncoderInstances(_trt__GetGua
     int jpegInstancesNumber = 0;
     int mpeg4InstancesNumber = 0;
     int h264InstancesNumber = 0;
-    int totalNumber = 0;
 
     for( auto it = profiles.cbegin(); it != profiles.cend(); ++it )
     {
         if (it->second.get_type() == tt__VideoEncoding__JPEG) {
             jpegInstancesNumber += instancesNumber;
-            totalNumber += instancesNumber;
         } else if (it->second.get_type() == tt__VideoEncoding__MPEG4) {
             mpeg4InstancesNumber += instancesNumber;
-            totalNumber += instancesNumber;
         } else if (it->second.get_type() == tt__VideoEncoding__H264) {
             h264InstancesNumber += instancesNumber;
-            totalNumber += instancesNumber;
         }
     }
 
-    trt__GetGuaranteedNumberOfVideoEncoderInstancesResponse.TotalNumber = totalNumber;
+    trt__GetGuaranteedNumberOfVideoEncoderInstancesResponse.TotalNumber = jpegInstancesNumber + mpeg4InstancesNumber + h264InstancesNumber;
     trt__GetGuaranteedNumberOfVideoEncoderInstancesResponse.JPEG = soap_new_ptr(soap, jpegInstancesNumber);
     trt__GetGuaranteedNumberOfVideoEncoderInstancesResponse.MPEG4 = soap_new_ptr(soap, mpeg4InstancesNumber);
     trt__GetGuaranteedNumberOfVideoEncoderInstancesResponse.H264 = soap_new_ptr(soap, h264InstancesNumber);

@@ -19,13 +19,7 @@
 
 int PTZBindingService::GetServiceCapabilities(_tptz__GetServiceCapabilities *tptz__GetServiceCapabilities, _tptz__GetServiceCapabilitiesResponse &tptz__GetServiceCapabilitiesResponse)
 {
-    UNUSED(tptz__GetServiceCapabilities);
-    DEBUG_MSG("PTZ: %s\n", __FUNCTION__);
-
-    ServiceContext* ctx = (ServiceContext*)this->soap->user;
-    tptz__GetServiceCapabilitiesResponse.Capabilities = ctx->getPTZServiceCapabilities(this->soap);
-
-    return SOAP_OK;
+    SOAP_EMPTY_HANDLER(tptz__GetServiceCapabilities, "PTZ");
 }
 
 

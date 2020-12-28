@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="../../../ver20/util/onvif-wsdl-viewer.xsl"?>
 <!--
-Copyright (c) 2008-2012 by ONVIF: Open Network Video Interface Forum. All rights reserved.
+Copyright (c) 2008-2020 by ONVIF: Open Network Video Interface Forum. All rights reserved.
 
 Recipients of this document may copy, distribute, publish, or display this document so long as this copyright notice, license and disclaimer are retained with all copies of the document. No license is granted to modify this document.
 
@@ -10,7 +10,7 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 -->
 <wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tptz="http://www.onvif.org/ver20/ptz/wsdl" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap12/" name="PTZService" targetNamespace="http://www.onvif.org/ver20/ptz/wsdl">
 	<wsdl:types>
-		<xs:schema targetNamespace="http://www.onvif.org/ver20/ptz/wsdl" xmlns:tt="http://www.onvif.org/ver10/schema" xmlns:tptz="http://www.onvif.org/ver20/ptz/wsdl" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="2.4">
+		<xs:schema targetNamespace="http://www.onvif.org/ver20/ptz/wsdl" xmlns:tt="http://www.onvif.org/ver10/schema" xmlns:tptz="http://www.onvif.org/ver20/ptz/wsdl" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="20.12">
 			<xs:import namespace="http://www.onvif.org/ver10/schema" schemaLocation="../../../ver10/schema/onvif.xsd"/>
 			<!--  Message Request/Responses elements  -->
 			<!--===============================-->
@@ -33,7 +33,7 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 			<!--===============================-->
 			<xs:complexType name="Capabilities">
 				<xs:sequence>
-					<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>   <!-- first Vendor then ONVIF -->
 				</xs:sequence>
 				<xs:attribute name="EFlip" type="xs:boolean">
 					<xs:annotation>
@@ -48,6 +48,21 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 				<xs:attribute name="GetCompatibleConfigurations" type="xs:boolean">
 					<xs:annotation>
 						<xs:documentation>Indicates support for the GetCompatibleConfigurations command.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="MoveStatus" type="xs:boolean">
+					<xs:annotation>
+						<xs:documentation>Indicates that the PTZStatus includes MoveStatus information.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="StatusPosition" type="xs:boolean">
+					<xs:annotation>
+						<xs:documentation>Indicates that the PTZStatus includes Position information.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="MoveAndTrack" type="tt:StringList">
+					<xs:annotation>
+						<xs:documentation>Indication of the methods of MoveAndTrack that are supported, acceptable values are defined in tt:MoveAndTrackMethod.</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:anyAttribute processContents="lax"/>
@@ -485,6 +500,48 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 				</xs:complexType>
 			</xs:element>
 			<!--===============================-->
+			<xs:element name="GeoMove">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="ProfileToken" type="tt:ReferenceToken">
+							<xs:annotation>
+								<xs:documentation>A reference to the MediaProfile.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Target" type="tt:GeoLocation">
+							<xs:annotation>
+								<xs:documentation>The geolocation of the target position.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Speed" type="tt:PTZSpeed" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>An optional Speed.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="AreaHeight" type="xs:float" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>An optional indication of the height of the target/area.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="AreaWidth" type="xs:float" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>An optional indication of the width of the target/area.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GeoMoveResponse">
+				<xs:complexType>
+					<xs:sequence/>
+				</xs:complexType>
+			</xs:element>
+			<!--===============================-->
 			<xs:element name="Stop">
 				<xs:complexType>
 					<xs:sequence>
@@ -644,6 +701,55 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 				</xs:complexType>
 			</xs:element>
 			<!--===============================-->
+            <xs:element name="MoveAndStartTracking"> 
+                <xs:complexType> 
+                    <xs:sequence> 
+                        <xs:element name="ProfileToken" type="tt:ReferenceToken"> 
+                            <xs:annotation> 
+                                <xs:documentation>A reference to the MediaProfile where the operation should take place. 
+                                </xs:documentation> 
+                            </xs:annotation> 
+                        </xs:element> 
+                        <xs:element name="PresetToken" type="tt:ReferenceToken" minOccurs="0"> 
+                            <xs:annotation> 
+                                <xs:documentation>A preset token. 
+                                </xs:documentation> 
+                            </xs:annotation> 
+                        </xs:element> 
+                        <xs:element name="GeoLocation" type="tt:GeoLocation" minOccurs="0"> 
+                            <xs:annotation> 
+                                <xs:documentation>The geolocation of the target position. 
+                                </xs:documentation> 
+                            </xs:annotation> 
+                        </xs:element> 
+                        <xs:element name="TargetPosition" type="tt:PTZVector" minOccurs="0"> 
+                            <xs:annotation> 
+                                <xs:documentation>A Position vector specifying the absolute target position. 
+                                </xs:documentation> 
+                            </xs:annotation> 
+                        </xs:element> 
+                        <xs:element name="Speed" type="tt:PTZSpeed" minOccurs="0"> 
+                            <xs:annotation> 
+                                <xs:documentation>Speed vector specifying the velocity of pan, tilt and zoom. 
+                                </xs:documentation> 
+                            </xs:annotation> 
+                        </xs:element> 
+                        <xs:element name="ObjectID" type="xs:integer" minOccurs="0"> 
+                            <xs:annotation> 
+                                <xs:documentation>Object ID of the object to track. 
+                                </xs:documentation> 
+                            </xs:annotation> 
+                        </xs:element> 
+                        <xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/> 
+                    </xs:sequence> 
+                </xs:complexType> 
+            </xs:element> 
+            <xs:element name="MoveAndStartTrackingResponse"> 
+                <xs:complexType> 
+                    <xs:sequence/> 
+                </xs:complexType> 
+            </xs:element> 
+            <!--===============================--> 
 		</xs:schema>
 	</wsdl:types>
 	<wsdl:message name="GetServiceCapabilitiesRequest">
@@ -754,6 +860,12 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 	<wsdl:message name="AbsoluteMoveResponse">
 		<wsdl:part name="parameters" element="tptz:AbsoluteMoveResponse"/>
 	</wsdl:message>
+	<wsdl:message name="GeoMoveRequest">
+		<wsdl:part name="parameters" element="tptz:GeoMove"/>
+	</wsdl:message>
+	<wsdl:message name="GeoMoveResponse">
+		<wsdl:part name="parameters" element="tptz:GeoMoveResponse"/>
+	</wsdl:message>
 	<wsdl:message name="StopRequest">
 		<wsdl:part name="parameters" element="tptz:Stop"/>
 	</wsdl:message>
@@ -808,6 +920,12 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 	<wsdl:message name="GetCompatibleConfigurationsResponse">
 		<wsdl:part name="parameters" element="tptz:GetCompatibleConfigurationsResponse"/>
 	</wsdl:message>
+    <wsdl:message name="MoveAndStartTrackingRequest"> 
+        <wsdl:part name="parameters" element="tptz:MoveAndStartTracking"/> 
+    </wsdl:message> 
+    <wsdl:message name="MoveAndStartTrackingResponse"> 
+        <wsdl:part name="parameters" element="tptz:MoveAndStartTrackingResponse"/> 
+    </wsdl:message> 
 	<wsdl:portType name="PTZ">
 		<wsdl:operation name="GetServiceCapabilities">
 			<wsdl:documentation>Returns the capabilities of the PTZ service. The result is returned in a typed answer.</wsdl:documentation>
@@ -834,7 +952,7 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 			<wsdl:output message="tptz:GetNodeResponse"/>
 		</wsdl:operation>
 		<wsdl:operation name="GetConfiguration">
-			<wsdl:documentation>Get a specific PTZonfiguration from the device, identified by its reference token or name.
+			<wsdl:documentation>Get a specific PTZconfiguration from the device, identified by its reference token or name.
 				<br/>
 				The default Position/Translation/Velocity Spaces are introduced to allow NVCs sending move
 				requests without the need to specify a certain coordinate system. The default Speeds are
@@ -991,6 +1109,17 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 			<wsdl:input message="tptz:AbsoluteMoveRequest"/>
 			<wsdl:output message="tptz:AbsoluteMoveResponse"/>
 		</wsdl:operation>
+		<wsdl:operation name="GeoMove">
+			<wsdl:documentation>Operation to move pan,tilt or zoom to point to a destination based on the geolocation of the target. <br/>
+				The speed argument is optional. If an x/y speed value is given it is up to the device to either use 
+				the x value as absolute resoluting speed vector or to map x and y to the component speed. 
+				If the speed argument is omitted, the default speed set by the PTZConfiguration will be used.
+				The area height and area dwidth parameters are optional, they can be used independently and may be used
+				by the device to automatically determine the best zoom level to show the target.
+			</wsdl:documentation>
+			<wsdl:input message="tptz:GeoMoveRequest"/>
+			<wsdl:output message="tptz:GeoMoveResponse"/>
+		</wsdl:operation>
 		<wsdl:operation name="Stop">
 			<wsdl:documentation>Operation to stop ongoing pan, tilt and zoom movements of absolute relative and continuous type.
 If no stop argument for pan, tilt or zoom is set, the device will stop all ongoing pan, tilt and zoom movements.</wsdl:documentation>
@@ -1041,6 +1170,16 @@ If no stop argument for pan, tilt or zoom is set, the device will stop all ongoi
 			<wsdl:input message="tptz:GetCompatibleConfigurationsRequest"/>
 			<wsdl:output message="tptz:GetCompatibleConfigurationsResponse"/>
 		</wsdl:operation>
+        <wsdl:operation name="MoveAndStartTracking"> 
+            <wsdl:documentation>Operation to send an an atomic command to the device: move the camera to a wanted position and then delegate the PTZ control to the tracking algorithm. <br/>
+                    An existing Speed argument overrides DefaultSpeed of the corresponding PTZ configuration during movement to the requested position. 
+                    If spaces are referenced within the Speed argument, they shall be speed spaces supported by the PTZ node. <br/>
+                    If the detection and the tracking are done in the same device, an ObjectID reference can be passed as an argument, in order to specify which object should be tracked. <br/>
+                    The operation shall fail if the requested absolute position is not reachable.
+            </wsdl:documentation> 
+            <wsdl:input message="tptz:MoveAndStartTrackingRequest"/> 
+            <wsdl:output message="tptz:MoveAndStartTrackingResponse"/> 
+        </wsdl:operation> 
 	</wsdl:portType>
 	<wsdl:binding name="PTZBinding" type="tptz:PTZ">
 		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
@@ -1206,6 +1345,15 @@ If no stop argument for pan, tilt or zoom is set, the device will stop all ongoi
 				<soap:body use="literal"/>
 			</wsdl:output>
 		</wsdl:operation>
+		<wsdl:operation name="GeoMove">
+			<soap:operation soapAction="http://www.onvif.org/ver20/ptz/wsdl/GeoMove"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
 		<wsdl:operation name="Stop">
 			<soap:operation soapAction="http://www.onvif.org/ver20/ptz/wsdl/Stop"/>
 			<wsdl:input>
@@ -1288,5 +1436,15 @@ If no stop argument for pan, tilt or zoom is set, the device will stop all ongoi
 				<soap:body use="literal"/>
 			</wsdl:output>
 		</wsdl:operation>
+        <wsdl:operation name="MoveAndStartTracking"> 
+            <soap:operation 
+                    soapAction="http://www.onvif.org/ver20/ptz/wsdl/MoveAndStartTracking"/> 
+            <wsdl:input> 
+                <soap:body use="literal"/> 
+            </wsdl:input> 
+            <wsdl:output> 
+                <soap:body use="literal"/> 
+            </wsdl:output> 
+        </wsdl:operation> 
 	</wsdl:binding>
 </wsdl:definitions>

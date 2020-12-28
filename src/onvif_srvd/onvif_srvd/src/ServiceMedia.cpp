@@ -70,19 +70,7 @@ int MediaBindingService::GetAudioOutputs(_trt__GetAudioOutputs *trt__GetAudioOut
 
 int MediaBindingService::CreateProfile(_trt__CreateProfile *trt__CreateProfile, _trt__CreateProfileResponse &trt__CreateProfileResponse)
 {
-    UNUSED(trt__CreateProfile);
-    DEBUG_MSG("Media: %s\n", __FUNCTION__);
-
-    struct SOAP_ENV__Code *subcode1 = soap_new_SOAP_ENV__Code(soap);
-    struct SOAP_ENV__Code *subcode2 = soap_new_SOAP_ENV__Code(soap);
-    soap_receiver_fault(soap, "Max number of profiles reached.", NULL);
-    subcode1->SOAP_ENV__Value = (char*)"ter:Action";
-    subcode1->SOAP_ENV__Subcode = subcode2;
-    subcode2->SOAP_ENV__Value = (char*)"ter:MaxNVTProfiles";
-    subcode2->SOAP_ENV__Subcode = NULL;
-    soap->fault->SOAP_ENV__Code->SOAP_ENV__Subcode = subcode1;
-
-    return SOAP_FAULT;
+    SOAP_EMPTY_HANDLER(trt__CreateProfile, "Media");
 }
 
 
@@ -260,19 +248,7 @@ int MediaBindingService::RemoveAudioDecoderConfiguration(_trt__RemoveAudioDecode
 
 int MediaBindingService::DeleteProfile(_trt__DeleteProfile *trt__DeleteProfile, _trt__DeleteProfileResponse &trt__DeleteProfileResponse)
 {
-    UNUSED(trt__DeleteProfile);
-    DEBUG_MSG("Media: %s\n", __FUNCTION__);
-
-    struct SOAP_ENV__Code *subcode1 = soap_new_SOAP_ENV__Code(soap);
-    struct SOAP_ENV__Code *subcode2 = soap_new_SOAP_ENV__Code(soap);
-    soap_sender_fault(soap, "Max number of profiles reached.", NULL);
-    subcode1->SOAP_ENV__Value = (char*)"ter:InvalidArgVal";
-    subcode1->SOAP_ENV__Subcode = subcode2;
-    subcode2->SOAP_ENV__Value = (char*)"ter:NoProfile";
-    subcode2->SOAP_ENV__Subcode = NULL;
-    soap->fault->SOAP_ENV__Code->SOAP_ENV__Subcode = subcode1;
-
-    return SOAP_FAULT;
+    SOAP_EMPTY_HANDLER(trt__DeleteProfile, "Media");
 }
 
 

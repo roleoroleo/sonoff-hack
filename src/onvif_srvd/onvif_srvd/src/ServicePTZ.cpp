@@ -12,7 +12,7 @@
 #include "soapPTZBindingService.h"
 #include "ServiceContext.h"
 #include "smacros.h"
-
+#include "stools.h"
 
 
 
@@ -26,7 +26,15 @@ int PTZBindingService::GetServiceCapabilities(_tptz__GetServiceCapabilities *tpt
 
 int PTZBindingService::GetConfigurations(_tptz__GetConfigurations *tptz__GetConfigurations, _tptz__GetConfigurationsResponse &tptz__GetConfigurationsResponse)
 {
-    SOAP_EMPTY_HANDLER(tptz__GetConfigurations, "PTZ");
+    DEBUG_MSG ("PTZ: %s\n", __FUNCTION__);
+    ServiceContext* ctx = (ServiceContext*)this->soap->user;
+
+    tt__PTZConfiguration *pPTZCfg = ctx->GetPTZConfiguration (soap);
+    if (pPTZCfg != NULL)
+    {
+        tptz__GetConfigurationsResponse.PTZConfiguration.push_back (pPTZCfg);
+    }
+    return SOAP_OK;
 }
 
 
@@ -217,7 +225,15 @@ int PTZBindingService::GetStatus(_tptz__GetStatus *tptz__GetStatus, _tptz__GetSt
 
 int PTZBindingService::GetConfiguration(_tptz__GetConfiguration *tptz__GetConfiguration, _tptz__GetConfigurationResponse &tptz__GetConfigurationResponse)
 {
-    SOAP_EMPTY_HANDLER(tptz__GetConfiguration, "PTZ");
+    DEBUG_MSG ("PTZ: %s\n", __FUNCTION__);
+    ServiceContext* ctx = (ServiceContext*)this->soap->user;
+
+    tt__PTZConfiguration *pPTZCfg = ctx->GetPTZConfiguration (soap);
+    if (pPTZCfg)
+    {
+        tptz__GetConfigurationResponse.PTZConfiguration = pPTZCfg;
+    }
+    return SOAP_OK;
 }
 
 
@@ -325,7 +341,11 @@ int PTZBindingService::SetConfiguration(_tptz__SetConfiguration *tptz__SetConfig
 
 int PTZBindingService::GetConfigurationOptions(_tptz__GetConfigurationOptions *tptz__GetConfigurationOptions, _tptz__GetConfigurationOptionsResponse &tptz__GetConfigurationOptionsResponse)
 {
-    SOAP_EMPTY_HANDLER(tptz__GetConfigurationOptions, "PTZ");
+    DEBUG_MSG ("PTZ: %s\n", __FUNCTION__);
+    ServiceContext* ctx = (ServiceContext*)this->soap->user;
+
+    tptz__GetConfigurationOptionsResponse.PTZConfigurationOptions = ctx->GetPTZConfigurationOptions (soap);
+    return SOAP_OK;
 }
 
 

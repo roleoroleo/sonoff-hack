@@ -205,6 +205,144 @@ trt__Capabilities *ServiceContext::getMediaServiceCapabilities(soap *soap)
 }
 
 
+tt__PTZConfiguration *ServiceContext::GetPTZConfiguration (struct soap *soap)
+{
+    tt__PTZConfiguration* ptz_cfg = soap_new_tt__PTZConfiguration (soap);
+
+    ptz_cfg->Name = "PTZCfg";
+    ptz_cfg->token = "PTZCfgToken";
+    ptz_cfg->NodeToken = "PTZNodeToken";
+
+    ptz_cfg->MoveRamp = soap_new_ptr (soap, (int)0);
+    ptz_cfg->PresetRamp = soap_new_ptr (soap, (int)0);
+    ptz_cfg->PresetTourRamp = soap_new_ptr (soap, (int)0);
+
+    ptz_cfg->DefaultAbsolutePantTiltPositionSpace = soap_new_std__string (soap);
+    *ptz_cfg->DefaultAbsolutePantTiltPositionSpace = "http://www.onvif.org/ver10/tptz/PanTiltSpaces/PositionGenericSpace";
+    ptz_cfg->DefaultAbsoluteZoomPositionSpace = soap_new_std__string (soap);
+    *ptz_cfg->DefaultAbsoluteZoomPositionSpace = "http://www.onvif.org/ver10/tptz/ZoomSpaces/PositionGenericSpace";
+    ptz_cfg->DefaultRelativePanTiltTranslationSpace = soap_new_std__string (soap);
+    *ptz_cfg->DefaultRelativePanTiltTranslationSpace = "http://www.onvif.org/ver10/tptz/PanTiltSpaces/TranslationGenericSpace";
+    ptz_cfg->DefaultRelativeZoomTranslationSpace = soap_new_std__string (soap);
+    *ptz_cfg->DefaultRelativeZoomTranslationSpace = "http://www.onvif.org/ver10/tptz/ZoomSpaces/TranslationGenericSpace";
+    ptz_cfg->DefaultContinuousPanTiltVelocitySpace = soap_new_std__string (soap);
+    *ptz_cfg->DefaultContinuousPanTiltVelocitySpace = "http://www.onvif.org/ver10/tptz/PanTiltSpaces/VelocityGenericSpace";
+    ptz_cfg->DefaultContinuousZoomVelocitySpace = soap_new_std__string (soap);
+    *ptz_cfg->DefaultContinuousZoomVelocitySpace = "http://www.onvif.org/ver10/tptz/ZoomSpaces/VelocityGenericSpace";
+
+    ptz_cfg->DefaultPTZSpeed = soap_new_tt__PTZSpeed (soap);
+    ptz_cfg->DefaultPTZSpeed->PanTilt = soap_new_req_tt__Vector2D (soap, 0.5f, 0.5f);
+    ptz_cfg->DefaultPTZSpeed->PanTilt->space = soap_new_std__string (soap);
+    *(ptz_cfg->DefaultPTZSpeed->PanTilt->space) = "http://www.onvif.org/ver10/tptz/PanTiltSpaces/GenericSpeedSpace";
+    ptz_cfg->DefaultPTZSpeed->Zoom = soap_new_req_tt__Vector1D (soap, 0.5f);
+    ptz_cfg->DefaultPTZSpeed->Zoom->space = soap_new_std__string (soap);
+    *(ptz_cfg->DefaultPTZSpeed->Zoom->space) = "http://www.onvif.org/ver10/tptz/ZoomSpaces/ZoomGenericSpeedSpace";
+
+    // ptz_cfg->DefaultPTZTimeout = soap_new_ptr(soap, (LONG64)1000);
+    ptz_cfg->DefaultPTZTimeout = soap_new_ptr (soap, (LONG64)5000);
+
+    ptz_cfg->PanTiltLimits = soap_new_tt__PanTiltLimits (soap);
+    ptz_cfg->PanTiltLimits->Range = soap_new_tt__Space2DDescription (soap);
+    ptz_cfg->PanTiltLimits->Range->URI = "http://www.onvif.org/ver10/tptz/PanTiltSpaces/PositionGenericSpace";
+    // ptz_cfg->PanTiltLimits->Range->XRange = soap_new_req_tt__FloatRange (soap, -INFINITY, INFINITY);
+    // ptz_cfg->PanTiltLimits->Range->YRange = soap_new_req_tt__FloatRange (soap, -INFINITY, INFINITY);
+    ptz_cfg->PanTiltLimits->Range->XRange = soap_new_req_tt__FloatRange (soap, -1, 1);
+    ptz_cfg->PanTiltLimits->Range->YRange = soap_new_req_tt__FloatRange (soap, -1, 1);
+
+    ptz_cfg->ZoomLimits = soap_new_tt__ZoomLimits (soap);
+    ptz_cfg->ZoomLimits->Range = soap_new_tt__Space1DDescription (soap);
+    ptz_cfg->ZoomLimits->Range->URI = "http://www.onvif.org/ver10/tptz/ZoomSpaces/PositionGenericSpace";
+    // ptz_cfg->ZoomLimits->Range->XRange = soap_new_req_tt__FloatRange(soap, -INFINITY, INFINITY);
+    ptz_cfg->ZoomLimits->Range->XRange = soap_new_req_tt__FloatRange (soap, 0, 1);
+
+    ptz_cfg->Extension = soap_new_tt__PTZConfigurationExtension (soap);
+    ptz_cfg->Extension->PTControlDirection = soap_new_tt__PTControlDirection (soap);
+    ptz_cfg->Extension->PTControlDirection->EFlip = soap_new_tt__EFlip (soap);
+    ptz_cfg->Extension->PTControlDirection->EFlip->Mode = tt__EFlipMode__OFF;
+
+    ptz_cfg->Extension->PTControlDirection->Reverse = soap_new_tt__Reverse (soap);
+    ptz_cfg->Extension->PTControlDirection->Reverse->Mode = tt__ReverseMode__OFF;
+
+    return ptz_cfg;
+}
+
+tt__PTZConfigurationOptions* ServiceContext::GetPTZConfigurationOptions (struct soap *soap)
+{
+    tt__PTZConfigurationOptions* pOptions;
+    pOptions = soap_new_tt__PTZConfigurationOptions (soap);
+    /// Required element 'tt:Spaces' of XML schema type 'tt:PTZSpaces'
+    pOptions->Spaces = soap_new_tt__PTZSpaces (soap);
+
+    tt__Space2DDescription * pSpace2DDescription;
+    tt__Space1DDescription * pSpace1DDescription;
+
+    pSpace2DDescription = soap_new_tt__Space2DDescription (soap);
+    pSpace2DDescription->URI = "http://www.onvif.org/ver10/tptz/PanTiltSpaces/PositionGenericSpace";
+    pSpace2DDescription->XRange = soap_new_set_tt__FloatRange (soap, -1.0, 1.0);
+    pSpace2DDescription->YRange = soap_new_set_tt__FloatRange (soap, -1.0, 1.0);
+    /// Optional element 'tt:AbsolutePanTiltPositionSpace' of XML schema type 'tt:Space2DDescription'
+    pOptions->Spaces->AbsolutePanTiltPositionSpace.push_back (pSpace2DDescription);
+
+    pSpace1DDescription = soap_new_tt__Space1DDescription (soap);
+    pSpace1DDescription->URI = "http://www.onvif.org/ver10/tptz/PanTiltSpaces/TranslationGenericSpace";
+    pSpace1DDescription->XRange = soap_new_set_tt__FloatRange (soap, 0.0, 1.0);
+    /// Optional element 'tt:AbsoluteZoomPositionSpace' of XML schema type 'tt:Space1DDescription'
+    pOptions->Spaces->AbsoluteZoomPositionSpace.push_back (pSpace1DDescription);
+
+    pSpace2DDescription = soap_new_tt__Space2DDescription (soap);
+    pSpace2DDescription->URI = "http://www.onvif.org/ver10/tptz/ZoomSpaces/TranslationGenericSpace";
+    pSpace2DDescription->XRange = soap_new_set_tt__FloatRange (soap, -1.0, 1.0);
+    pSpace2DDescription->YRange = soap_new_set_tt__FloatRange (soap, -1.0, 1.0);
+    /// Optional element 'tt:RelativePanTiltTranslationSpace' of XML schema type 'tt:Space2DDescription'
+    pOptions->Spaces->RelativePanTiltTranslationSpace.push_back (pSpace2DDescription);
+
+
+    pSpace1DDescription = soap_new_tt__Space1DDescription (soap);
+    pSpace1DDescription->URI = "http://www.onvif.org/ver10/tptz/PanTiltSpaces/PositionGenericSpace";
+    pSpace1DDescription->XRange = soap_new_set_tt__FloatRange (soap, -1.0, 1.0);
+    /// Optional element 'tt:RelativeZoomTranslationSpace' of XML schema type 'tt:Space1DDescription'
+    pOptions->Spaces->RelativeZoomTranslationSpace.push_back (pSpace1DDescription);
+
+    pSpace2DDescription = soap_new_tt__Space2DDescription (soap);
+    pSpace2DDescription->URI = "http://www.onvif.org/ver10/tptz/PanTiltSpaces/VelocityGenericSpace";
+    pSpace2DDescription->XRange = soap_new_set_tt__FloatRange (soap, -1.0, 1.0);
+    pSpace2DDescription->YRange = soap_new_set_tt__FloatRange (soap, -1.0, 1.0);
+    /// Optional element 'tt:ContinuousPanTiltVelocitySpace' of XML schema type 'tt:Space2DDescription'
+    pOptions->Spaces->ContinuousPanTiltVelocitySpace.push_back (pSpace2DDescription);
+
+    pSpace1DDescription = soap_new_tt__Space1DDescription (soap);
+    pSpace1DDescription->URI = "http://www.onvif.org/ver10/tptz/ZoomSpaces/VelocityGenericSpace";
+    pSpace1DDescription->XRange = soap_new_set_tt__FloatRange (soap, 0.0, 1.0);
+    /// Optional element 'tt:ContinuousZoomVelocitySpace' of XML schema type 'tt:Space1DDescription'
+    pOptions->Spaces->ContinuousZoomVelocitySpace.push_back (pSpace1DDescription);
+
+    pSpace1DDescription = soap_new_tt__Space1DDescription (soap);
+    pSpace1DDescription->URI = "http://www.onvif.org/ver10/tptz/PanTiltSpaces/GenericSpeedSpace";
+    pSpace1DDescription->XRange = soap_new_set_tt__FloatRange (soap, -1.0, 1.0);
+    /// Optional element 'tt:PanTiltSpeedSpace' of XML schema type 'tt:Space1DDescription'
+    pOptions->Spaces->PanTiltSpeedSpace.push_back (pSpace1DDescription);
+
+    pSpace1DDescription = soap_new_tt__Space1DDescription (soap);
+    pSpace1DDescription->URI = "http://www.onvif.org/ver10/tptz/ZoomSpaces/ZoomGenericSpeedSpace";
+    pSpace1DDescription->XRange = soap_new_set_tt__FloatRange (soap, -1.0, 1.0);
+    /// Optional element 'tt:ZoomSpeedSpace' of XML schema type 'tt:Space1DDescription'
+    pOptions->Spaces->ZoomSpeedSpace.push_back (pSpace1DDescription);
+
+
+    /// Required element 'tt:PTZTimeout' of XML schema type 'tt:DurationRange'
+    pOptions->PTZTimeout = soap_new_set_tt__DurationRange (soap, 1000, 100000);
+
+    /// Optional element 'tt:PTControlDirection' of XML schema type 'tt:PTControlDirectionOptions'
+    pOptions->PTControlDirection = soap_new_tt__PTControlDirectionOptions (soap);
+    pOptions->PTControlDirection->EFlip = soap_new_tt__EFlipOptions (soap);
+    pOptions->PTControlDirection->EFlip->Mode.push_back (tt__EFlipMode__OFF);
+    pOptions->PTControlDirection->EFlip->Mode.push_back (tt__EFlipMode__ON);
+    pOptions->PTControlDirection->Reverse = soap_new_tt__ReverseOptions (soap);
+    pOptions->PTControlDirection->Reverse->Mode.push_back (tt__ReverseMode__OFF);
+    pOptions->PTControlDirection->Reverse->Mode.push_back (tt__ReverseMode__ON);
+    pOptions->PTControlDirection->Reverse->Mode.push_back (tt__ReverseMode__AUTO);
+    return pOptions;
+}
 
 tptz__Capabilities *ServiceContext::getPTZServiceCapabilities(soap *soap)
 {
@@ -257,43 +395,9 @@ tt__VideoEncoderConfiguration* StreamProfile::get_video_enc_cfg(struct soap *soa
 
 tt__PTZConfiguration* StreamProfile::get_ptz_cfg(struct soap *soap) const
 {
-    tt__PTZConfiguration* ptz_cfg = soap_new_tt__PTZConfiguration(soap);
+    ServiceContext* ctx = (ServiceContext*)soap->user;
 
-    ptz_cfg->Name               = "PTZ";
-    ptz_cfg->token              = "PTZToken";
-    ptz_cfg->NodeToken          = "PTZNodeToken";
-
-    ptz_cfg->DefaultAbsolutePantTiltPositionSpace    = soap_new_std__string(soap);
-    *ptz_cfg->DefaultAbsolutePantTiltPositionSpace   = "http://www.onvif.org/ver10/tptz/PanTiltSpaces/PositionGenericSpace";
-    ptz_cfg->DefaultAbsoluteZoomPositionSpace        = soap_new_std__string(soap);
-    *ptz_cfg->DefaultAbsoluteZoomPositionSpace       = "http://www.onvif.org/ver10/tptz/ZoomSpaces/PositionGenericSpace";
-    ptz_cfg->DefaultRelativePanTiltTranslationSpace  = soap_new_std__string(soap);
-    *ptz_cfg->DefaultRelativePanTiltTranslationSpace = "http://www.onvif.org/ver10/tptz/PanTiltSpaces/TranslationGenericSpace";
-    ptz_cfg->DefaultRelativeZoomTranslationSpace     = soap_new_std__string(soap);
-    *ptz_cfg->DefaultRelativeZoomTranslationSpace    = "http://www.onvif.org/ver10/tptz/ZoomSpaces/TranslationGenericSpace";
-    ptz_cfg->DefaultContinuousPanTiltVelocitySpace   = soap_new_std__string(soap);
-    *ptz_cfg->DefaultContinuousPanTiltVelocitySpace  = "http://www.onvif.org/ver10/tptz/PanTiltSpaces/VelocityGenericSpace";
-    ptz_cfg->DefaultContinuousZoomVelocitySpace      = soap_new_std__string(soap);
-    *ptz_cfg->DefaultContinuousZoomVelocitySpace     = "http://www.onvif.org/ver10/tptz/ZoomSpaces/VelocityGenericSpace";
-
-    ptz_cfg->DefaultPTZSpeed                   = soap_new_tt__PTZSpeed(soap);
-    ptz_cfg->DefaultPTZSpeed->PanTilt          = soap_new_req_tt__Vector2D(soap, 0.1f, 0.1f);
-    ptz_cfg->DefaultPTZSpeed->Zoom             = soap_new_req_tt__Vector1D(soap, 1.0f);
-
-    ptz_cfg->DefaultPTZTimeout                 = soap_new_ptr(soap, (LONG64)1000);
-
-    ptz_cfg->PanTiltLimits                     = soap_new_tt__PanTiltLimits(soap);
-    ptz_cfg->PanTiltLimits->Range              = soap_new_tt__Space2DDescription(soap);
-    ptz_cfg->PanTiltLimits->Range->URI         = "http://www.onvif.org/ver10/tptz/PanTiltSpaces/PositionGenericSpace";
-    ptz_cfg->PanTiltLimits->Range->XRange      = soap_new_req_tt__FloatRange(soap, -INFINITY, INFINITY);
-    ptz_cfg->PanTiltLimits->Range->YRange      = soap_new_req_tt__FloatRange(soap, -INFINITY, INFINITY);
-
-    ptz_cfg->ZoomLimits                        = soap_new_tt__ZoomLimits(soap);
-    ptz_cfg->ZoomLimits->Range                 = soap_new_tt__Space1DDescription(soap);
-    ptz_cfg->ZoomLimits->Range->URI            = "http://www.onvif.org/ver10/tptz/ZoomSpaces/PositionGenericSpace";
-    ptz_cfg->ZoomLimits->Range->XRange         = soap_new_req_tt__FloatRange(soap, -INFINITY, INFINITY);
-
-    return ptz_cfg;
+    return ctx->GetPTZConfiguration (soap);
 }
 
 

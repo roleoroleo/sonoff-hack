@@ -167,6 +167,8 @@ class ServiceContext
 
         const std::map<std::string, StreamProfile> &get_profiles(void) { return profiles; }
         PTZNode* get_ptz_node(void) { return &ptz_node; }
+        tt__PTZConfiguration* GetPTZConfiguration (struct soap *soap);
+        tt__PTZConfigurationOptions* GetPTZConfigurationOptions (struct soap *soap);
 
         // service capabilities
         tds__DeviceServiceCapabilities* getDeviceServiceCapabilities(struct soap* soap);

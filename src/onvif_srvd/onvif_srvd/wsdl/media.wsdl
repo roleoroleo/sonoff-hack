@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="../../../ver20/util/onvif-wsdl-viewer.xsl"?>
 <!--
-Copyright (c) 2008-2015 by ONVIF: Open Network Video Interface Forum. All rights reserved.
+Copyright (c) 2008-2019 by ONVIF: Open Network Video Interface Forum. All rights reserved.
 
 Recipients of this document may copy, distribute, publish, or display this document so long as this copyright notice, license and disclaimer are retained with all copies of the document. No license is granted to modify this document.
 
@@ -10,7 +10,7 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 -->
 <wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:trt="http://www.onvif.org/ver10/media/wsdl" targetNamespace="http://www.onvif.org/ver10/media/wsdl">
 	<wsdl:types>
-		<xs:schema targetNamespace="http://www.onvif.org/ver10/media/wsdl" xmlns:tt="http://www.onvif.org/ver10/schema" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="2.6">
+		<xs:schema targetNamespace="http://www.onvif.org/ver10/media/wsdl" xmlns:tt="http://www.onvif.org/ver10/schema" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="19.06">
 			<xs:import namespace="http://www.onvif.org/ver10/schema" schemaLocation="../../../ver10/schema/onvif.xsd"/>
 			<!--  Message Request/Responses elements  -->
 			<!--===============================-->
@@ -43,7 +43,7 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 							<xs:documentation>Streaming capabilities.</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	 <!-- first Vendor then ONVIF -->
 				</xs:sequence>
 				<xs:attribute name="SnapshotUri" type="xs:boolean">
 					<xs:annotation>
@@ -65,6 +65,11 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 						<xs:documentation>Indicates if OSD is supported.</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
+				<xs:attribute name="TemporaryOSDText" type="xs:boolean">
+					<xs:annotation>
+						<xs:documentation>Indicates the support for temporary osd text configuration. </xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
 				<xs:attribute name="EXICompression" type="xs:boolean">
 					<xs:annotation>
 						<xs:documentation>Indicates the support for the Efficient XML Interchange (EXI) binary XML format.</xs:documentation>
@@ -76,7 +81,7 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 			<!--===============================-->
 			<xs:complexType name="ProfileCapabilities">
 				<xs:sequence>
-					<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	 <!-- first Vendor then ONVIF -->
 				</xs:sequence>
 				<xs:attribute name="MaximumNumberOfProfiles" type="xs:int">
 					<xs:annotation>
@@ -88,7 +93,7 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 			<!--===============================-->
 			<xs:complexType name="StreamingCapabilities">
 				<xs:sequence>
-					<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	 <!-- first Vendor then ONVIF -->
 				</xs:sequence>
 				<xs:attribute name="RTPMulticast" type="xs:boolean">
 					<xs:annotation>
@@ -1784,7 +1789,7 @@ AudioOutputConfiguration shall be removed.</xs:documentation>
 			<!--===============================-->
 			<xs:complexType name="VideoSourceModeExtension"> 
 				<xs:sequence>
-					<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	 <!-- first Vendor then ONVIF -->
 				</xs:sequence>
 			</xs:complexType>
 
@@ -1821,7 +1826,7 @@ AudioOutputConfiguration shall be removed.</xs:documentation>
 								<xs:documentation>The GetOSD command fetches the OSD configuration if the OSD token is known.</xs:documentation>
 							</xs:annotation>
 						</xs:element>
-						<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	 <!-- first Vendor then ONVIF -->
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -1833,7 +1838,7 @@ AudioOutputConfiguration shall be removed.</xs:documentation>
 								<xs:documentation>The requested OSD configuration.</xs:documentation>
 							</xs:annotation>
 						</xs:element>
-						<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	 <!-- first Vendor then ONVIF -->
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -1846,14 +1851,14 @@ AudioOutputConfiguration shall be removed.</xs:documentation>
 								<xs:documentation>Contains the modified OSD configuration.</xs:documentation>
 							</xs:annotation>
 						</xs:element>
-						<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	 <!-- first Vendor then ONVIF -->
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="SetOSDResponse">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	 <!-- first Vendor then ONVIF -->
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -1866,7 +1871,7 @@ AudioOutputConfiguration shall be removed.</xs:documentation>
 								<xs:documentation>Video Source Configuration Token that specifies an existing video source configuration that the options shall be compatible with.</xs:documentation>
 							</xs:annotation>
 						</xs:element>
-						<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	 <!-- first Vendor then ONVIF -->
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -1878,7 +1883,7 @@ AudioOutputConfiguration shall be removed.</xs:documentation>
 								<xs:documentation/>
 							</xs:annotation>
 						</xs:element>
-						<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	 <!-- first Vendor then ONVIF -->
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -1891,7 +1896,7 @@ AudioOutputConfiguration shall be removed.</xs:documentation>
 								<xs:documentation>Contain the initial OSD configuration for create.</xs:documentation>
 							</xs:annotation>
 						</xs:element>
-						<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	 <!-- first Vendor then ONVIF -->
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -1903,7 +1908,7 @@ AudioOutputConfiguration shall be removed.</xs:documentation>
 								<xs:documentation>Returns Token of the newly created OSD</xs:documentation>
 							</xs:annotation>
 						</xs:element>
-						<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	 <!-- first Vendor then ONVIF -->
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -1916,14 +1921,14 @@ AudioOutputConfiguration shall be removed.</xs:documentation>
 								<xs:documentation>This element contains a reference to the OSD configuration that should be deleted.</xs:documentation>
 							</xs:annotation>
 						</xs:element>
-						<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	 <!-- first Vendor then ONVIF -->
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="DeleteOSDResponse">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>	 <!-- first Vendor then ONVIF -->
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -2830,8 +2835,7 @@ accordingly (ValidUntilConnect=false, ValidUntilReboot=false, timeout=PT0S). <br
 					<li>RTP over RTSP over TCP: StreamType = "RTP_unicast", TransportProtocol = "RTSP"</li>
 				</ol>
 				<br/>
-If a multicast stream is requested the VideoEncoderConfiguration, AudioEncoderConfiguration and MetadataConfiguration element inside the corresponding 
-media profile must be configured with valid multicast settings.<br/>
+If a multicast stream is requested at least one of VideoEncoderConfiguration, AudioEncoderConfiguration and MetadataConfiguration shall have a valid multicast setting.<br/>
 For full compatibility with other ONVIF services a device should not generate Uris longer than
 128 octets.</wsdl:documentation>
 			<wsdl:input message="trt:GetStreamUriRequest"/>

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="../../../ver20/util/onvif-wsdl-viewer.xsl"?>
 <!--
-Copyright (c) 2008-2014 by ONVIF: Open Network Video Interface Forum. All rights reserved.
+Copyright (c) 2008-2019 by ONVIF: Open Network Video Interface Forum. All rights reserved.
 
 Recipients of this document may copy, distribute, publish, or display this document so long as this copyright notice, license and disclaimer are retained with all copies of the document. No license is granted to modify this document.
 
@@ -10,7 +10,7 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 -->
 <wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tds="http://www.onvif.org/ver10/device/wsdl" targetNamespace="http://www.onvif.org/ver10/device/wsdl">
 	<wsdl:types>
-		<xs:schema targetNamespace="http://www.onvif.org/ver10/device/wsdl" xmlns:tt="http://www.onvif.org/ver10/schema" xmlns:tds="http://www.onvif.org/ver10/device/wsdl" elementFormDefault="qualified" version="16.12">
+		<xs:schema targetNamespace="http://www.onvif.org/ver10/device/wsdl" xmlns:tt="http://www.onvif.org/ver10/schema" xmlns:tds="http://www.onvif.org/ver10/device/wsdl" elementFormDefault="qualified" version="19.12">
 			<xs:import namespace="http://www.onvif.org/ver10/schema" schemaLocation="../../../ver10/schema/onvif.xsd"/>
 			<!--===============================-->
 			<xs:element name="GetServices">
@@ -324,13 +324,38 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 						<xs:documentation>If present signals support for geo location. The value signals the supported number of entries.</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
-				<xs:attribute name="AutoGeo" type="xs:string">
+				<xs:attribute name="AutoGeo" type="tt:StringAttrList">
 					<xs:annotation>
-						<xs:documentation>Signals support for automatic retrieval of geo location.</xs:documentation>
+						<xs:documentation>List of supported automatic GeoLocation adjustment supported by the device. Valid items are defined by tds:AutoGeoMode.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="StorageTypesSupported" type="tt:StringAttrList">
+					<xs:annotation>
+						<xs:documentation>Enumerates the supported StorageTypes, see tds:StorageType.</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:anyAttribute processContents="lax"/>
 			</xs:complexType>
+			<!--===============================-->
+			<xs:simpleType name="AutoGeoModes">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="Location">
+						<xs:annotation>	
+							<xs:documentation>Automatic adjustment of the device location.</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="Heading">
+						<xs:annotation>	
+							<xs:documentation>Automatic adjustment of the device orientation relative to the compass also called yaw.</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="Leveling">
+						<xs:annotation>	
+							<xs:documentation>Automatic adjustment of the deviation from the horizon also called pitch and roll.</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+    			</xs:restriction>
+			</xs:simpleType>
 			<!--===============================-->
 			<xs:complexType name="MiscCapabilities">
 				<xs:attribute name="AuxiliaryCommands" type="tt:StringAttrList">
@@ -1908,6 +1933,11 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 							<xs:documentation>CDMI protocol</xs:documentation>
 						</xs:annotation>
 					</xs:enumeration>
+					<xs:enumeration value="FTP">
+						<xs:annotation>
+							<xs:documentation>FTP protocol</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
 				</xs:restriction>
 			</xs:simpleType>
 			
@@ -2855,12 +2885,8 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 			<wsdl:output message="tds:GetWsdlUrlResponse"/>
 		</wsdl:operation>
 		<wsdl:operation name="GetCapabilities">
-			<wsdl:documentation>Any endpoint can ask for the capabilities of a device using the capability exchange request
-				response operation. The device shall indicate all its ONVIF compliant capabilities through the
-				GetCapabilities command.
-				The capability list includes references to the addresses (XAddr) of the service implementing
-				the interface operations in the category. Apart from the addresses, the
-				capabilities only reflect optional functions.</wsdl:documentation>
+			<wsdl:documentation>This method has been replaced by the more generic GetServices method.
+			 For capabilities of individual services refer to the GetServiceCapabilities methods.</wsdl:documentation>
 			<wsdl:input message="tds:GetCapabilitiesRequest"/>
 			<wsdl:output message="tds:GetCapabilitiesResponse"/>
 		</wsdl:operation>
@@ -3028,97 +3054,6 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 			<wsdl:input message="tds:SetAccessPolicyRequest"/>
 			<wsdl:output message="tds:SetAccessPolicyResponse"/>
 		</wsdl:operation>
-		<wsdl:operation name="CreateCertificate">
-			<wsdl:documentation>This operation generates a private/public key pair and also can create a self-signed device
-				certificate as a result of key pair generation. The certificate is created using a suitable
-				onboard key pair generation mechanism.<br/>
-				If a device supports onboard key pair generation, the device that supports TLS shall support
-				this certificate creation command. And also, if a device supports onboard key pair generation,
-				the device that support IEEE 802.1X shall support this command for the purpose of key pair
-				generation. Certificates and key pairs are identified using certificate IDs. These IDs are either
-				chosen by the certificate generation requester or by the device (in case that no ID value is
-				given).</wsdl:documentation>
-			<wsdl:input message="tds:CreateCertificateRequest"/>
-			<wsdl:output message="tds:CreateCertificateResponse"/>
-		</wsdl:operation>
-		<wsdl:operation name="GetCertificates">
-			<wsdl:documentation>This operation gets all device server certificates (including self-signed) for the purpose of TLS
-				authentication and all device client certificates for the purpose of IEEE 802.1X authentication.
-				This command lists only the TLS server certificates and IEEE 802.1X client certificates for the
-				device (neither trusted CA certificates nor trusted root certificates). The certificates are
-				returned as binary data. A device that supports TLS shall support this command and the
-				certificates shall be encoded using ASN.1 [X.681], [X.682], [X.683] DER [X.690] encoding
-				rules.</wsdl:documentation>
-			<wsdl:input message="tds:GetCertificatesRequest"/>
-			<wsdl:output message="tds:GetCertificatesResponse"/>
-		</wsdl:operation>
-		<wsdl:operation name="GetCertificatesStatus">
-			<wsdl:documentation>This operation is specific to TLS functionality. This operation gets the status
-				(enabled/disabled) of the device TLS server certificates. A device that supports TLS shall
-				support this command.</wsdl:documentation>
-			<wsdl:input message="tds:GetCertificatesStatusRequest"/>
-			<wsdl:output message="tds:GetCertificatesStatusResponse"/>
-		</wsdl:operation>
-		<wsdl:operation name="SetCertificatesStatus">
-			<wsdl:documentation>This operation is specific to TLS functionality. This operation sets the status (enable/disable)
-				of the device TLS server certificates. A device that supports TLS shall support this command.
-				Typically only one device server certificate is allowed to be enabled at a time.</wsdl:documentation>
-			<wsdl:input message="tds:SetCertificatesStatusRequest"/>
-			<wsdl:output message="tds:SetCertificatesStatusResponse"/>
-		</wsdl:operation>
-		<wsdl:operation name="DeleteCertificates">
-			<wsdl:documentation>This operation deletes a certificate or multiple certificates. The device MAY also delete a
-				private/public key pair which is coupled with the certificate to be deleted. The device that
-				support either TLS or IEEE 802.1X shall support the deletion of a certificate or multiple
-				certificates through this command. Either all certificates are deleted successfully or a fault
-				message shall be returned without deleting any certificate.</wsdl:documentation>
-			<wsdl:input message="tds:DeleteCertificatesRequest"/>
-			<wsdl:output message="tds:DeleteCertificatesResponse"/>
-		</wsdl:operation>
-		<wsdl:operation name="GetPkcs10Request">
-			<wsdl:documentation>This operation requests a PKCS #10 certificate signature request from the device. The
-				returned information field shall be either formatted exactly as specified in [PKCS#10] or PEM
-				encoded [PKCS#10] format. In order for this command to work, the device must already have
-				a private/public key pair. This key pair should be referred by CertificateID as specified in the
-				input parameter description. This CertificateID refers to the key pair generated using
-				CreateCertificate command.<br/>
-				A device that support onboard key pair generation that supports either TLS or IEEE 802.1X
-				using client certificate shall support this command.</wsdl:documentation>
-			<wsdl:input message="tds:GetPkcs10RequestRequest"/>
-			<wsdl:output message="tds:GetPkcs10RequestResponse"/>
-		</wsdl:operation>
-		<wsdl:operation name="LoadCertificates">
-			<wsdl:documentation>TLS server certificate(s) or IEEE 802.1X client certificate(s) created using the PKCS#10
-				certificate request command can be loaded into the device using this command (see Section
-				8.4.13). The certificate ID in the request shall be present. The device may sort the received
-				certificate(s) based on the public key and subject information in the certificate(s).
-				The certificate ID in the request will be the ID value the client wish to have. The device is
-				supposed to scan the generated key pairs present in the device to identify which is the
-				correspondent key pair with the loaded certificate and then make the link between the
-				certificate and the key pair.<br/>
-				A device that supports onboard key pair generation that support either TLS or IEEE 802.1X
-				shall support this command.<br/>
-				The certificates shall be encoded using ASN.1 [X.681], [X.682], [X.683] DER [X.690] encoding
-				rules.<br/>
-				This command is applicable to any device type, although the parameter name is called for
-				historical reasons NVTCertificate.</wsdl:documentation>
-			<wsdl:input message="tds:LoadCertificatesRequest"/>
-			<wsdl:output message="tds:LoadCertificatesResponse"/>
-		</wsdl:operation>
-		<wsdl:operation name="GetClientCertificateMode">
-			<wsdl:documentation>This operation is specific to TLS functionality. This operation gets the status
-				(enabled/disabled) of the device TLS client authentication. A device that supports TLS shall
-				support this command.</wsdl:documentation>
-			<wsdl:input message="tds:GetClientCertificateModeRequest"/>
-			<wsdl:output message="tds:GetClientCertificateModeResponse"/>
-		</wsdl:operation>
-		<wsdl:operation name="SetClientCertificateMode">
-			<wsdl:documentation>This operation is specific to TLS functionality. This operation sets the status
-				(enabled/disabled) of the device TLS client authentication. A device that supports TLS shall
-				support this command.</wsdl:documentation>
-			<wsdl:input message="tds:SetClientCertificateModeRequest"/>
-			<wsdl:output message="tds:SetClientCertificateModeResponse"/>
-		</wsdl:operation>
 		<wsdl:operation name="GetRelayOutputs">
 			<wsdl:documentation>This operation gets a list of all available relay outputs and their settings.<br/>
 				This method has been depricated with version 2.0. Refer to the DeviceIO service.</wsdl:documentation>
@@ -3157,98 +3092,6 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 				A device that indicates auxiliary service capability shall support this command.</wsdl:documentation>
 			<wsdl:input message="tds:SendAuxiliaryCommandRequest"/>
 			<wsdl:output message="tds:SendAuxiliaryCommandResponse"/>
-		</wsdl:operation>
-		<wsdl:operation name="GetCACertificates">
-			<wsdl:documentation>CA certificates will be loaded into a device and be used for the sake of following two cases.
-				The one is for the purpose of TLS client authentication in TLS server function. The other one
-				is for the purpose of Authentication Server authentication in IEEE 802.1X function. This
-				operation gets all CA certificates loaded into a device. A device that supports either TLS client
-				authentication or IEEE 802.1X shall support this command and the returned certificates shall
-				be encoded using ASN.1 [X.681], [X.682], [X.683] DER [X.690] encoding rules.</wsdl:documentation>
-			<wsdl:input message="tds:GetCACertificatesRequest"/>
-			<wsdl:output message="tds:GetCACertificatesResponse"/>
-		</wsdl:operation>
-		<wsdl:operation name="LoadCertificateWithPrivateKey">
-			<wsdl:documentation>There might be some cases that a Certificate Authority or some other equivalent creates a
-				certificate without having PKCS#10 certificate signing request. In such cases, the certificate
-				will be bundled in conjunction with its private key. This command will be used for such use
-				case scenarios. The certificate ID in the request is optionally set to the ID value the client
-				wish to have. If the certificate ID is not specified in the request, device can choose the ID
-				accordingly.<br/>
-				This operation imports a private/public key pair into the device.
-				The certificates shall be encoded using ASN.1 [X.681], [X.682], [X.683] DER [X.690] encoding
-				rules.<br/>
-				A device that does not support onboard key pair generation and support either TLS or IEEE
-				802.1X using client certificate shall support this command. A device that support onboard key
-				pair generation MAY support this command. The security policy of a device that supports this
-				operation should make sure that the private key is sufficiently protected.</wsdl:documentation>
-			<wsdl:input message="tds:LoadCertificateWithPrivateKeyRequest"/>
-			<wsdl:output message="tds:LoadCertificateWithPrivateKeyResponse"/>
-		</wsdl:operation>
-		<wsdl:operation name="GetCertificateInformation">
-			<wsdl:documentation>This operation requests the information of a certificate specified by certificate ID. The device
-				should respond with its “Issuer DN”, “Subject DN”, “Key usage”, "Extended key usage”, “Key
-				Length”, “Version”, “Serial Number”, “Signature Algorithm” and “Validity” data as the
-				information of the certificate, as long as the device can retrieve such information from the
-				specified certificate.<br/>
-				A device that supports either TLS or IEEE 802.1X should support this command.</wsdl:documentation>
-			<wsdl:input message="tds:GetCertificateInformationRequest"/>
-			<wsdl:output message="tds:GetCertificateInformationResponse"/>
-		</wsdl:operation>
-		<wsdl:operation name="LoadCACertificates">
-			<wsdl:documentation>This command is used when it is necessary to load trusted CA certificates or trusted root
-				certificates for the purpose of verification for its counterpart i.e. client certificate verification in
-				TLS function or server certificate verification in IEEE 802.1X function.<br/>
-				A device that support either TLS or IEEE 802.1X shall support this command. As for the
-				supported certificate format, either DER format or PEM format is possible to be used. But a
-				device that support this command shall support at least DER format as supported format type.
-				The device may sort the received certificate(s) based on the public key and subject
-				information in the certificate(s). Either all CA certificates are loaded successfully or a fault
-				message shall be returned without loading any CA certificate.</wsdl:documentation>
-			<wsdl:input message="tds:LoadCACertificatesRequest"/>
-			<wsdl:output message="tds:LoadCACertificatesResponse"/>
-		</wsdl:operation>
-		<wsdl:operation name="CreateDot1XConfiguration">
-			<wsdl:documentation>This operation newly creates IEEE 802.1X configuration parameter set of the device. The
-				device shall support this command if it supports IEEE 802.1X. If the device receives this
-				request with already existing configuration token (Dot1XConfigurationToken) specification, the
-				device should respond with 'ter:ReferenceToken ' error to indicate there is some configuration
-				conflict.</wsdl:documentation>
-			<wsdl:input message="tds:CreateDot1XConfigurationRequest"/>
-			<wsdl:output message="tds:CreateDot1XConfigurationResponse"/>
-		</wsdl:operation>
-		<wsdl:operation name="SetDot1XConfiguration">
-			<wsdl:documentation>While the CreateDot1XConfiguration command is trying to create a new configuration
-				parameter set, this operation modifies existing IEEE 802.1X configuration parameter set of
-				the device. A device that support IEEE 802.1X shall support this command.</wsdl:documentation>
-			<wsdl:input message="tds:SetDot1XConfigurationRequest"/>
-			<wsdl:output message="tds:SetDot1XConfigurationResponse"/>
-		</wsdl:operation>
-		<wsdl:operation name="GetDot1XConfiguration">
-			<wsdl:documentation>This operation gets one IEEE 802.1X configuration parameter set from the device by
-				specifying the configuration token (Dot1XConfigurationToken).<br/>
-				A device that supports IEEE 802.1X shall support this command.
-				Regardless of whether the 802.1X method in the retrieved configuration has a password or
-				not, the device shall not include the Password element in the response.</wsdl:documentation>
-			<wsdl:input message="tds:GetDot1XConfigurationRequest"/>
-			<wsdl:output message="tds:GetDot1XConfigurationResponse"/>
-		</wsdl:operation>
-		<wsdl:operation name="GetDot1XConfigurations">
-			<wsdl:documentation>This operation gets all the existing IEEE 802.1X configuration parameter sets from the device.
-				The device shall respond with all the IEEE 802.1X configurations so that the client can get to
-				know how many IEEE 802.1X configurations are existing and how they are configured.<br/>
-				A device that support IEEE 802.1X shall support this command.<br/>
-				Regardless of whether the 802.1X method in the retrieved configuration has a password or
-				not, the device shall not include the Password element in the response.</wsdl:documentation>
-			<wsdl:input message="tds:GetDot1XConfigurationsRequest"/>
-			<wsdl:output message="tds:GetDot1XConfigurationsResponse"/>
-		</wsdl:operation>
-		<wsdl:operation name="DeleteDot1XConfiguration">
-			<wsdl:documentation>This operation deletes an IEEE 802.1X configuration parameter set from the device. Which
-				configuration should be deleted is specified by the 'Dot1XConfigurationToken' in the request.
-				A device that support IEEE 802.1X shall support this command.</wsdl:documentation>
-			<wsdl:input message="tds:DeleteDot1XConfigurationRequest"/>
-			<wsdl:output message="tds:DeleteDot1XConfigurationResponse"/>
 		</wsdl:operation>
 		<wsdl:operation name="GetDot11Capabilities">
 			<wsdl:documentation>This operation returns the IEEE802.11 capabilities. The device shall support
@@ -3383,7 +3226,86 @@ IN NO EVENT WILL THE CORPORATION OR ITS MEMBERS OR THEIR AFFILIATES BE LIABLE FO
 			<wsdl:input message="tds:DeleteGeoLocationRequest"/>
 			<wsdl:output message="tds:DeleteGeoLocationResponse"/>
 		</wsdl:operation>
-		
+
+		<!--===============================-->
+		<wsdl:documentation> The definition and interfaces for the Security have been deprecated with release 16.12
+			The Security part was handed over to Security Configuration Service.
+			For backward compatibility the methods remains in the devicemgmt.wsdl file.
+		</wsdl:documentation>
+		<wsdl:operation name="CreateCertificate">
+			<wsdl:input message="tds:CreateCertificateRequest"/>
+			<wsdl:output message="tds:CreateCertificateResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="GetCertificates">
+			<wsdl:input message="tds:GetCertificatesRequest"/>
+			<wsdl:output message="tds:GetCertificatesResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="GetCertificatesStatus">
+			<wsdl:input message="tds:GetCertificatesStatusRequest"/>
+			<wsdl:output message="tds:GetCertificatesStatusResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="SetCertificatesStatus">
+			<wsdl:input message="tds:SetCertificatesStatusRequest"/>
+			<wsdl:output message="tds:SetCertificatesStatusResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="DeleteCertificates">
+			<wsdl:input message="tds:DeleteCertificatesRequest"/>
+			<wsdl:output message="tds:DeleteCertificatesResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="GetPkcs10Request">
+			<wsdl:input message="tds:GetPkcs10RequestRequest"/>
+			<wsdl:output message="tds:GetPkcs10RequestResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="LoadCertificates">
+			<wsdl:input message="tds:LoadCertificatesRequest"/>
+			<wsdl:output message="tds:LoadCertificatesResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="GetClientCertificateMode">
+			<wsdl:input message="tds:GetClientCertificateModeRequest"/>
+			<wsdl:output message="tds:GetClientCertificateModeResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="SetClientCertificateMode">
+			<wsdl:input message="tds:SetClientCertificateModeRequest"/>
+			<wsdl:output message="tds:SetClientCertificateModeResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="GetCACertificates">
+			<wsdl:input message="tds:GetCACertificatesRequest"/>
+			<wsdl:output message="tds:GetCACertificatesResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="LoadCertificateWithPrivateKey">
+			<wsdl:input message="tds:LoadCertificateWithPrivateKeyRequest"/>
+			<wsdl:output message="tds:LoadCertificateWithPrivateKeyResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="GetCertificateInformation">
+			<wsdl:input message="tds:GetCertificateInformationRequest"/>
+			<wsdl:output message="tds:GetCertificateInformationResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="LoadCACertificates">
+			<wsdl:input message="tds:LoadCACertificatesRequest"/>
+			<wsdl:output message="tds:LoadCACertificatesResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="CreateDot1XConfiguration">
+			<wsdl:input message="tds:CreateDot1XConfigurationRequest"/>
+			<wsdl:output message="tds:CreateDot1XConfigurationResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="SetDot1XConfiguration">
+			<wsdl:input message="tds:SetDot1XConfigurationRequest"/>
+			<wsdl:output message="tds:SetDot1XConfigurationResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="GetDot1XConfiguration">
+			<wsdl:input message="tds:GetDot1XConfigurationRequest"/>
+			<wsdl:output message="tds:GetDot1XConfigurationResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="GetDot1XConfigurations">
+			<wsdl:input message="tds:GetDot1XConfigurationsRequest"/>
+			<wsdl:output message="tds:GetDot1XConfigurationsResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="DeleteDot1XConfiguration">
+			<wsdl:input message="tds:DeleteDot1XConfigurationRequest"/>
+			<wsdl:output message="tds:DeleteDot1XConfigurationResponse"/>
+		</wsdl:operation>
+		<!--===============================-->
+
 	</wsdl:portType>
 	<wsdl:binding name="DeviceBinding" type="tds:Device">
 		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>

@@ -32,7 +32,8 @@ int DeviceBindingService::GetServices(_tds__GetServices *tds__GetServices, _tds_
     tds__GetServicesResponse.Service.push_back(soap_new_tds__Service(this->soap));
     tds__GetServicesResponse.Service.back()->Namespace  = "http://www.onvif.org/ver10/device/wsdl";
     tds__GetServicesResponse.Service.back()->XAddr      = XAddr;
-    tds__GetServicesResponse.Service.back()->Version    = soap_new_req_tt__OnvifVersion(this->soap, 2, 5);
+//    tds__GetServicesResponse.Service.back()->Version    = soap_new_req_tt__OnvifVersion(this->soap, 2, 5);
+    tds__GetServicesResponse.Service.back()->Version    = soap_new_req_tt__OnvifVersion(this->soap, 19, 12);
     if( tds__GetServices->IncludeCapability )
     {
         tds__GetServicesResponse.Service.back()->Capabilities        = soap_new__tds__Service_Capabilities(this->soap);
@@ -44,7 +45,8 @@ int DeviceBindingService::GetServices(_tds__GetServices *tds__GetServices, _tds_
     tds__GetServicesResponse.Service.push_back(soap_new_tds__Service(this->soap));
     tds__GetServicesResponse.Service.back()->Namespace  = "http://www.onvif.org/ver10/media/wsdl";
     tds__GetServicesResponse.Service.back()->XAddr      = XAddr;
-    tds__GetServicesResponse.Service.back()->Version    = soap_new_req_tt__OnvifVersion(this->soap, 2, 6);
+//    tds__GetServicesResponse.Service.back()->Version    = soap_new_req_tt__OnvifVersion(this->soap, 2, 6);
+    tds__GetServicesResponse.Service.back()->Version    = soap_new_req_tt__OnvifVersion (this->soap, 19, 6);
     if (tds__GetServices->IncludeCapability)
     {
         tds__GetServicesResponse.Service.back()->Capabilities        = soap_new__tds__Service_Capabilities(this->soap);
@@ -52,12 +54,12 @@ int DeviceBindingService::GetServices(_tds__GetServices *tds__GetServices, _tds_
         tds__GetServicesResponse.Service.back()->Capabilities->__any = soap_dom_element(this->soap, NULL, "trt:Capabilities", capabilities, capabilities->soap_type());
     }
 
-
     if (ctx->get_ptz_node()->enable) {
         tds__GetServicesResponse.Service.push_back(soap_new_tds__Service(this->soap));
         tds__GetServicesResponse.Service.back()->Namespace  = "http://www.onvif.org/ver20/ptz/wsdl";
         tds__GetServicesResponse.Service.back()->XAddr      = XAddr;
-        tds__GetServicesResponse.Service.back()->Version    = soap_new_req_tt__OnvifVersion(this->soap, 2, 4);
+//        tds__GetServicesResponse.Service.back()->Version    = soap_new_req_tt__OnvifVersion(this->soap, 2, 4);
+        tds__GetServicesResponse.Service.back()->Version    = soap_new_req_tt__OnvifVersion(this->soap, 20, 12);
         if (tds__GetServices->IncludeCapability)
         {
             tds__GetServicesResponse.Service.back()->Capabilities        = soap_new__tds__Service_Capabilities(this->soap);
@@ -360,6 +362,10 @@ int DeviceBindingService::GetCapabilities(_tds__GetCapabilities *tds__GetCapabil
             tds__GetCapabilitiesResponse.Capabilities->Device = soap_new_tt__DeviceCapabilities(this->soap);
             tds__GetCapabilitiesResponse.Capabilities->Device->XAddr = XAddr;
             tds__GetCapabilitiesResponse.Capabilities->Device->System = soap_new_tt__SystemCapabilities(this->soap);
+            tds__GetCapabilitiesResponse.Capabilities->Device->System->SupportedVersions.push_back (soap_new_req_tt__OnvifVersion (this->soap, 20, 12));
+            tds__GetCapabilitiesResponse.Capabilities->Device->System->SupportedVersions.push_back (soap_new_req_tt__OnvifVersion (this->soap, 17, 6));
+            tds__GetCapabilitiesResponse.Capabilities->Device->System->SupportedVersions.push_back (soap_new_req_tt__OnvifVersion (this->soap, 2, 6));
+            tds__GetCapabilitiesResponse.Capabilities->Device->System->SupportedVersions.push_back (soap_new_req_tt__OnvifVersion (this->soap, 2, 4));
             tds__GetCapabilitiesResponse.Capabilities->Device->System->SupportedVersions.push_back(soap_new_req_tt__OnvifVersion(this->soap, 2, 0));
             tds__GetCapabilitiesResponse.Capabilities->Device->Network = soap_new_tt__NetworkCapabilities(this->soap);
             tds__GetCapabilitiesResponse.Capabilities->Device->Security = soap_new_tt__SecurityCapabilities(this->soap);
@@ -384,9 +390,7 @@ int DeviceBindingService::GetCapabilities(_tds__GetCapabilities *tds__GetCapabil
                 tds__GetCapabilitiesResponse.Capabilities->PTZ->XAddr = XAddr;
             }
         }
-
     }
-
 
     return SOAP_OK;
 }

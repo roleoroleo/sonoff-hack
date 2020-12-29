@@ -580,17 +580,3 @@ int PTZBindingService::GetCompatibleConfigurations(_tptz__GetCompatibleConfigura
 {
     SOAP_EMPTY_HANDLER(tptz__GetCompatibleConfigurations, "PTZ");
 }
-
-
-
-int PTZBindingService::GeoMove(_tptz__GeoMove *tptz__GeoMove, _tptz__GeoMoveResponse &tptz__GeoMoveResponse)
-{
-    SOAP_EMPTY_HANDLER(tptz__GeoMove, "PTZ");
-}
-
-
-
-int PTZBindingService::MoveAndStartTracking(_tptz__MoveAndStartTracking *tptz__MoveAndStartTracking, _tptz__MoveAndStartTrackingResponse &tptz__MoveAndStartTrackingResponse)
-{
-    SOAP_EMPTY_HANDLER(tptz__MoveAndStartTracking, "PTZ");
-}

@@ -95,6 +95,9 @@ if [[ $(get_config DISABLE_CLOUD) == "yes" ]] ; then
     killall colink.sh
     killall colink
     killall IOTCare
+else
+    umount /mnt/mtd/ipc/app/colink
+    rm /tmp/colink
 fi
 
 if [[ $(get_config HTTPD) == "yes" ]] ; then

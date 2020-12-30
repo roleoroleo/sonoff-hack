@@ -37,7 +37,18 @@ See [CONTRIBUTING](CONTRIBUTING.md)
 This firmware contains the following features.
 
 - FEATURES
-  - ONVIF server (with support for h264 stream, snapshot, ptz, presets, events and WS-Discovery) - standardized interfaces for IP cameras.
+  - ONVIF server (with support for h264 stream, snapshot, ptz, presets and WS-Discovery) - standardized interfaces for IP cameras.
+  
+    ONVIF compatible devices/software:
+    - Onvif Device Manager
+    - Hikvision
+    - Qnap Surveillance Station
+    - Xiongmai based DVR
+    - Home Assistant
+    - Onvifer (Android app)
+ 
+    Beta testing devices/software:
+    - Synology Surveillance Station
   - Snapshot service - allows to get a jpg (1920x1080) with a web request.
     - http://IP-CAM:8080/cgi-bin/snapshot.sh
   - MQTT - Motion detection through mqtt protocol.

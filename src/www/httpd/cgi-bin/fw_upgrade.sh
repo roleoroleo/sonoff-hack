@@ -38,16 +38,18 @@ elif [ "$VAL" == "upgrade" ] ; then
         exit
     fi
 
+    # Clean old upgrades
     rm -rf /mnt/mmc/.fw_upgrade
-    mkdir -p /mnt/mmc/.fw_upgrade
-    cd /mnt/mmc/.fw_upgrade
     rm -rf /mnt/mmc/.fw_upgrade.conf
+
+    mkdir -p /mnt/mmc/.fw_upgrade
     mkdir -p /mnt/mmc/.fw_upgrade.conf
+    cd /mnt/mmc/.fw_upgrade
 
     MODEL=$(cat /mnt/mtd/ipc/cfg/config_cst.cfg | grep model | cut -d'=' -f2 | cut -d'"' -f2)
     FW_VERSION=`cat /mnt/mmc/sonoff-hack/version`
     if [ -f /mnt/mmc/GK-200MP2B_x.x.x.tgz ]; then
-        cp /mnt/mmc/GK-200MP2B_x.x.x.tgz /mnt/mmc/.fw_upgrade/GK-200MP2B_x.x.x.tgz
+        mv /mnt/mmc/GK-200MP2B_x.x.x.tgz /mnt/mmc/.fw_upgrade/GK-200MP2B_x.x.x.tgz
         LATEST_FW="x.x.x"
     else
         LATEST_FW=`/mnt/mmc/sonoff-hack/usr/bin/wget -O -  https://api.github.com/repos/roleoroleo/sonoff-hack/releases/latest 2>&1 | grep '"tag_name":' | sed -r 's/.*"([^"]+)".*/\1/'`
@@ -66,35 +68,14 @@ elif [ "$VAL" == "upgrade" ] ; then
     fi
 
     # Backup configuration
-    cp -f $SONOFF_HACK_PREFIX/etc/*.conf /mnt/mmc/.fw_upgrade.conf/
-    if [ -f $SONOFF_HACK_PREFIX/etc/hostname ]; then
-        cp -f $SONOFF_HACK_PREFIX/etc/hostname /mnt/mmc/.fw_upgrade.conf/
-    fi
-    cp -rf $SONOFF_HACK_PREFIX/etc/dropbear /mnt/mmc/.fw_upgrade.conf/
+    cp -f $SONOFF_HACK_PREFIX/etc/* /mnt/mmc/.fw_upgrade.conf/
+    rm /mnt/mmc/.fw_upgrade.conf/*.tar.gz
 
-    # Killall processes
-    killall wsdd
-    killall onvif_srvd
-    killall mqtt-sonoff
-    killall pure-ftpd
-    killall dropbear
-    sleep 1
-
-    # Copy new hack
+    # Prepare new hack
     $SONOFF_HACK_PREFIX/bin/tar zxvf ${MODEL}_${LATEST_FW}.tgz
     rm ${MODEL}_${LATEST_FW}.tgz
-    rm -rf $SONOFF_HACK_PREFIX.old
-    mv $SONOFF_HACK_PREFIX $SONOFF_HACK_PREFIX.old
-    mv -f * ..
-
-    # Restore configuration
-    cp -f /mnt/mmc/.fw_upgrade.conf/*.conf $SONOFF_HACK_PREFIX/etc/
-    if [ -f /mnt/mmc/.fw_upgrade.conf/hostname ]; then
-        cp -f /mnt/mmc/.fw_upgrade.conf/hostname $SONOFF_HACK_PREFIX/etc/hostname
-    fi
-    cp -rf /mnt/mmc/.fw_upgrade.conf/dropbear $SONOFF_HACK_PREFIX/etc/
-    cd /mnt/mmc
-    rm -rf /mnt/mmc/.fw_upgrade
+    mkdir -p /mnt/mmc/.fw_upgrade/sonoff-hack/etc
+    cp -rf /mnt/mmc/.fw_upgrade.conf/* /mnt/mmc/.fw_upgrade/sonoff-hack/etc/
     rm -rf /mnt/mmc/.fw_upgrade.conf
 
 
@@ -105,5 +86,6 @@ elif [ "$VAL" == "upgrade" ] ; then
     sync
     sync
     sync
+    sleep 1
     reboot
 fi

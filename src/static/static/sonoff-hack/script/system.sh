@@ -3,6 +3,7 @@
 CONF_FILE="etc/system.conf"
 
 SONOFF_HACK_PREFIX="/mnt/mmc/sonoff-hack"
+SONOFF_HACK_UPGRADE_PATH="/mnt/mmc/.fw_upgrade"
 
 SONOFF_HACK_VER=$(cat /mnt/mmc/sonoff-hack/version)
 MODEL=$(cat /mnt/mtd/ipc/cfg/config_cst.cfg | grep model | cut -d'=' -f2 | cut -d'"' -f2)
@@ -18,6 +19,23 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/mnt/mmc/sonoff-hack/lib
 export PATH=$PATH:/mnt/mmc/sonoff-hack/bin:/mnt/mmc/sonoff-hack/sbin:/mnt/mmc/sonoff-hack/usr/bin:/mnt/mmc/sonoff-hack/usr/sbin
 
 touch /tmp/httpd.conf
+
+if [ -f $SONOFF_HACK_UPGRADE_PATH/sonoff-hack/fw_upgrade_in_progress ]; then
+    echo "#!/bin/sh" > /tmp/fw_upgrade_2p.sh
+    echo "# Complete fw upgrade and restore configuration" >> /tmp/fw_upgrade_2p.sh
+    echo "sleep 1" >> /tmp/fw_upgrade_2p.sh
+    echo "cd $SONOFF_HACK_UPGRADE_PATH" >> /tmp/fw_upgrade_2p.sh
+    echo "cp -rf * .." >> /tmp/fw_upgrade_2p.sh
+    echo "cd .." >> /tmp/fw_upgrade_2p.sh
+    echo "rm -rf $SONOFF_HACK_UPGRADE_PATH" >> /tmp/fw_upgrade_2p.sh
+    echo "rm $SONOFF_HACK_PREFIX/fw_upgrade_in_progress" >> /tmp/fw_upgrade_2p.sh
+    echo "sync" >> /tmp/fw_upgrade_2p.sh
+    echo "sync" >> /tmp/fw_upgrade_2p.sh
+    echo "sync" >> /tmp/fw_upgrade_2p.sh
+    echo "reboot" >> /tmp/fw_upgrade_2p.sh
+    sh /tmp/fw_upgrade_2p.sh
+    exit
+fi
 
 $SONOFF_HACK_PREFIX/script/check_conf.sh
 

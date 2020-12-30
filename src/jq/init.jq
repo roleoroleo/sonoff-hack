@@ -15,3 +15,7 @@ tar zxvf $ARCHIVE
 cd jq-1.5 || exit 1
 
 ./configure --host=arm-sonoff-linux-uclibcgnueabi --disable-docs
+sed -i 's/-DHAVE_J0=1//g' Makefile
+sed -i 's/-DHAVE_J1=1//g' Makefile
+sed -i 's/-DHAVE_Y0=1//g' Makefile
+sed -i 's/-DHAVE_Y1=1//g' Makefile

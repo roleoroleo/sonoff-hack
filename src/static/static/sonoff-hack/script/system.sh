@@ -103,11 +103,23 @@ if [[ $(get_config PTZ_PRESET_BOOT) != "default" ]] ; then
 fi
 
 if [[ $(get_config DISABLE_CLOUD) == "yes" ]] ; then
+    # Add forbidden domains
     echo "127.0.0.1               eu-dispd.coolkit.cc" >> /etc/hosts
     echo "127.0.0.1               eu-api.coolkit.cn" >> /etc/hosts
+    echo "127.0.0.1               testapi.coolkit.cn" >> /etc/hosts
     echo "127.0.0.1               push.iotcare.cn" >> /etc/hosts
+    echo "127.0.0.1               www.iotcare.cn" >> /etc/hosts
+    echo "127.0.0.1               alive.hapsee.cn" >> /etc/hosts
+    echo "127.0.0.1               upgrade.hapsee.cn" >> /etc/hosts
+    echo "127.0.0.1               hapseemate.cn" >> /etc/hosts
+    echo "127.0.0.1               iotgo.iteadstudio.com" >> /etc/hosts
+    echo "127.0.0.1               baidu.com" >> /etc/hosts
+    echo "127.0.0.1               sina.com" >> /etc/hosts
 
-    # Kill ProcessGuard
+    # Add forbidden IPs
+    ip route add prohibit 13.52.12.176/32
+
+    # Kill ProcessGuard and iot processes
     touch /tmp/bProcessGuardExit
     killall colinkwtg.sh
     killall colink.sh
@@ -190,10 +202,10 @@ if [ ! -z "$CRONTAB" ] || [ "$FREE_SPACE" != "0" ] ; then
     mkdir -p /var/spool/cron/crontabs/
 
     if [ ! -z "$CRONTAB" ]; then
-        printf "$CRONTAB\n" > /var/spool/cron/crontabs/root
+        echo "$CRONTAB" > /var/spool/cron/crontabs/root
     fi
     if [ "$FREE_SPACE" != "0" ]; then
-        echo "0  *  *  *  *  /mnt/mmc/sonoff-hack/script/clean_records.sh $FREE_SPACE" > /var/spool/cron/crontabs/root
+        echo "0 * * * * /mnt/mmc/sonoff-hack/script/clean_records.sh $FREE_SPACE" > /var/spool/cron/crontabs/root
     fi
 
     /usr/sbin/crond -c /var/spool/cron/crontabs/

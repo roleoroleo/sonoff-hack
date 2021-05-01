@@ -188,8 +188,13 @@ int mqtt_send_message(mqtt_msg_t *msg, int retain)
     if(!is_connected)
         return -1;
 
-    ret=mosquitto_publish(mosq, &mid_sent, msg->topic, msg->len, msg->msg,
-                          mqtt_conf->qos, retain);
+    if ((strlen(msg->topic) >= strlen(EMPTY_TOPIC)) &&
+                (strcmp(EMPTY_TOPIC, &msg->topic[strlen(msg->topic) - strlen(EMPTY_TOPIC)]) == 0)) {
+        fprintf(stderr, "No message sent: topic is empty\n");
+    } else {
+        ret=mosquitto_publish(mosq, &mid_sent, msg->topic, msg->len, msg->msg,
+                              mqtt_conf->qos, retain);
+    }
 
     if(ret!=MOSQ_ERR_SUCCESS)
     {

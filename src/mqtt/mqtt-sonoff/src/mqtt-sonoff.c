@@ -43,48 +43,50 @@ void callback_motion_start()
 
     mqtt_send_message(&msg, conf.retain_motion);
 
-    // Send image
-    tmpnam(bufferFile);
-    sprintf(cmd, "%s -f %s", MQTT_SONOFF_SNAPSHOT, bufferFile);
-    system(cmd);
+    if (strcmp(EMPTY_TOPIC, mqtt_sonoff_conf.topic_motion_image) != 0) {
+        // Send image
+        tmpnam(bufferFile);
+        sprintf(cmd, "%s -f %s", MQTT_SONOFF_SNAPSHOT, bufferFile);
+        system(cmd);
 
-    fImage = fopen(bufferFile, "r");
-    if (fImage == NULL) {
-        printf("Cannot open image file\n");
-        remove(bufferFile);
-        return;
-    }
-    fseek(fImage, 0L, SEEK_END);
-    sz = ftell(fImage);
-    fseek(fImage, 0L, SEEK_SET);
+        fImage = fopen(bufferFile, "r");
+        if (fImage == NULL) {
+            printf("Cannot open image file\n");
+            remove(bufferFile);
+            return;
+        }
+        fseek(fImage, 0L, SEEK_END);
+        sz = ftell(fImage);
+        fseek(fImage, 0L, SEEK_SET);
 
-    bufferImage = (char *) malloc(sz * sizeof(char));
-    if (bufferImage == NULL) {
-        printf("Cannot allocate memory\n");
-        fclose(fImage);
-        remove(bufferFile);
-        return;
-    }
-    if (fread(bufferImage, 1, sz, fImage) != sz) {
-        printf("Cannot read image file\n");
+        bufferImage = (char *) malloc(sz * sizeof(char));
+        if (bufferImage == NULL) {
+            printf("Cannot allocate memory\n");
+            fclose(fImage);
+            remove(bufferFile);
+            return;
+        }
+        if (fread(bufferImage, 1, sz, fImage) != sz) {
+            printf("Cannot read image file\n");
+            free(bufferImage);
+            fclose(fImage);
+            remove(bufferFile);
+            return;
+        }
+
+        msg.msg=bufferImage;
+        msg.len=sz;
+        msg.topic=topic;
+
+        sprintf(topic, "%s/%s", mqtt_sonoff_conf.mqtt_prefix, mqtt_sonoff_conf.topic_motion_image);
+
+        mqtt_send_message(&msg, conf.retain_motion_image);
+
+        // Clean
         free(bufferImage);
         fclose(fImage);
         remove(bufferFile);
-        return;
     }
-
-    msg.msg=bufferImage;
-    msg.len=sz;
-    msg.topic=topic;
-
-    sprintf(topic, "%s/%s", mqtt_sonoff_conf.mqtt_prefix, mqtt_sonoff_conf.topic_motion_image);
-
-    mqtt_send_message(&msg, conf.retain_motion_image);
-
-    // Clean
-    free(bufferImage);
-    fclose(fImage);
-    remove(bufferFile);
 }
 
 int main(int argc, char **argv)
@@ -271,33 +273,33 @@ static void init_mqtt_sonoff_config()
     // Setting default for all char* vars
     if(conf.mqtt_prefix == NULL)
     {
-        conf.mqtt_prefix=malloc((char)strlen("yicam")+1);
-        strcpy(conf.mqtt_prefix, "yicam");
+        conf.mqtt_prefix=malloc((char)strlen("sonoffcam")+1);
+        strcpy(conf.mqtt_prefix, "sonoffcam");
     }
     if(mqtt_sonoff_conf.mqtt_prefix == NULL)
     {
-        mqtt_sonoff_conf.mqtt_prefix=malloc((char)strlen("yicam")+1);
-        strcpy(mqtt_sonoff_conf.mqtt_prefix, "yicam");
+        mqtt_sonoff_conf.mqtt_prefix=malloc((char)strlen("sonoffcam")+1);
+        strcpy(mqtt_sonoff_conf.mqtt_prefix, "sonoffcam");
     }
     if(conf.topic_birth_will == NULL)
     {
-        conf.topic_birth_will=malloc((char)strlen("status")+1);
-        strcpy(conf.topic_birth_will, "status");
+        conf.topic_birth_will=malloc((char)strlen(EMPTY_TOPIC)+1);
+        strcpy(conf.topic_birth_will, EMPTY_TOPIC);
     }
     if(mqtt_sonoff_conf.topic_birth_will == NULL)
     {
-        mqtt_sonoff_conf.topic_birth_will=malloc((char)strlen("status")+1);
-        strcpy(mqtt_sonoff_conf.topic_birth_will, "status");
+        mqtt_sonoff_conf.topic_birth_will=malloc((char)strlen(EMPTY_TOPIC)+1);
+        strcpy(mqtt_sonoff_conf.topic_birth_will, EMPTY_TOPIC);
     }
     if(mqtt_sonoff_conf.topic_motion == NULL)
     {
-        mqtt_sonoff_conf.topic_motion=malloc((char)strlen("motion_detection")+1);
-        strcpy(mqtt_sonoff_conf.topic_motion, "motion_detection");
+        mqtt_sonoff_conf.topic_motion=malloc((char)strlen(EMPTY_TOPIC)+1);
+        strcpy(mqtt_sonoff_conf.topic_motion, EMPTY_TOPIC);
     }
     if(mqtt_sonoff_conf.topic_motion_image == NULL)
     {
-        mqtt_sonoff_conf.topic_motion_image=malloc((char)strlen("motion_detection_image")+1);
-        strcpy(mqtt_sonoff_conf.topic_motion_image, "motion_detection_image");
+        mqtt_sonoff_conf.topic_motion_image=malloc((char)strlen(EMPTY_TOPIC)+1);
+        strcpy(mqtt_sonoff_conf.topic_motion_image, EMPTY_TOPIC);
     }
     if(conf.birth_msg == NULL)
     {

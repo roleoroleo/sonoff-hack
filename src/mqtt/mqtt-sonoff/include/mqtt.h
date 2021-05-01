@@ -9,6 +9,8 @@
 
 #define MAX_RETRY   100
 
+#define EMPTY_TOPIC         "EMPTY_TOPIC"
+
 typedef struct
 {
     char        client_id[64];

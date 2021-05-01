@@ -8,6 +8,7 @@ FW_VERSION=$(cat /mnt/mmc/sonoff-hack/version)
 HOME_VERSION=$(cat /mnt/mtd/ipc/cfg/version)
 MODEL=$(cat /mnt/mtd/ipc/cfg/config_cst.cfg | grep model | cut -d'=' -f2 | cut -d'"' -f2)
 PTZ="yes"
+SERIAL_NUMBER=$(cat /mnt/mtd/ipc/cfg/colink.conf | grep devid | cut -d "=" -f2 | cut -d'"' -f2)
 DEVICE_ID=$(cat /mnt/mtd/ipc/cfg/colink.conf | grep devid | cut -d "=" -f2 | cut -d'"' -f2)
 LOCAL_TIME=$(date)
 UPTIME=$(cat /proc/uptime | cut -d ' ' -f1)
@@ -54,7 +55,9 @@ printf "\"%s\":\"%s\",\n" "fw_version"      "$FW_VERSION"
 printf "\"%s\":\"%s\",\n" "home_version"    "$HOME_VERSION"
 printf "\"%s\":\"%s\",\n" "model"           "$MODEL"
 printf "\"%s\":\"%s\",\n" "ptz"             "$PTZ"
+printf "\"%s\":\"%s\",\n" "serial_number"   "$SERIAL_NUMBER"
 printf "\"%s\":\"%s\",\n" "device_id"       "$DEVICE_ID"
+printf "\"%s\":\"%s\",\n" "mac_addr"        "$MAC_ADDR_W"
 printf "\"%s\":\"%s\",\n" "local_time"      "$LOCAL_TIME"
 printf "\"%s\":\"%s\",\n" "uptime"          "$UPTIME"
 printf "\"%s\":\"%s\",\n" "load_avg"        "$LOAD_AVG"

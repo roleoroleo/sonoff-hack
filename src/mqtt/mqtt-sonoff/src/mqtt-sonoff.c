@@ -87,6 +87,18 @@ void callback_motion_start()
         fclose(fImage);
         remove(bufferFile);
     }
+
+    printf("WAIT 10 S AND SEND MOTION STOP\n");
+    sleep(10);
+
+    // Send start message
+    msg.msg=mqtt_sonoff_conf.motion_stop_msg;
+    msg.len=strlen(msg.msg);
+    msg.topic=topic;
+
+    sprintf(topic, "%s/%s", mqtt_sonoff_conf.mqtt_prefix, mqtt_sonoff_conf.topic_motion);
+
+    mqtt_send_message(&msg, conf.retain_motion);
 }
 
 int main(int argc, char **argv)
@@ -243,6 +255,11 @@ static void handle_config(const char *key, const char *value)
         mqtt_sonoff_conf.motion_start_msg=malloc((char)strlen(value)+1);
         strcpy(mqtt_sonoff_conf.motion_start_msg, value);
     }
+    else if(strcmp(key, "MOTION_STOP_MSG")==0)
+    {
+        mqtt_sonoff_conf.motion_stop_msg=malloc((char)strlen(value)+1);
+        strcpy(mqtt_sonoff_conf.motion_stop_msg, value);
+    }
     else
     {
         printf("key: %s | value: %s\n", key, value);
@@ -260,6 +277,7 @@ static void init_mqtt_sonoff_config()
     mqtt_sonoff_conf.birth_msg=NULL;
     mqtt_sonoff_conf.will_msg=NULL;
     mqtt_sonoff_conf.motion_start_msg=NULL;
+    mqtt_sonoff_conf.motion_stop_msg=NULL;
 
     if(init_config(MQTT_SONOFF_CONF_FILE)!=0)
     {
@@ -325,5 +343,10 @@ static void init_mqtt_sonoff_config()
     {
         mqtt_sonoff_conf.motion_start_msg=malloc((char)strlen("motion_start")+1);
         strcpy(mqtt_sonoff_conf.motion_start_msg, "motion_start");
+    }
+    if(mqtt_sonoff_conf.motion_stop_msg == NULL)
+    {
+        mqtt_sonoff_conf.motion_stop_msg=malloc((char)strlen("motion_stop")+1);
+        strcpy(mqtt_sonoff_conf.motion_stop_msg, "motion_stop");
     }
 }

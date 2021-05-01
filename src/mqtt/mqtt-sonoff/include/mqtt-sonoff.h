@@ -27,6 +27,7 @@ typedef struct
     char *birth_msg;
     char *will_msg;
     char *motion_start_msg;
+    char *motion_stop_msg;
 } mqtt_sonoff_conf_t;
 
 #endif // MQTT_SONOFF_H

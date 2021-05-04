@@ -11,7 +11,9 @@ do
     if [ "$CONF" == "dir" ] ; then
         DIR="-a $VAL"
     elif [ "$CONF" == "time" ] ; then
-        TIME="-t $VAL"
+        # convert time to milliseconds
+        TIME=$(awk "BEGIN {print $VAL*1000}")
+        TIME="-t $TIME"
     fi
 done
 

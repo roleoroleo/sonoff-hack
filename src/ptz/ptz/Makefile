@@ -1,17 +1,26 @@
-OBJECTS = ptz.o config.o
+OBJECTS-B = ptz_b.o config.o
+OBJECTS-C = ptz_c.o config.o
 INCLUDE = -I./dummylib
-LIB = -L./dummylib -lptz
+LIB-B = -L./dummylib -lptz
+LIB-C = -L./dummylib -lhardware
 
-all: libptz ptz
+all: libptz ptz_b ptz_c
 
-ptz.o: ptz.c $(HEADERS)
+ptz_b.o: ptz_b.c $(HEADERS)
+	$(CC) $(INCLUDE) -c $< -fPIC -O2 -o $@
+
+ptz_c.o: ptz_c.c $(HEADERS)
 	$(CC) $(INCLUDE) -c $< -fPIC -O2 -o $@
 
 config.o: config.c $(HEADERS)
 	$(CC) $(INCLUDE) -c $< -fPIC -O2 -o $@
 
-ptz: $(OBJECTS)
-	$(CC) $(OBJECTS) $(LIB) -fPIC -O2 -o $@
+ptz_b: $(OBJECTS-B)
+	$(CC) $(OBJECTS-B) $(LIB-B) -fPIC -O2 -o $@
+	$(STRIP) $@
+
+ptz_c: $(OBJECTS-C)
+	$(CC) $(OBJECTS-C) $(LIB-C) -fPIC -O2 -o $@
 	$(STRIP) $@
 
 libptz:
@@ -20,8 +29,8 @@ libptz:
 .PHONY: clean
 
 clean:
-	rm -f ptz
-	rm -f $(OBJECTS)
+	rm -f ptz_b ptz_c
+	rm -f $(OBJECTS-B) $(OBJECTS-C)
 	make -C dummylib clean
 
 distclean: clean

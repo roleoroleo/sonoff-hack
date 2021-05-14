@@ -196,7 +196,7 @@ APP.ptz = (function ($) {
             success: function(data) {
                 for (let key in data) {
                     if (key == "model") {
-                        if (data[key] == "GK-200MP2B") {
+                        if ((data[key] == "GK-200MP2B") || (data[key] == "GK-200MP2C")) {
                             $('#ptz_description').show();
                             $('#ptz_available').hide();
                             $('#ptz_main').show();

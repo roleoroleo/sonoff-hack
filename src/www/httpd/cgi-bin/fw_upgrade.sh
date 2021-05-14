@@ -46,10 +46,11 @@ elif [ "$VAL" == "upgrade" ] ; then
     mkdir -p /mnt/mmc/.fw_upgrade.conf
     cd /mnt/mmc/.fw_upgrade
 
-    MODEL=$(cat /mnt/mtd/ipc/cfg/config_cst.cfg | grep model | cut -d'=' -f2 | cut -d'"' -f2)
+    #MODEL=$(cat /mnt/mtd/ipc/cfg/config_cst.cfg | grep model | cut -d'=' -f2 | cut -d'"' -f2)
+    MODEL="$(cat ${SONOFF_HACK_PREFIX}/model)"
     FW_VERSION=`cat /mnt/mmc/sonoff-hack/version`
-    if [ -f /mnt/mmc/GK-200MP2B_x.x.x.tgz ]; then
-        mv /mnt/mmc/GK-200MP2B_x.x.x.tgz /mnt/mmc/.fw_upgrade/GK-200MP2B_x.x.x.tgz
+    if [ -f /mnt/mmc/${MODEL}_x.x.x.tgz ]; then
+        mv /mnt/mmc/${MODEL}_x.x.x.tgz /mnt/mmc/.fw_upgrade/${MODEL}_x.x.x.tgz
         LATEST_FW="x.x.x"
     else
         LATEST_FW=`/mnt/mmc/sonoff-hack/usr/bin/wget -O -  https://api.github.com/repos/roleoroleo/sonoff-hack/releases/latest 2>&1 | grep '"tag_name":' | sed -r 's/.*"([^"]+)".*/\1/'`

@@ -27,11 +27,11 @@ init_config()
     fi
 
     case $(get_config ONVIF_PORT) in
-        ''|*[!0-9]*) ONVIF_PORT=80 ;;
+        ''|*[!0-9]*) ONVIF_PORT=1000 ;;
         *) ONVIF_PORT=$(get_config ONVIF_PORT) ;;
     esac
     case $(get_config HTTPD_PORT) in
-        ''|*[!0-9]*) HTTPD_PORT=8080 ;;
+        ''|*[!0-9]*) HTTPD_PORT=80 ;;
         *) HTTPD_PORT=$(get_config HTTPD_PORT) ;;
     esac
 

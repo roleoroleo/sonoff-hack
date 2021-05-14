@@ -2,7 +2,7 @@
 	<img height="200" src="https://user-images.githubusercontent.com/39277388/90162474-f5629b80-dd94-11ea-874b-74e6b15424b6.png">
 </p>
 
-# Custom firmware for Sonoff camera (model GK-200MP2B)
+# Custom firmware for Sonoff camera (model GK-200MP2B and GK-200MP2C)
 
 This firmware is based on the yi-hack-Allwinner project.
 https://github.com/roleoroleo/yi-hack-Allwinner
@@ -50,9 +50,9 @@ This firmware contains the following features.
     Beta testing devices/software:
     - Synology Surveillance Station
   - Snapshot service - allows to get a jpg (1920x1080) with a web request.
-    - http://IP-CAM:8080/cgi-bin/snapshot.sh
+    - http://IP-CAM/cgi-bin/snapshot.sh
   - MQTT - Motion detection through mqtt protocol.
-  - Web server - web configuration interface (port 8080).
+  - Web server - web configuration interface (port 80).
   - SSH server - dropbear.
   - FTP server.
   - Authentication for HTTP, RTSP and ONVIF server.
@@ -74,7 +74,7 @@ If you notice problems and you have a SD to waste, try to enable swap file.
 
 ## Supported cameras
 
-Currently this project supports only GK-200MP2B camera with firmware version V2524.1.245build20191030.
+Currently this project supports GK-200MP2B camera with firmware version V2524.1.245build20191030 and GK-200MP2C with firmware version V0525.1.72build202011031649
 
 USE AT YOUR OWN RISK.
 
@@ -93,7 +93,7 @@ USE AT YOUR OWN RISK.
 
 6. Wait a minute.
 
-7. Go in the browser and access the web interface of the camera as a website (http://IP-CAM:8080). Find the IP address on your router's portal (see connected devices).
+7. Go in the browser and access the web interface of the camera as a website (http://IP-CAM). Find the IP address on your router's portal (see connected devices).
 
 8. Don't remove the microSD card (yes this hack requires a dedicated microSD card).
 
@@ -101,12 +101,12 @@ USE AT YOUR OWN RISK.
 
 ## URLs, Ports and Default RTSP Password
 For both streams if you've set a custom username and password on the config screen don't forget to replace "hack" at the beginning of the URLs! First one is username, second is password. If you want to view the stream in, as example, VLC and haven't set a password you need to enter "hack" for both user and pass.
-* Configuration Website: `http://IP-CAM:8080`
+* Configuration Website: `http://IP-CAM`
 * High Res Stream: `rtsp://hack:hack@IP-CAM/av_stream/ch0`
 * Low Res Stream: `rtsp://hack:hack@IP-CAM/av_stream/ch1`
-* 1080p Snapshot URL: `http://IP-CAM:8080/cgi-bin/snapshot.sh`
-* PTZ Port: 80
-    * In Blue Iris you need to manually enable "PTZ Controls" and change it to "ONFIV (OXML)" in the camera settings. If PTZ doesn't work delete the camera and add it again, also try to set the port to "80" manually.
+* 1080p Snapshot URL: `http://IP-CAM/cgi-bin/snapshot.sh`
+* PTZ Port: 1000
+    * In Blue Iris you need to manually enable "PTZ Controls" and change it to "ONFIV (OXML)" in the camera settings. If PTZ doesn't work delete the camera and add it again, also try to set the port to "1000" manually.
 
 ## Build your own firmware
 If you want to build your own firmware, clone this git and compile it using a linux machine.

@@ -114,9 +114,14 @@ TMP_DIR=$(create_tmp_dir)
 echo "${TMP_DIR} created!"
 mkdir -p ${TMP_DIR}/sonoff-hack
 
-# Copy the build files to the tmp dir
+# copy the build files to the tmp dir
 echo -n ">>> Copying files from the build directory to ${TMP_DIR}... "
 cp -R $BUILD_DIR/sonoff-hack/* $TMP_DIR/sonoff-hack || exit 1
+echo "done!"
+
+# create symlinks if necessary
+echo -n ">>> Create symlinks... "
+(cd $TMP_DIR/sonoff-hack/bin/ && ln -s ptz_$CAMERA_NAME ptz > /dev/null 2>&1)
 echo "done!"
 
 # adding defaults

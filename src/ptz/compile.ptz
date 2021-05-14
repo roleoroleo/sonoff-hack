@@ -27,7 +27,8 @@ make || exit 1
 mkdir -p ../_install/bin || exit 1
 mkdir -p ../_install/etc || exit 1
 
-cp ./ptz ../_install/bin || exit 1
+cp ./ptz_b ../_install/bin/ptz_GK-200MP2B || exit 1
+cp ./ptz_c ../_install/bin/ptz_GK-200MP2C || exit 1
 cp ./conf/ptz_presets.conf ../_install/etc/ || exit 1
 
 ${STRIP} ../_install/bin/* || exit 1

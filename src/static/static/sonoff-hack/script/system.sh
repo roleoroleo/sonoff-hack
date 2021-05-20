@@ -85,6 +85,10 @@ if [[ x$CUR_PASSWORD_MD5 != x$PASSWORD_MD5 ]] ; then
     sed -i 's|^\(root:\)[^:]*:|root:'${PASSWORD_MD5}':|g' "/etc/shadow"
 fi
 
+case $(get_config RTSP_PORT) in
+    ''|*[!0-9]*) RTSP_PORT=554 ;;
+    *) RTSP_PORT=$(get_config RTSP_PORT) ;;
+esac
 case $(get_config ONVIF_PORT) in
     ''|*[!0-9]*) ONVIF_PORT=1000 ;;
     *) ONVIF_PORT=$(get_config ONVIF_PORT) ;;
@@ -171,12 +175,25 @@ if [[ $(get_config MQTT) == "yes" ]] ; then
     $SONOFF_HACK_PREFIX/bin/mqtt-sonoff &
 fi
 
+if [[ $RTSP_PORT != "554" ]] ; then
+    D_RTSP_PORT=:$RTSP_PORT
+fi
+
 if [[ $ONVIF_PORT != "80" ]] ; then
     D_ONVIF_PORT=:$ONVIF_PORT
 fi
 
 if [[ $HTTPD_PORT != "80" ]] ; then
     D_HTTPD_PORT=:$HTTPD_PORT
+fi
+
+if [[ "$RTSP_PORT" != "554" ]] ; then
+    killall rtspd
+    mkdir -p /mnt/mmc/var/av/xml
+    cp -r /mnt/mtd/ipc/app/av.xml /mnt/mmc/var/av/xml
+    sed -i "s/<VALUE>554<\/VALUE>/<VALUE>$RTSP_PORT<\/VALUE>/g" /mnt/mmc/var/av/xml/av.xml
+    mount -o bind,rw /mnt/mmc/var/av/xml/av.xml /mnt/mtd/ipc/app/av.xml
+    /mnt/mtd/ipc/app/rtspd >/dev/null &
 fi
 
 if [[ $(get_config ONVIF) == "yes" ]] ; then

@@ -26,6 +26,10 @@ init_config()
         RTSP_USERPWD="hack:hack@"
     fi
 
+    case $(get_config RTSP_PORT) in
+        ''|*[!0-9]*) RTSP_PORT=554 ;;
+        *) RTSP_PORT=$(get_config RTSP_PORT) ;;
+    esac
     case $(get_config ONVIF_PORT) in
         ''|*[!0-9]*) ONVIF_PORT=1000 ;;
         *) ONVIF_PORT=$(get_config ONVIF_PORT) ;;
@@ -34,6 +38,10 @@ init_config()
         ''|*[!0-9]*) HTTPD_PORT=80 ;;
         *) HTTPD_PORT=$(get_config HTTPD_PORT) ;;
     esac
+
+    if [[ $RTSP_PORT != "554" ]] ; then
+        D_RTSP_PORT=:$RTSP_PORT
+    fi
 
     if [[ $ONVIF_PORT != "80" ]] ; then
         D_ONVIF_PORT=:$ONVIF_PORT
@@ -48,6 +56,16 @@ init_config()
     else
         ONVIF_NETIF="eth0"
     fi
+}
+
+start_rtsp()
+{
+    /mnt/mtd/ipc/app/rtspd >/dev/null &
+}
+
+stop_rtsp()
+{
+    killall rtspd
 }
 
 start_onvif()
@@ -131,7 +149,9 @@ done
 init_config
 
 if [ "$ACTION" == "start" ] ; then
-    if [ "$NAME" == "onvif" ]; then
+    if [ "$NAME" == "rtsp" ]; then
+        start_rtsp
+    elif [ "$NAME" == "onvif" ]; then
         start_onvif $PARAM1
     elif [ "$NAME" == "wsdd" ]; then
         start_wsdd
@@ -141,7 +161,9 @@ if [ "$ACTION" == "start" ] ; then
         mqtt-sonoff >/dev/null &
     fi
 elif [ "$ACTION" == "stop" ] ; then
-    if [ "$NAME" == "onvif" ]; then
+    if [ "$NAME" == "rtsp" ]; then
+        stop_rtsp
+    elif [ "$NAME" == "onvif" ]; then
         stop_onvif
     elif [ "$NAME" == "wsdd" ]; then
         stop_wsdd
@@ -151,7 +173,9 @@ elif [ "$ACTION" == "stop" ] ; then
         killall mqtt-sonoff
     fi
 elif [ "$ACTION" == "status" ] ; then
-    if [ "$NAME" == "onvif" ]; then
+    if [ "$NAME" == "rtsp" ]; then
+        RES=$(ps_program rtspd)
+    elif [ "$NAME" == "onvif" ]; then
         RES=$(ps_program onvif_srvd)
     elif [ "$NAME" == "wsdd" ]; then
         RES=$(ps_program wsdd)

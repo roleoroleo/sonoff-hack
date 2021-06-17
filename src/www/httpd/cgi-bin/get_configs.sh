@@ -17,7 +17,9 @@ printf "Content-type: application/json\r\n\r\n"
 CONF_TYPE="$(get_conf_type)"
 CONF_FILE=""
 
-if [ "$CONF_TYPE" == "mqtt" ] ; then
+if [ "$CONF_TYPE" == "camera" ] ; then
+    /mnt/mmc/sonoff-hack/www/cgi-bin/get_camera_settings.sh
+elif [ "$CONF_TYPE" == "mqtt" ] ; then
     CONF_FILE="$SONOFF_HACK_PREFIX/etc/mqtt-sonoff.conf"
 else
     CONF_FILE="$SONOFF_HACK_PREFIX/etc/$CONF_TYPE.conf"

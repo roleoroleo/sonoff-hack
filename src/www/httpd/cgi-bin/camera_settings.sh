@@ -1,11 +1,12 @@
 #!/bin/sh
 
 SONOFF_HACK_PREFIX="/mnt/mmc/sonoff-hack"
-CONF_FILE="$SONOFF_HACK_PREFIX/etc/camera.conf"
-
 CONF_LAST="CONF_LAST"
 
-for I in 1 2 3 4 5 6 7
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/mnt/mmc/sonoff-hack/lib
+export PATH=$PATH:/mnt/mmc/sonoff-hack/bin:/mnt/mmc/sonoff-hack/sbin:/mnt/mmc/sonoff-hack/usr/bin:/mnt/mmc/sonoff-hack/usr/sbin
+
+for I in 1 2 3
 do
     CONF="$(echo $QUERY_STRING | cut -d'&' -f$I | cut -d'=' -f1)"
     VAL="$(echo $QUERY_STRING | cut -d'&' -f$I | cut -d'=' -f2)"
@@ -14,47 +15,44 @@ do
         continue
     fi
     CONF_LAST=$CONF
-    CONF_UPPER="$(echo $CONF | tr '[a-z]' '[A-Z]')"
 
-    sed -i "s/^\(${CONF_UPPER}\s*=\s*\).*$/\1${VAL}/" $CONF_FILE
-
-    if [ "$CONF" == "switch_on" ] ; then
+#    if [ "$CONF" == "switch_on" ] ; then
+#        if [ "$VAL" == "no" ] ; then
+#            ipc_cmd -t off
+#        else
+#            ipc_cmd -t on
+#        fi
+    if [ "$CONF" == "save_video_on_motion" ] ; then
         if [ "$VAL" == "no" ] ; then
-            ipc_cmd -t off
+            sqlite3 /mnt/mtd/db/ipcsys.db "update t_mdarea set c_left=0,c_top=0,c_right=1920,c_bottom=1080,c_sensitivity=0,c_enable=0,c_name=\"P2P_SET\" where c_index=0;"
         else
-            ipc_cmd -t on
-        fi
-    elif [ "$CONF" == "save_video_on_motion" ] ; then
-        if [ "$VAL" == "no" ] ; then
-            ipc_cmd -v always
-        else
-            ipc_cmd -v detect
+            sqlite3 /mnt/mtd/db/ipcsys.db "update t_mdarea set c_left=0,c_top=0,c_right=1920,c_bottom=1080,c_sensitivity=25,c_enable=1,c_name=\"P2P_SET\" where c_index=0;"
         fi
     elif [ "$CONF" == "sensitivity" ] ; then
-        ipc_cmd -s $VAL
-    elif [ "$CONF" == "baby_crying_detect" ] ; then
-        if [ "$VAL" == "no" ] ; then
-            ipc_cmd -b off
-        else
-            ipc_cmd -b on
-        fi
-    elif [ "$CONF" == "led" ] ; then
-        if [ "$VAL" == "no" ] ; then
-            ipc_cmd -l off
-        else
-            ipc_cmd -l on
-        fi
-    elif [ "$CONF" == "ir" ] ; then
-        if [ "$VAL" == "no" ] ; then
-            ipc_cmd -i off
-        else
-            ipc_cmd -i on
-        fi
+        sqlite3 /mnt/mtd/db/ipcsys.db "update t_mdarea set c_sensitivity=$VAL where c_index=0;"
+#    elif [ "$CONF" == "baby_crying_detect" ] ; then
+#        if [ "$VAL" == "no" ] ; then
+#            ipc_cmd -b off
+#        else
+#            ipc_cmd -b on
+#        fi
+#    elif [ "$CONF" == "led" ] ; then
+#        if [ "$VAL" == "no" ] ; then
+#            ipc_cmd -l off
+#        else
+#            ipc_cmd -l on
+#        fi
+#    elif [ "$CONF" == "ir" ] ; then
+#        if [ "$VAL" == "no" ] ; then
+#            ipc_cmd -i off
+#        else
+#            ipc_cmd -i on
+#        fi
     elif [ "$CONF" == "rotate" ] ; then
         if [ "$VAL" == "no" ] ; then
-            ipc_cmd -r off
+            sqlite3 /mnt/mtd/db/ipcsys.db "update t_sys_param set c_param_value=\"0\" where c_param_name=\"mirror\";"
         else
-            ipc_cmd -r on
+            sqlite3 /mnt/mtd/db/ipcsys.db "update t_sys_param set c_param_value=\"1\" where c_param_name=\"mirror\";"
         fi
     fi
     sleep 1

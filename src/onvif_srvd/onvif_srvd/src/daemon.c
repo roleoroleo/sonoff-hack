@@ -111,6 +111,13 @@ volatile struct daemon_info_t daemon_info =
     #endif
 
 
+    #ifdef  DAEMON_CONF_FILE_NAME
+        .conf_file = DAEMON_CONF_FILE_NAME,
+    #else
+        .conf_file = NULL,
+    #endif
+
+
     #ifdef  DAEMON_PID_FILE_NAME
         .pid_file = DAEMON_PID_FILE_NAME,
     #else

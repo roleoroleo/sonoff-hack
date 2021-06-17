@@ -78,7 +78,7 @@ if [[ x$(get_config USERNAME) != "x" ]] ; then
     USERNAME=$(get_config USERNAME)
     PASSWORD=$(get_config PASSWORD)
     RTSP_USERPWD=""
-    ONVIF_USERPWD="--user $USERNAME --password $PASSWORD"
+    ONVIF_USERPWD="user=$USERNAME\npassword=$PASSWORD"
     echo "/:$USERNAME:$PASSWORD" > /tmp/httpd.conf
 else
     RTSP_USERPWD="hack:hack@"
@@ -214,12 +214,50 @@ if [[ $(get_config ONVIF) == "yes" ]] ; then
         ONVIF_NETIF="eth0"
     fi
 
-    ONVIF_PROFILE_1="--name Profile_1 --width 640 --height 360 --url rtsp://$RTSP_USERPWD%s/av_stream/ch1 --snapurl http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh --type H264"
-    ONVIF_PROFILE_0="--name Profile_0 --width 1920 --height 1080 --url rtsp://$RTSP_USERPWD%s/av_stream/ch0 --snapurl http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh --type H264"
+    ONVIF_PROFILE_1="name=Profile_1\nwidth=640\nheight=360\nurl=rtsp://$RTSP_USERPWD%s/av_stream/ch1\nsnapurl=http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh\ntype=H264"
+    ONVIF_PROFILE_0="name=Profile_0\nwidth=1920\nheight=1080\nurl=rtsp://$RTSP_USERPWD%s/av_stream/ch0\nsnapurl=http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh\ntype=H264"
 
-    onvif_srvd --pid_file /var/run/onvif_srvd.pid --model "Sonoff Hack" --manufacturer "Sonoff" --firmware_ver "$SONOFF_HACK_VER" --hardware_id $MODEL --serial_num $DEVICE_ID --ifs $ONVIF_NETIF --port $ONVIF_PORT --scope onvif://www.onvif.org/Profile/S $ONVIF_PROFILE_0 $ONVIF_PROFILE_1 $ONVIF_USERPWD --ptz --move_left "/mnt/mmc/sonoff-hack/bin/ptz -a left" --move_right "/mnt/mmc/sonoff-hack/bin/ptz -a right" --move_up "/mnt/mmc/sonoff-hack/bin/ptz -a up" --move_down "/mnt/mmc/sonoff-hack/bin/ptz -a down" --move_stop "/mnt/mmc/sonoff-hack/bin/ptz -a stop" --move_preset "/mnt/mmc/sonoff-hack/bin/ptz -f /mnt/mmc/sonoff-hack/etc/ptz_presets.conf -a go_preset -n %t" --set_preset "/mnt/mmc/sonoff-hack/bin/ptz -f /mnt/mmc/sonoff-hack/etc/ptz_presets.conf -a set_preset -e %n -n %t"
+    ONVIF_SRVD_CONF="/tmp/onvif_srvd.conf"
+
+    echo "pid_file=/var/run/onvif_srvd.pid" > $ONVIF_SRVD_CONF
+    echo "model=Sonoff Hack" >> $ONVIF_SRVD_CONF
+    echo "manufacturer=Sonoff" >> $ONVIF_SRVD_CONF
+    echo "firmware_ver=$SONOFF_HACK_VER" >> $ONVIF_SRVD_CONF
+    echo "hardware_id=$MODEL" >> $ONVIF_SRVD_CONF
+    echo "serial_num=$DEVICE_ID" >> $ONVIF_SRVD_CONF
+    echo "ifs=$ONVIF_NETIF" >> $ONVIF_SRVD_CONF
+    echo "port=$ONVIF_PORT" >> $ONVIF_SRVD_CONF
+    echo "scope=onvif://www.onvif.org/Profile/S" >> $ONVIF_SRVD_CONF
+    echo "" >> $ONVIF_SRVD_CONF
+    if [ ! -z $ONVIF_PROFILE_0 ]; then
+        echo "#Profile 0" >> $ONVIF_SRVD_CONF
+        echo -e $ONVIF_PROFILE_0 >> $ONVIF_SRVD_CONF
+        echo "" >> $ONVIF_SRVD_CONF
+    fi
+    if [ ! -z $ONVIF_PROFILE_1 ]; then
+        echo "#Profile 1" >> $ONVIF_SRVD_CONF
+        echo -e $ONVIF_PROFILE_1 >> $ONVIF_SRVD_CONF
+        echo "" >> $ONVIF_SRVD_CONF
+    fi
+    if [ ! -z $ONVIF_USERPWD ]; then
+        echo -e $ONVIF_USERPWD >> $ONVIF_SRVD_CONF
+        echo "" >> $ONVIF_SRVD_CONF
+    fi
+
+    echo "#PTZ" >> $ONVIF_SRVD_CONF
+    echo "ptz=1" >> $ONVIF_SRVD_CONF
+    echo "move_left=/mnt/mmc/sonoff-hack/bin/ptz -a left" >> $ONVIF_SRVD_CONF
+    echo "move_right=/mnt/mmc/sonoff-hack/bin/ptz -a right" >> $ONVIF_SRVD_CONF
+    echo "move_up=/mnt/mmc/sonoff-hack/bin/ptz -a up" >> $ONVIF_SRVD_CONF
+    echo "move_down=/mnt/mmc/sonoff-hack/bin/ptz -a down" >> $ONVIF_SRVD_CONF
+    echo "move_stop=/mnt/mmc/sonoff-hack/bin/ptz -a stop" >> $ONVIF_SRVD_CONF
+    echo "move_preset=/mnt/mmc/sonoff-hack/bin/ptz -f /mnt/mmc/sonoff-hack/etc/ptz_presets.conf -a go_preset -n %t" >> $ONVIF_SRVD_CONF
+    echo "set_preset=/mnt/mmc/sonoff-hack/bin/ptz -f /mnt/mmc/sonoff-hack/etc/ptz_presets.conf -a set_preset -e %n -n %t" >> $ONVIF_SRVD_CONF
+
+    onvif_srvd --conf_file $ONVIF_SRVD_CONF
+
     if [[ $(get_config ONVIF_WSDD) == "yes" ]] ; then
-        wsdd --pid_file /var/run/wsdd.pid --if_name $ONVIF_NETIF --type tdn:NetworkVideoTransmitter --xaddr http://%s$D_ONVIF_PORT --scope "onvif://www.onvif.org/name/Unknown onvif://www.onvif.org/Profile/Streaming"
+        wsdd --pid_file /var/run/wsdd.pid --if_name $ONVIF_NETIF --type tdn:NetworkVideoTransmitter --xaddr "http://%s$D_ONVIF_PORT" --scope "onvif://www.onvif.org/name/Unknown onvif://www.onvif.org/Profile/Streaming"
     fi
 fi
 

@@ -74,9 +74,10 @@ struct daemon_info_t
     unsigned int no_fork        :1;
     unsigned int no_close_stdio :1;
 
-    const char *pid_file;
-    const char *log_file;
-    const char *cmd_pipe;
+    char *conf_file;
+    char *pid_file;
+    char *log_file;
+    char *cmd_pipe;
 };
 
 

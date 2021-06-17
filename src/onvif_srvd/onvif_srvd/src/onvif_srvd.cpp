@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <errno.h>
+#include <iostream>
+#include <fstream>
 #include <string.h>
 #include <signal.h>
 #include <getopt.h>
@@ -36,6 +38,7 @@ static const char *help_str =
         "       --no_chdir             Don't change the directory to '/'\n"
         "       --no_fork              Don't do fork\n"
         "       --no_close             Don't close standart IO files\n"
+        "       --conf_file    [value] Set configuration file name\n"
         "       --pid_file     [value] Set pid file name\n"
         "       --log_file     [value] Set log file name\n\n"
         "       --port         [value] Set socket port for Services   (default = 1000)\n"
@@ -82,6 +85,7 @@ namespace LongOpts
         no_chdir = 1,
         no_fork,
         no_close,
+        conf_file,
         pid_file,
         log_file,
 
@@ -131,6 +135,7 @@ static const struct option long_opts[] =
     { "no_chdir",     no_argument,       NULL, LongOpts::no_chdir      },
     { "no_fork",      no_argument,       NULL, LongOpts::no_fork       },
     { "no_close",     no_argument,       NULL, LongOpts::no_close      },
+    { "conf_file",    required_argument, NULL, LongOpts::conf_file     },
     { "pid_file",     required_argument, NULL, LongOpts::pid_file      },
     { "log_file",     required_argument, NULL, LongOpts::log_file      },
 
@@ -279,7 +284,7 @@ void processing_cmd(int argc, char *argv[])
                         break;
 
 
-                 //daemon options
+            //daemon options
             case LongOpts::no_chdir:
                         daemon_info.no_chdir = 1;
                         break;
@@ -290,6 +295,10 @@ void processing_cmd(int argc, char *argv[])
 
             case LongOpts::no_close:
                         daemon_info.no_close_stdio = 1;
+                        break;
+
+            case LongOpts::conf_file:
+                        daemon_info.conf_file = optarg;
                         break;
 
             case LongOpts::pid_file:
@@ -460,6 +469,146 @@ void processing_cmd(int argc, char *argv[])
 
 
 
+void processing_conf_file()
+{
+    StreamProfile  profile;
+
+    std::string line;
+    std::string param;
+    std::string value;
+    std::ifstream filein(daemon_info.conf_file);
+
+    while (std::getline(filein, line))
+    {
+        unsigned int first = 0;
+        unsigned int second;
+
+        if (line.size() == 0) {
+            continue;
+        }
+        if (line.at(0) == '#') {
+            continue;
+        }
+        second = line.find_first_of('=', first);
+        //first has index of start of token
+        //second has index of end of token + 1;
+        if(second == std::string::npos) {
+            second = line.size();
+        }
+        param = line.substr(first, second - first);
+        if (second == line.size()) {
+            daemon_error_exit("Wrong option: %s\n", line.c_str());
+        } else if (second == line.size() - 1) {
+            value = "";
+        } else {
+            value = line.substr(second + 1, line.size() - second);
+        }
+        if ((value != "") && (value.at(0) == '"') && (value.at(value.size() - 1) == '"')) {
+            value = value.substr(1, value.size() - 2);
+        }
+//        fprintf(stderr, "%s: %s\n", param.c_str(), value.c_str());
+
+        //daemon options
+        if (param == "no_chdir") {
+            if (value == "1") {
+                daemon_info.no_chdir = 1;
+            }
+        } else if (param == "no_fork") {
+            if (value == "1") {
+                daemon_info.no_fork = 1;
+            }
+        } else if (param == "no_close") {
+            if (value == "1") {
+                daemon_info.no_close_stdio = 1;
+            }
+        } else if (param == "pid_file") {
+            daemon_info.pid_file = (char *) malloc(value.size() + 1);
+            strcpy(daemon_info.pid_file, value.c_str());
+        } else if (param == "log_file") {
+            daemon_info.log_file = (char *) malloc(value.size() + 1);
+            strcpy(daemon_info.log_file, value.c_str());
+
+        //ONVIF Service options (context)
+        } else if (param == "port") {
+            service_ctx.port = atoi(value.c_str());
+        } else if (param == "user") {
+            service_ctx.user = value;
+        } else if (param == "password") {
+            service_ctx.password = value;
+        } else if (param == "manufacturer") {
+            service_ctx.manufacturer = value;
+        } else if (param == "model") {
+            service_ctx.model = value;
+        } else if (param == "firmware_ver") {
+            service_ctx.firmware_version = value;
+        } else if (param == "serial_num") {
+            service_ctx.serial_number = value;
+        } else if (param == "hardware_id") {
+            service_ctx.hardware_id = value;
+        } else if (param == "scope") {
+            service_ctx.scopes.push_back(value);
+        } else if (param == "ifs") {
+            service_ctx.eth_ifs.push_back(Eth_Dev_Param());
+            if( service_ctx.eth_ifs.back().open(value.c_str()) != 0 )
+                daemon_error_exit("Can't open ethernet interface: %s - %m\n", value.c_str());
+
+        //Media Profile for ONVIF Media Service
+        } else if (param == "name") {
+            if( !profile.set_name(value.c_str()) )
+                daemon_error_exit("Can't set name for Profile: %s\n", profile.get_cstr_err());
+        } else if (param == "width") {
+            if( !profile.set_width(value.c_str()) )
+                daemon_error_exit("Can't set width for Profile: %s\n", profile.get_cstr_err());
+        } else if (param == "height") {
+            if( !profile.set_height(value.c_str()) )
+                daemon_error_exit("Can't set height for Profile: %s\n", profile.get_cstr_err());
+        } else if (param == "url") {
+            if( !profile.set_url(value.c_str()) )
+                daemon_error_exit("Can't set URL for Profile: %s\n", profile.get_cstr_err());
+        } else if (param == "snapurl") {
+            if( !profile.set_snapurl(value.c_str()) )
+                daemon_error_exit("Can't set URL for Snapshot: %s\n", profile.get_cstr_err());
+        } else if (param == "type") {
+            if( !profile.set_type(value.c_str()) )
+                daemon_error_exit("Can't set type for Profile: %s\n", profile.get_cstr_err());
+
+            if( !service_ctx.add_profile(profile) )
+                daemon_error_exit("Can't add Profile: %s\n", service_ctx.get_cstr_err());
+
+            profile.clear(); //now we can add new profile (just uses one variable)
+
+        //PTZ Profile for ONVIF PTZ Service
+        } else if (param == "ptz") {
+            service_ctx.get_ptz_node()->enable = true;
+        } else if (param == "move_left") {
+            if( !service_ctx.get_ptz_node()->set_move_left(value.c_str()) )
+                daemon_error_exit("Can't set process for pan left movement: %s\n", service_ctx.get_ptz_node()->get_cstr_err());
+        } else if (param == "move_right") {
+            if( !service_ctx.get_ptz_node()->set_move_right(value.c_str()) )
+                daemon_error_exit("Can't set process for pan right movement: %s\n", service_ctx.get_ptz_node()->get_cstr_err());
+        } else if (param == "move_up") {
+            if( !service_ctx.get_ptz_node()->set_move_up(value.c_str()) )
+                daemon_error_exit("Can't set process for tilt up movement: %s\n", service_ctx.get_ptz_node()->get_cstr_err());
+        } else if (param == "move_down") {
+            if( !service_ctx.get_ptz_node()->set_move_down(value.c_str()) )
+                daemon_error_exit("Can't set process for tilt down movement: %s\n", service_ctx.get_ptz_node()->get_cstr_err());
+        } else if (param == "move_stop") {
+            if( !service_ctx.get_ptz_node()->set_move_stop(value.c_str()) )
+                daemon_error_exit("Can't set process for stop movement: %s\n", service_ctx.get_ptz_node()->get_cstr_err());
+        } else if (param == "move_preset") {
+            if( !service_ctx.get_ptz_node()->set_move_preset(value.c_str()) )
+                daemon_error_exit("Can't set process for goto preset movement: %s\n", service_ctx.get_ptz_node()->get_cstr_err());
+        } else if (param == "set_preset") {
+            if( !service_ctx.get_ptz_node()->set_set_preset(value.c_str()) )
+                daemon_error_exit("Can't set process for set preset movement: %s\n", service_ctx.get_ptz_node()->get_cstr_err());
+        } else {
+            daemon_error_exit("Unrecognized option: %s\n", line.c_str());
+        }
+    }
+}
+
+
+
 void check_service_ctx(void)
 {
     if(service_ctx.eth_ifs.empty())
@@ -515,6 +664,8 @@ void init(void *data)
 int main(int argc, char *argv[])
 {
     processing_cmd(argc, argv);
+    if (daemon_info.conf_file)
+        processing_conf_file();
     daemonize2(init, NULL);
 
     FOREACH_SERVICE(DECLARE_SERVICE, soap)

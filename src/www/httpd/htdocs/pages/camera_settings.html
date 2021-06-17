@@ -18,7 +18,7 @@
             <div class="twelve columns configs-switch">
                 <table class="u-full-width padded-table config-table">
                     <tbody>
-                    <tr class="row">
+<!--                    <tr class="row">
                         <td>Switch on/off the camera</td>
                         <td>
                             <label class="switch small">
@@ -30,7 +30,7 @@
                                 Switch on/off the video on the camera.
                             </span>
                         </td>
-                    </tr>
+                    </tr> -->
                     <tr class="row">
                         <td>Save video when a motion is detected</td>
                         <td>
@@ -40,15 +40,7 @@
                                 <span class="switch-text"></span>
                             </label>
                             <span class="switch-description">
-                                If enabled, video will be saved only when a motion is detected.
-                            </span>
-                            <br/>
-                            <span class="switch-description">
-                                If disabled, video will be always saved.
-                            </span>
-                            <br/>
-                            <span class="switch-description">
-                                (It takes effect only if recording is enabled)
+                                If enabled, video will be saved when a motion is detected.
                             </span>
                         </td>
                     </tr>
@@ -57,14 +49,14 @@
                         <td>
                             <div class="standard-select">
                                 <select data-key="SENSITIVITY" id="SENSITIVITY">
-                                    <option value="low">Low</option>
-                                    <option value="medium">Medium</option>
-                                    <option value="high">High</option>
+                                    <option value="25">Low</option>
+                                    <option value="50">Medium</option>
+                                    <option value="75">High</option>
                                 </select>
                             </div>
                         </td>
                     </tr>
-                    <tr class="row">
+<!--                    <tr class="row">
                         <td>Baby crying detect</td>
                         <td>
                             <label class="switch small">
@@ -102,7 +94,7 @@
                                 Enable IR led for night vision.
                             </span>
                         </td>
-                    </tr>
+                    </tr> -->
                     <tr class="row">
                         <td>Rotate</td>
                         <td>
@@ -122,8 +114,6 @@
         </div>
         <div class="align-right">
             <span class="strong">Any change will take effect immediately.</span>
-            <br/>
-            <span class="strong">Note that these settings are not synchronized with the settings made with the app.</span>
         </div>
         <br/>
         <div class="float-right">

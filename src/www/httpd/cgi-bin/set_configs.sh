@@ -4,7 +4,7 @@ SONOFF_HACK_PREFIX="/mnt/mmc/sonoff-hack"
 
 sedencode(){
 #  echo -e "$(sed 's/\\/\\\\\\/g;s/\&/\\\&/g;s/\//\\\//g;')"
-  echo "$(sed 's/\\/\\\\/g;s/\&/\\\&/g;s/\//\\\//g;')"
+  echo "$(sed 's/\\/\\\\/g;s/\"/\\\"/g;s/\&/\\\&/g;s/\//\\\//g;')"
 }
 
 removedoublequotes(){
@@ -35,11 +35,15 @@ PASSWORD="none"
 TIMEZONE="none"
 
 read -r POST_DATA
-
-KEYS=$(echo "$POST_DATA" | jq keys_unsorted[])
-for KEY in $KEYS; do
-    KEY=$(echo $KEY | removedoublequotes)
-    VALUE=$(echo "$POST_DATA" | jq .$KEY | removedoublequotes)
+# Change temporarily \n with \t (2 bytes)
+POST_DATA=$(echo "$POST_DATA" | sed 's/\\n/\\t/g')
+IFS=$(echo -en "\n\b")
+ROWS=$(echo "$POST_DATA" | jq -r '. | keys[] as $k | "\($k)=\(.[$k])"')
+for ROW in $ROWS; do
+    ROW=$(echo "$ROW" | removedoublequotes)
+    KEY=$(echo "$ROW" | cut -d'=' -f1)
+    # Change back tab with \n
+    VALUE=$(echo "$ROW" | cut -d'=' -f2 | sed 's/\t/\\n/g')
 
     if [ "$KEY" == "HOSTNAME" ] ; then
         if [ -z $VALUE ] ; then

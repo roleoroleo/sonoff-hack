@@ -30,16 +30,16 @@ printf "{\n"
 while IFS= read -r LINE ; do
     if [ ! -z "$LINE" ] ; then
         if [ "$LINE" == "${LINE#\#}" ] ; then # skip comments
-#            printf "\"%s\",\n" $(echo "$LINE" | sed -r 's/=/":"/g') # Format to json and replace = with ":"
+#            printf "\"%s\",\n" $(echo "$LINE" | sed -r 's/\\/\\\\/g;s/"/\\"/g;s/=/":"/g;') # Format to json and replace = with ":"
             echo -n "\""
-            echo -n "$LINE" | sed -r 's/=/":"/g;'
+            echo -n "$LINE" | sed -r 's/\\/\\\\/g;s/\"/\\"/g;s/=/":"/g;s/\\\\n/\\n/g;'
             echo "\","
         fi
     fi
 done < "$CONF_FILE"
 
 if [ "$CONF_TYPE" == "system" ] ; then
-    printf "\"%s\":\"%s\",\n"  "HOSTNAME" "$(cat $SONOFF_HACK_PREFIX/etc/hostname)"
+    printf "\"%s\":\"%s\",\n"  "HOSTNAME" "$(cat $SONOFF_HACK_PREFIX/etc/hostname | sed -r 's/\\/\\\\/g;s/"/\\"/g;')"
     TIMEZONE_N=$(sqlite3 /mnt/mtd/db/ipcsys.db "select c_param_value from t_sys_param where c_param_name='ZoneTimeName';")
     if [ ! -z $TIMEZONE_N ]; then
         let TIMEZONE_N=TIMEZONE_N-1

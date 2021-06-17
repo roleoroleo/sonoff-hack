@@ -1,6 +1,6 @@
 var APP = APP || {};
 
-APP.ptz = (function ($) {
+APP.ptz = (function($) {
 
     function init() {
         registerEventHandler();
@@ -9,25 +9,25 @@ APP.ptz = (function ($) {
     }
 
     function registerEventHandler() {
-        $(document).on("click", '#img-au', function (e) {
+        $(document).on("click", '#img-au', function(e) {
             move('#img-au', 'up');
         });
-        $(document).on("click", '#img-al', function (e) {
+        $(document).on("click", '#img-al', function(e) {
             move('#img-al', 'left');
         });
-        $(document).on("click", '#img-ar', function (e) {
+        $(document).on("click", '#img-ar', function(e) {
             move('#img-ar', 'right');
         });
-        $(document).on("click", '#img-ad', function (e) {
+        $(document).on("click", '#img-ad', function(e) {
             move('#img-ad', 'down');
         });
-        $(document).on("click", '#button-goto', function (e) {
+        $(document).on("click", '#button-goto', function(e) {
             gotoPreset('#button-goto', '#select-goto');
         });
-        $(document).on("click", '#button-save', function (e) {
+        $(document).on("click", '#button-save', function(e) {
             gotoPresetBoot('#button-save', '#PTZ_PRESET_BOOT');
         });
-        $(document).on("click", '#button-set', function (e) {
+        $(document).on("click", '#button-set', function(e) {
             setPreset('#button-set', '#select-set');
         });
     }
@@ -36,7 +36,7 @@ APP.ptz = (function ($) {
         $(button).attr("disabled", true);
         $.ajax({
             type: "GET",
-            url: 'cgi-bin/ptz.sh?dir='+dir,
+            url: 'cgi-bin/ptz.sh?dir=' + dir,
             dataType: "json",
             error: function(response) {
                 console.log('error', response);

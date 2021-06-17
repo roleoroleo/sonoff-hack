@@ -24,6 +24,7 @@ I have no time to support the project, so feel free to clone/fork this git and m
 - [Supported cameras](#supported-cameras)
 - [Getting started](#getting-started)
 - [URLs, Ports and Default RTSP Password](#urls-ports-and-default-rtsp-password)
+- [Home Assistant integration](#home-assistant-integration)
 - [Build your own firmware](#build-your-own-firmware)
 - [Unbricking](#unbricking)
 - [Acknowledgments](#acknowledgments)
@@ -107,6 +108,14 @@ For both streams if you've set a custom username and password on the config scre
 * 1080p Snapshot URL: `http://IP-CAM/cgi-bin/snapshot.sh`
 * PTZ Port: 1000
     * In Blue Iris you need to manually enable "PTZ Controls" and change it to "ONFIV (OXML)" in the camera settings. If PTZ doesn't work delete the camera and add it again, also try to set the port to "1000" manually.
+
+## Home Assistant integration
+Are you using Home Assistant?
+
+Do you want to integrate your cam?
+
+Try this custom integration:
+https://github.com/roleoroleo/yi-hack_ha_integration
 
 ## Build your own firmware
 If you want to build your own firmware, clone this git and compile it using a linux machine.

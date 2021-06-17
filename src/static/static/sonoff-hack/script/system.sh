@@ -57,6 +57,17 @@ if [[ $(get_config SWAP_FILE) == "yes" ]] ; then
     fi
 fi
 
+# Check libptz.so or libhardware.so
+if [ -f /mnt/mtd/ipc/app/lib/libptz.so ]; then
+    if [ ! -f /mnt/mmc/sonoff-hack/bin/ptz ]; then
+        cp /mnt/mmc/sonoff-hack/bin/ptz_p /mnt/mmc/sonoff-hack/bin/ptz
+    fi
+else
+    if [ ! -f /mnt/mmc/sonoff-hack/bin/ptz ]; then
+        cp /mnt/mmc/sonoff-hack/bin/ptz_h /mnt/mmc/sonoff-hack/bin/ptz
+    fi
+fi
+
 # Create hack user if doesn't exist
 HACK_USER=$(sqlite3 /mnt/mtd/db/ipcsys.db "select count(*) from t_user where C_UserID=10101;")
 if [[ $HACK_USER -eq 0 ]]; then

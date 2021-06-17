@@ -120,9 +120,9 @@ cp -R $BUILD_DIR/sonoff-hack/* $TMP_DIR/sonoff-hack || exit 1
 echo "done!"
 
 # rename binaries based on camera name
-echo -n ">>> Rename binaries... "
-(cd $TMP_DIR/sonoff-hack/bin/ && cp ptz_$CAMERA_NAME ptz > /dev/null 2>&1)
-echo "done!"
+#echo -n ">>> Rename binaries... "
+#(cd $TMP_DIR/sonoff-hack/bin/ && cp ptz_$CAMERA_NAME ptz > /dev/null 2>&1)
+#echo "done!"
 
 # adding defaults
 echo -n ">>> Adding defaults... "

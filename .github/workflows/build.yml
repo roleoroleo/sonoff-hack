@@ -20,15 +20,15 @@ jobs:
       
       - name: Build Submodules
         run: |    
-            ./scripts/compile_ci_pre.sh
+            bash -x ./scripts/compile_ci_pre.sh
 
       - name: Build stuff
         run: |    
-            ./scripts/compile_ci_post.sh
+            bash -x ./scripts/compile_ci_post.sh
 
       - name: Pack stuff
         run: |    
-            sudo ./scripts/pack_fw.all.sh
+            sudo bash -x ./scripts/pack_fw.all.sh
             ls -la
             pwd           
             

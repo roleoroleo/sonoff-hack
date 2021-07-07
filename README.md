@@ -2,6 +2,12 @@
 	<img height="200" src="https://user-images.githubusercontent.com/39277388/90162474-f5629b80-dd94-11ea-874b-74e6b15424b6.png">
 </p>
 
+<p align="center">
+	<a target="_blank" href="https://github.com/roleoroleo/sonoff-hack/releases">
+		<img src="https://img.shields.io/github/downloads/roleoroleo/sonoff-hack/total.svg" alt="Releases Downloads">
+	</a>
+</p>
+
 # Custom firmware for Sonoff camera (model GK-200MP2B and GK-200MP2C)
 
 This firmware is based on the yi-hack-Allwinner project.

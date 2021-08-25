@@ -198,6 +198,10 @@ if [[ $HTTPD_PORT != "80" ]] ; then
     D_HTTPD_PORT=:$HTTPD_PORT
 fi
 
+if [[ $(get_config SNAPSHOT) == "no" ]] ; then
+    touch /tmp/snapshot.disabled
+fi
+
 if [[ "$RTSP_PORT" != "554" ]] ; then
     killall rtspd
     mkdir -p /mnt/mmc/var/av/xml

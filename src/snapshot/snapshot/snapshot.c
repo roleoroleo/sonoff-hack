@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include <getopt.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -110,6 +111,13 @@ int main(int argc, char **argv)
     }
 
     if (debug) fprintf(stderr, "Starting program\n");
+
+    // Check if snapshot is disabled
+    if (access("/tmp/snapshot.disabled", F_OK ) == 0 ) {
+        fprintf(stderr, "Snapshot is disabled\n");
+        return 0;
+    }
+
 
     if (debug) fprintf(stderr, "File %s selected\n", filename);
 

@@ -18,6 +18,12 @@ get_config()
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/mnt/mmc/sonoff-hack/lib
 export PATH=$PATH:/mnt/mmc/sonoff-hack/bin:/mnt/mmc/sonoff-hack/sbin:/mnt/mmc/sonoff-hack/usr/bin:/mnt/mmc/sonoff-hack/usr/sbin
 
+# Backup original db
+if [ ! -d "/mnt/mmc/db_hack_backup" ]; then
+    mkdir -p /mnt/mmc/db_hack_backup
+    cp /mnt/mtd/db/* /mnt/mmc/db_hack_backup
+fi
+
 touch /tmp/httpd.conf
 
 if [ -f $SONOFF_HACK_UPGRADE_PATH/sonoff-hack/fw_upgrade_in_progress ]; then

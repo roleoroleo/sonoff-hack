@@ -75,9 +75,19 @@ else
 fi
 
 # Create hack user if doesn't exist
+# And remove existing users:
+#10001|1|admin|12345678|
+#10002|1|rtsp|12345678|
 HACK_USER=$(sqlite3 /mnt/mtd/db/ipcsys.db "select count(*) from t_user where C_UserID=10101;")
 if [[ $HACK_USER -eq 0 ]]; then
-    sqlite3 /mnt/mtd/db/ipcsys.db "insert into t_user (C_UserID, c_role_id, C_UserName, C_PassWord) values (10101, 1, 'hack', 'hack');"
+    sqlite3 /mnt/mtd/db/ipcsys.db <<EOF &
+.timeout 3000
+delete from t_user where C_UserId < 10100;
+EOF
+    sqlite3 /mnt/mtd/db/ipcsys.db <<EOF &
+.timeout 3000
+insert into t_user (C_UserID, c_role_id, C_UserName, C_PassWord) values (10101, 1, 'hack', 'hack');
+EOF
 fi
 
 if [[ x$(get_config USERNAME) != "x" ]] ; then

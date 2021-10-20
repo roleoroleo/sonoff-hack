@@ -54,7 +54,7 @@ APP.camera_settings = (function($) {
         $.ajax({
             type: "GET",
             url: 'cgi-bin/camera_settings.sh?' +
-                'save_video_on_motion=' + configs["SAVE_VIDEO_ON_MOTION"] +
+                'motion_detection=' + configs["MOTION_DETECTION"] +
                 '&sensitivity=' + configs["SENSITIVITY"] +
 //                '&baby_crying_detect=' + configs["BABY_CRYING_DETECT"] +
 //                '&led=' + configs["LED"] +

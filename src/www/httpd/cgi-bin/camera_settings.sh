@@ -22,7 +22,7 @@ do
 #        else
 #            ipc_cmd -t on
 #        fi
-    if [ "$CONF" == "save_video_on_motion" ] ; then
+    if [ "$CONF" == "motion_detection" ] ; then
         if [ "$VAL" == "no" ] ; then
             sqlite3 /mnt/mtd/db/ipcsys.db "update t_mdarea set c_left=0,c_top=0,c_right=1920,c_bottom=1080,c_sensitivity=0,c_enable=0,c_name=\"P2P_SET\" where c_index=0;"
         else

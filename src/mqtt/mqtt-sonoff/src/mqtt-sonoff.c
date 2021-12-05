@@ -45,8 +45,10 @@ void callback_motion_start()
 
     if (strcmp(EMPTY_TOPIC, mqtt_sonoff_conf.topic_motion_image) != 0) {
         // Send image
+        printf("Wait %.1f seconds and take a snapshot\n", mqtt_sonoff_conf.motion_image_delay);
         tmpnam(bufferFile);
         sprintf(cmd, "%s -f %s", MQTT_SONOFF_SNAPSHOT, bufferFile);
+        usleep((unsigned int) (mqtt_sonoff_conf.motion_image_delay * 1000.0 * 1000.0));
         system(cmd);
 
         fImage = fopen(bufferFile, "r");
@@ -236,6 +238,10 @@ static void handle_config(const char *key, const char *value)
         mqtt_sonoff_conf.topic_motion_image=malloc((char)strlen(value)+1);
         strcpy(mqtt_sonoff_conf.topic_motion_image, value);
     }
+    else if(strcmp(key, "MOTION_IMAGE_DELAY")==0)
+    {
+        mqtt_sonoff_conf.motion_image_delay=strtod(value, NULL);
+    }
     else if(strcmp(key, "BIRTH_MSG")==0)
     {
         conf.birth_msg=malloc((char)strlen(value)+1);
@@ -274,6 +280,7 @@ static void init_mqtt_sonoff_config()
     mqtt_sonoff_conf.topic_birth_will=NULL;
     mqtt_sonoff_conf.topic_motion=NULL;
     mqtt_sonoff_conf.topic_motion_image=NULL;
+    mqtt_sonoff_conf.motion_image_delay=0.5;
     mqtt_sonoff_conf.birth_msg=NULL;
     mqtt_sonoff_conf.will_msg=NULL;
     mqtt_sonoff_conf.motion_start_msg=NULL;

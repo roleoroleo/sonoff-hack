@@ -13,7 +13,7 @@
 #include "sql.h"
 #include "mqtt.h"
 
-#define MQTT_SONOFF_VERSION      "0.0.1"
+#define MQTT_SONOFF_VERSION      "0.1.0"
 #define MQTT_SONOFF_CONF_FILE    "/mnt/mmc/sonoff-hack/etc/mqtt-sonoff.conf"
 
 #define MQTT_SONOFF_SNAPSHOT     "/mnt/mmc/sonoff-hack/bin/snapshot"
@@ -24,6 +24,7 @@ typedef struct
     char *topic_birth_will;
     char *topic_motion;
     char *topic_motion_image;
+    double motion_image_delay;
     char *birth_msg;
     char *will_msg;
     char *motion_start_msg;

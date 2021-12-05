@@ -50,6 +50,7 @@ MQTT_PREFIX=sonoffcam
 TOPIC_BIRTH_WILL=status
 TOPIC_MOTION=motion_detection
 TOPIC_MOTION_IMAGE=motion_detection_image
+MOTION_IMAGE_DELAY=0.5
 BIRTH_MSG=online
 WILL_MSG=offline
 MOTION_START_MSG=motion_start

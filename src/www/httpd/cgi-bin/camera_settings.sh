@@ -50,8 +50,10 @@ do
 #        fi
     elif [ "$CONF" == "rotate" ] ; then
         if [ "$VAL" == "no" ] ; then
+            sqlite3 /mnt/mtd/db/ipcsys.db "update t_sys_param set c_param_value=\"0\" where c_param_name=\"flip\";"
             sqlite3 /mnt/mtd/db/ipcsys.db "update t_sys_param set c_param_value=\"0\" where c_param_name=\"mirror\";"
         else
+            sqlite3 /mnt/mtd/db/ipcsys.db "update t_sys_param set c_param_value=\"1\" where c_param_name=\"flip\";"
             sqlite3 /mnt/mtd/db/ipcsys.db "update t_sys_param set c_param_value=\"1\" where c_param_name=\"mirror\";"
         fi
     fi

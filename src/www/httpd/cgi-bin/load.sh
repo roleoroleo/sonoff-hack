@@ -1,6 +1,5 @@
 #!/bin/sh
 
-# Conf
 CONF_FILE="etc/camera.conf"
 SONOFF_HACK_PREFIX="/mnt/mmc/sonoff-hack"
 

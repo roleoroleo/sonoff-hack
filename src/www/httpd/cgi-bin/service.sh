@@ -72,7 +72,7 @@ start_onvif()
 {
     if [[ "$1" == "none" ]]; then
         ONVIF_PROFILE=$(get_config ONVIF_PROFILE)
-    else
+    elif [[ "$1" == "low" ]] || [[ "$1" == "high" ]] || [[ "$1" == "both" ]]; then
         ONVIF_PROFILE=$1
     fi
     if [[ $ONVIF_PROFILE == "high" ]]; then
@@ -188,6 +188,16 @@ ps_program()
         echo "stopped"
     fi
 }
+
+. $SONOFF_HACK_PREFIX/www/cgi-bin/validate.sh
+
+if ! $(validateQueryString $QUERY_STRING); then
+    printf "Content-type: application/json\r\n\r\n"
+    printf "{\n"
+    printf "\"%s\":\"%s\"\\n" "error" "true"
+    printf "}"
+    exit
+fi
 
 NAME="none"
 ACTION="none"

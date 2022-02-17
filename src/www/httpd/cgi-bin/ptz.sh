@@ -1,5 +1,17 @@
 #!/bin/sh
 
+SONOFF_HACK_PREFIX="/mnt/mmc/sonoff-hack"
+
+. $SONOFF_HACK_PREFIX/www/cgi-bin/validate.sh
+
+if ! $(validateQueryString $QUERY_STRING); then
+    printf "Content-type: application/json\r\n\r\n"
+    printf "{\n"
+    printf "\"%s\":\"%s\"\\n" "error" "true"
+    printf "}"
+    exit
+fi
+
 DIR="none"
 TIME=""
 
@@ -11,17 +23,39 @@ do
     if [ "$CONF" == "dir" ] ; then
         DIR="-a $VAL"
     elif [ "$CONF" == "time" ] ; then
-        # convert time to milliseconds
-        TIME=$(awk "BEGIN {print $VAL*1000}")
-        TIME="-t $TIME"
+        TIME="$VAL"
     fi
 done
+
+if ! $(validateString $DIR); then
+    printf "Content-type: application/json\r\n\r\n"
+    printf "{\n"
+    printf "\"%s\":\"%s\",\\n" "error" "true"
+    printf "\"%s\":\"%s\"\\n" "description" "wrong dir parameter"
+    printf "}"
+    exit
+fi
+
+if [ ! -z $TIME ]; then
+    if ! $(validateNumber $TIME); then
+        printf "Content-type: application/json\r\n\r\n"
+        printf "{\n"
+        printf "\"%s\":\"%s\",\\n" "error" "true"
+        printf "\"%s\":\"%s\"\\n" "description" "wrong time parameter"
+        printf "}"
+        exit
+    fi
+
+    # convert time to milliseconds
+    TIME=$(awk "BEGIN {print $TIME*1000}")
+    TIME="-t $TIME"
+fi
 
 if [ "$DIR" != "none" ] ; then
     ptz $DIR $TIME
 fi
 
 printf "Content-type: application/json\r\n\r\n"
-
 printf "{\n"
+printf "\"%s\":\"%s\"\\n" "error" "false"
 printf "}"

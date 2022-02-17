@@ -1,9 +1,7 @@
 #!/bin/sh
 
 CONF_FILE="etc/system.conf"
-
 SONOFF_HACK_PREFIX="/mnt/mmc/sonoff-hack"
-
 SONOFF_HACK_VER=$(cat /mnt/mmc/sonoff-hack/version)
 MODEL=$(cat /mnt/mtd/ipc/cfg/config_cst.cfg | grep model | cut -d'=' -f2 | cut -d'"' -f2)
 DEVICE_ID=$(cat /mnt/mtd/ipc/cfg/colink.conf | grep devid | cut -d'=' -f2 | cut -d'"' -f2)
@@ -51,6 +49,18 @@ ps_program()
     fi
 }
 
+SONOFF_HACK_PREFIX="/mnt/mmc/sonoff-hack"
+
+. $SONOFF_HACK_PREFIX/www/cgi-bin/validate.sh
+
+if ! $(validateQueryString $QUERY_STRING); then
+    printf "Content-type: application/json\r\n\r\n"
+    printf "{\n"
+    printf "\"%s\":\"%s\"\\n" "error" "true"
+    printf "}"
+    exit
+fi
+
 VALUE="none"
 PARAM1="none"
 PARAM2="none"
@@ -84,9 +94,9 @@ elif [ "$VALUE" == "status" ] ; then
 fi
 
 printf "Content-type: application/json\r\n\r\n"
-
 printf "{\n"
 if [ ! -z "$RES" ]; then
-    printf "\"status\": \"$RES\"\n"
+    printf "\"status\": \"$RES\",\n"
 fi
+printf "\"%s\":\"%s\"\\n" "error" "true"
 printf "}"

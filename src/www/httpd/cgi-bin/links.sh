@@ -1,7 +1,6 @@
 #!/bin/sh
 
 CONF_FILE="etc/system.conf"
-
 SONOFF_HACK_PREFIX="/mnt/mmc/sonoff-hack"
 
 get_config()

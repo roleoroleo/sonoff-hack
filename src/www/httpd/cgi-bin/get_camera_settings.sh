@@ -1,7 +1,7 @@
 #!/bin/sh
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/mnt/mmc/sonoff-hack/lib
 export PATH=$PATH:/mnt/mmc/sonoff-hack/bin:/mnt/mmc/sonoff-hack/sbin:/mnt/mmc/sonoff-hack/usr/bin:/mnt/mmc/sonoff-hack/usr/sbin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/mnt/mmc/sonoff-hack/lib
 
 MOTION_DETECTION=$(sqlite3 /mnt/mtd/db/ipcsys.db "select c_enable from t_mdarea where c_index=0;")
 if [ "$MOTION_DETECTION" == "0" ]; then

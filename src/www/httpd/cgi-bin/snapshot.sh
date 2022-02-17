@@ -1,14 +1,16 @@
 #!/bin/sh
 
-validateFile()
-{
-    case $1 in
-        *[\'!\"@\#\$%\&^*\(\),:\;]* )
-            echo "invalid";;
-        *)
-            echo $1;;
-    esac
-}
+SONOFF_HACK_PREFIX="/mnt/mmc/sonoff-hack"
+
+. $SONOFF_HACK_PREFIX/www/cgi-bin/validate.sh
+
+if ! $(validateQueryString $QUERY_STRING); then
+    printf "Content-type: application/json\r\n\r\n"
+    printf "{\n"
+    printf "\"%s\":\"%s\"\\n" "error" "true"
+    printf "}"
+    exit
+fi
 
 BASE64="no"
 OUTPUT_FILE="none"
@@ -19,16 +21,17 @@ do
     VAL="$(echo $QUERY_STRING | cut -d'&' -f$I | cut -d'=' -f2)"
 
     if [ "$CONF" == "base64" ] ; then
-        BASE64=$VAL
+        if [ "$VAL" == "yes" ] || [ "$VAL" == "no" ] ; then
+            BASE64=$VAL
+        fi
     elif [ "$CONF" == "file" ] ; then
         OUTPUT_FILE=$VAL
     fi
 done
 
 REDIRECT=""
-if [ "$OUTPUT_FILE" != "none" ] ; then
-    OUTPUT_FILE=$(validateFile "$OUTPUT_FILE")
-    if [ "$OUTPUT_FILE" != "invalid" ]; then
+if $(validateBaseName $OUTPUT_FILE); then
+    if [ "$OUTPUT_FILE" != "none" ]; then
         OUTPUT_DIR=$(cd "$(dirname "/mnt/mmc/sonoff-hack/www/alarm_record/$OUTPUT_FILE")"; pwd)
         OUTPUT_DIR=$(echo "$OUTPUT_DIR" | cut -c1-37)
         if [ "$OUTPUT_DIR" == "/mnt/mmc/sonoff-hack/www/alarm_record" ]; then

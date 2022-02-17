@@ -1,47 +1,51 @@
 #!/bin/sh
 
-validateFile()
-{
-    case ${1} in
-        ''|*[\\\/\ ]*) NAME="invalid" ;;
-        *) NAME=$NAME ;;
-    esac
-}
+SONOFF_HACK_PREFIX="/mnt/mmc/sonoff-hack"
+
+. $SONOFF_HACK_PREFIX/www/cgi-bin/validate.sh
+
+if ! $(validateQueryString $QUERY_STRING); then
+    printf "Content-type: application/json\r\n\r\n"
+    printf "{\n"
+    printf "\"%s\":\"%s\"\\n" "error" "true"
+    printf "}"
+    exit
+fi
 
 NAME="none"
 
-for I in 1
-do
-    CONF="$(echo $QUERY_STRING | cut -d'&' -f$I | cut -d'=' -f1)"
-    VAL="$(echo $QUERY_STRING | cut -d'&' -f$I | cut -d'=' -f2)"
+CONF="$(echo $QUERY_STRING | cut -d'&' -f1 | cut -d'=' -f1)"
+VAL="$(echo $QUERY_STRING | cut -d'&' -f1 | cut -d'=' -f2)"
 
-    if [ "$CONF" == "name" ] ; then
-        NAME="$VAL"
-    fi
-done
+if [ "$CONF" == "name" ] ; then
+    NAME="$VAL"
+fi
 
-validateFile "$NAME"
-
-if [ "$NAME" == "invalid" ] ; then
+if ! $(validateBaseName $NAME); then
     printf "Content-type: application/json\r\n\r\n"
     printf "{\n"
-    printf "\"error\"=\"Invalid name\"\n"
-    printf "}\n"
+    printf "\"%s\":\"%s\"\\n" "error" "true"
+    printf "}"
     exit
-elif [ "$NAME" == "none" ] ; then
-    NAME=$(mktemp -u -p /mnt/mmc/)
+fi
+
+if [ "$NAME" == "none" ] ; then
+    NAME=$(mktemp -u -p alarm_record/)
+    FULL_NAME="/mnt/mmc/sonoff-hack/www/"$NAME
 else
-    NAME="/mnt/mmc/$NAME"
+    NAME="alarm_record/$NAME"
+    FULL_NAME="/mnt/mmc/sonoff-hack/www/"$NAME
 fi
 
 if [ ${NAME##*\.} != "mp4" ]; then
     NAME=$NAME.mp4
+    FULL_NAME=$FULL_NAME.mp4
 fi
 
-record -f $NAME
+record -f $FULL_NAME
 
 printf "Content-type: application/json\r\n\r\n"
 printf "{\n"
-printf "\"name\"=\"$NAME\"\n"
-printf "\"link\"=\"$NAME\"\n"
+printf "\"name\":\"$FULL_NAME\",\n"
+printf "\"link\":\"$NAME\"\n"
 printf "}\n"

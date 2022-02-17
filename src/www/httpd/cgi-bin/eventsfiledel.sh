@@ -1,8 +1,8 @@
 #!/bin/sh
 
-validateFile()
+validateRecFile()
 {
-    if [ ${#1} != 33 ] ; then
+    if [ "${#1}" != "33" ] ; then
         DIR="none"
         ARC="none"
     fi
@@ -27,9 +27,17 @@ validateFile()
     esac
 }
 
-case $QUERY_STRING in
-    *[\'!\"@\#\$%^*\(\)_+,:\;]* ) exit;;
-esac
+SONOFF_HACK_PREFIX="/mnt/mmc/sonoff-hack"
+
+. $SONOFF_HACK_PREFIX/www/cgi-bin/validate.sh
+
+if ! $(validateQueryString $QUERY_STRING); then
+    printf "Content-type: application/json\r\n\r\n"
+    printf "{\n"
+    printf "\"%s\":\"%s\"\\n" "error" "true"
+    printf "}"
+    exit
+fi
 
 FILE="none"
 DIR="none"
@@ -42,13 +50,20 @@ if [ "$CONF" == "file" ] ; then
     FILE="$VAL"
 fi
 
-validateFile $FILE
+validateRecFile $FILE
 
-if [ "$DIR" != "none" ] && [ "$ARC" != "none" ] ; then
-    rm -f /mnt/mmc/alarm_record/$DIR/$ARC
+if [ "$DIR" == "none" ] || [ "$ARC" == "none" ] ; then
+    printf "Content-type: application/json\r\n\r\n"
+    printf "{\n"
+    printf "\"%s\":\"%s\"\\n" "error" "true"
+    printf "}"
+    exit
 fi
+
+rm -f /mnt/mmc/alarm_record/$DIR/$ARC
 
 printf "Content-type: application/json\r\n\r\n"
 
 printf "{\n"
+printf "\"%s\":\"%s\"\\n" "error" "false"
 printf "}"

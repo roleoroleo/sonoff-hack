@@ -14,4 +14,5 @@ tar zxvf defaults.tar.gz > /dev/null 2>&1
 
 printf "Content-type: application/json\r\n\r\n"
 printf "{\n"
+printf "\"%s\":\"%s\"\\n" "error" "false"
 printf "}\n"

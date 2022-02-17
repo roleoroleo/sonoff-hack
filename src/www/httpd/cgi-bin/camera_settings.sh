@@ -7,6 +7,7 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/mnt/mmc/sonoff-hack/lib
 export PATH=$PATH:/mnt/mmc/sonoff-hack/bin:/mnt/mmc/sonoff-hack/sbin:/mnt/mmc/sonoff-hack/usr/bin:/mnt/mmc/sonoff-hack/usr/sbin
 
 for I in 1 2 3
+for I in 1 2 3 4
 do
     CONF="$(echo $QUERY_STRING | cut -d'&' -f$I | cut -d'=' -f1)"
     VAL="$(echo $QUERY_STRING | cut -d'&' -f$I | cut -d'=' -f2)"
@@ -30,6 +31,12 @@ do
         fi
     elif [ "$CONF" == "sensitivity" ] ; then
         sqlite3 /mnt/mtd/db/ipcsys.db "update t_mdarea set c_sensitivity=$VAL where c_index=0;"
+    elif [ "$CONF" == "local_record" ] ; then
+        if [ "$VAL" == "no" ] ; then
+            sqlite3 /mnt/mtd/db/ipcsys.db "update t_record_plan set c_enabled=0 where c_recplan_no=1;"
+        else
+            sqlite3 /mnt/mtd/db/ipcsys.db "update t_record_plan set c_enabled=1 where c_recplan_no=1;"
+        fi
 #    elif [ "$CONF" == "baby_crying_detect" ] ; then
 #        if [ "$VAL" == "no" ] ; then
 #            ipc_cmd -b off

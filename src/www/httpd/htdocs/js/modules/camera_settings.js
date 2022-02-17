@@ -56,6 +56,7 @@ APP.camera_settings = (function($) {
             url: 'cgi-bin/camera_settings.sh?' +
                 'motion_detection=' + configs["MOTION_DETECTION"] +
                 '&sensitivity=' + configs["SENSITIVITY"] +
+                '&local_record=' + configs["LOCAL_RECORD"] +
 //                '&baby_crying_detect=' + configs["BABY_CRYING_DETECT"] +
 //                '&led=' + configs["LED"] +
 //                '&ir=' + configs["IR"] +

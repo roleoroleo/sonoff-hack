@@ -123,7 +123,9 @@ static void *sql_thread(void *args)
     {
         ret = sqlite3_step(stmt);
         if (ret == SQLITE_ROW) {
-            parse_message((char *) sqlite3_column_text(stmt, 0));
+            if (sqlite3_column_text(stmt, 0) != NULL) {
+                parse_message((char *) sqlite3_column_text(stmt, 0));
+            }
         }
         ret = sqlite3_reset(stmt);
         usleep(1000*1000);

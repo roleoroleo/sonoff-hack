@@ -6,3 +6,5 @@ cd $SCRIPT_DIR
 cd snapshot
 
 make clean
+rm -rf SDK
+rm -rf jpeg-9c

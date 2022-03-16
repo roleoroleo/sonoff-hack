@@ -38,12 +38,12 @@ CXXFLAGS         += -DDAEMON_NO_CLOSE_STDIO=$(DAEMON_NO_CLOSE_STDIO)
 CXXFLAGS         += -I$(COMMON_DIR)
 CXXFLAGS         += -I$(GENERATED_DIR)
 CXXFLAGS         += -I$(GSOAP_DIR) -I$(GSOAP_CUSTOM_DIR) -I$(GSOAP_PLUGIN_DIR) -I$(GSOAP_IMPORT_DIR)
-CXXFLAGS         += -std=c++11 -O2  -Wall  -pipe
+CXXFLAGS         += -std=c++11 -Os -ffunction-sections -fdata-sections -Wall -pipe
 CXXFLAGS         += -DWITH_NO_C_LOCALE
 
 CXX              ?= g++
 
-LDFLAGS      += -Llib -lpthread -lrt
+LDFLAGS          += -Wl,--gc-sections -Llib -lpthread -lrt
 
 
 
@@ -54,7 +54,7 @@ LDFLAGS      += -Llib -lpthread -lrt
 # make WSSE_ON=1 all
 ifdef WSSE_ON
 CXXFLAGS        += -DWITH_OPENSSL -I$(OPENSSL_DIR)/include
-LDFLAGS         += openssl/libssl.a openssl/libcrypto.a -ldl
+LDFLAGS         += -Wl,--gc-sections openssl/libssl.a openssl/libcrypto.a -ldl
 
 WSSE_SOURCES     = $(GSOAP_PLUGIN_DIR)/wsseapi.c \
                    $(GSOAP_PLUGIN_DIR)/mecevp.c  \
@@ -300,12 +300,13 @@ define build_openssl
     if [ ! -f openssl-1.0.2u/README ]; then \
         tar zxvf ./SDK/openssl.tar.gz; \
         ln -s openssl-1.0.2u openssl; \
+        cp Configure.openssl openssl/Configure; \
     fi
 
     # build
     if [ ! -f openssl/libcrypto.so.1.0.0 ] || [ ! -f openssl/libssl.so.1.0.0 ]; then \
         cd openssl; \
-        CC=arm-sonoff-linux-uclibcgnueabi-gcc ./Configure linux-generic32 && \
+        CC=arm-sonoff-linux-uclibcgnueabi-gcc ./Configure linux-sonoff && \
         CC=arm-sonoff-linux-uclibcgnueabi-gcc make; \
         cd ..;\
     fi

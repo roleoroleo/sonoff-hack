@@ -12,7 +12,7 @@ autoconf; autoheader || exit 1
 
 ./configure CC=arm-sonoff-linux-uclibcgnueabi-gcc \
     --prefix=$SCRIPT_DIR/_install \
-    USER_CFLAGS="-I/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include -L/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/arm-sonoff-linux-uclibcgnueabi/sysroot/lib" \
+    CFLAGS="-Os -I/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include -L/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/arm-sonoff-linux-uclibcgnueabi/sysroot/lib" \
     AR=arm-sonoff-linux-uclibcgnueabi-ar \
     RANLIB=arm-sonoff-linux-uclibcgnueabi-ranlib \
     --host=arm \

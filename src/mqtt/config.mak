@@ -17,8 +17,6 @@
 #
 
 CC=arm-sonoff-linux-uclibcgnueabi-gcc
-USER_CFLAGS=-I/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include -L/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/arm-sonoff-linux-uclibcgnueabi/sysroot/lib
-USER_LDFLAGS=
 AR=arm-sonoff-linux-uclibcgnueabi-ar
 RANLIB=arm-sonoff-linux-uclibcgnueabi-ranlib
 STRIP=arm-sonoff-linux-uclibcgnueabi-strip

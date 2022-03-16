@@ -74,20 +74,45 @@ else
     fi
 fi
 
-# Create hack user if doesn't exist
-# And remove existing users:
 #10001|1|admin|12345678|
 #10002|1|rtsp|12345678|
-HACK_USER=$(sqlite3 /mnt/mtd/db/ipcsys.db "select count(*) from t_user where C_UserID=10101;")
-if [[ $HACK_USER -eq 0 ]]; then
-    sqlite3 /mnt/mtd/db/ipcsys.db <<EOF &
-.timeout 3000
-delete from t_user where C_UserId < 10100;
-EOF
+# Add hack user if it doesn't exist
+HACK_DBUSER=$(sqlite3 /mnt/mtd/db/ipcsys.db "select count(*) from t_user where C_UserID=10101;")
+if [[ $HACK_DBUSER -eq 0 ]]; then
     sqlite3 /mnt/mtd/db/ipcsys.db <<EOF &
 .timeout 3000
 insert into t_user (C_UserID, c_role_id, C_UserName, C_PassWord) values (10101, 1, 'hack', 'hack');
 EOF
+fi
+
+if [[ $(get_config DISABLE_CLOUD) == "yes" ]] ; then
+    # Remove embedded users
+    sqlite3 /mnt/mtd/db/ipcsys.db <<EOF &
+.timeout 3000
+delete from t_user where C_UserId < 10100;
+EOF
+
+else
+    # Restore admin user if it doesn't exist
+    EMB_DBUSER=$(sqlite3 /mnt/mtd/db/ipcsys.db "select count(*) from t_user where C_UserName='admin';")
+    # Add hack user if it doesn't exist
+    if [[ $EMB_DBUSER -eq 0 ]]; then
+        sqlite3 /mnt/mtd/db/ipcsys.db <<EOF &
+.timeout 3000
+insert into t_user (C_UserID, c_role_id, C_UserName, C_PassWord) values (10001, 1, 'admin', '12345678');
+EOF
+    fi
+
+    # Restore rtsp user if it doesn't exist
+    EMB_DBUSER=$(sqlite3 /mnt/mtd/db/ipcsys.db "select count(*) from t_user where C_UserName='rtsp';")
+    # Add hack user if it doesn't exist
+    if [[ $EMB_DBUSER -eq 0 ]]; then
+        sqlite3 /mnt/mtd/db/ipcsys.db <<EOF &
+.timeout 3000
+insert into t_user (C_UserID, c_role_id, C_UserName, C_PassWord) values (10002, 1, 'rtsp', '12345678');
+EOF
+    fi
+
 fi
 
 if [[ x$(get_config USERNAME) != "x" ]] ; then

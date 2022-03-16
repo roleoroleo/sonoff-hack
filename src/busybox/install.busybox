@@ -6,7 +6,12 @@ cd $SCRIPT_DIR
 #rsync -a ./_install/* ../../build/sonoff-hack
 mkdir -p ../../build/sonoff-hack/bin
 mkdir -p ../../build/sonoff-hack/usr/bin
-cp -f ./_install/bin/busybox ../../build/sonoff-hack/bin/tar
-cp -f ./_install/bin/busybox ../../build/sonoff-hack/bin/gzip
-cp -f ./_install/bin/busybox ../../build/sonoff-hack/usr/bin/wget
-cp -f ./_install/bin/busybox ../../build/sonoff-hack/usr/bin/xargs
+cp -f ./_install/bin/busybox ../../build/sonoff-hack/bin/busybox
+echo "#!/mnt/mmc/sonoff-hack/bin/busybox" > ../../build/sonoff-hack/bin/tar
+chmod 0755 ../../build/sonoff-hack/bin/tar
+echo "#!/mnt/mmc/sonoff-hack/bin/busybox" > ../../build/sonoff-hack/bin/gzip
+chmod 0755 ../../build/sonoff-hack/bin/gzip
+echo "#!/mnt/mmc/sonoff-hack/bin/busybox" > ../../build/sonoff-hack/usr/bin/wget
+chmod 0755 ../../build/sonoff-hack/usr/bin/wget
+echo "#!/mnt/mmc/sonoff-hack/bin/busybox" > ../../build/sonoff-hack/usr/bin/xargs
+chmod 0755 ../../build/sonoff-hack/usr/bin/xargs

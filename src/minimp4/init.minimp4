@@ -1,0 +1,27 @@
+#!/bin/bash
+
+export CROSSPATH=/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin
+export PATH=${PATH}:${CROSSPATH}
+
+export TARGET=arm-sonoff-linux-uclibcgnueabi
+export CROSS=arm-sonoff-linux-uclibcgnueabi
+export BUILD=x86_64-pc-linux-gnu
+
+export CROSSPREFIX=${CROSS}-
+
+export STRIP=${CROSSPREFIX}strip
+export CXX=${CROSSPREFIX}g++
+export CC=${CROSSPREFIX}gcc
+export LD=${CROSSPREFIX}ld
+export AS=${CROSSPREFIX}as
+export AR=${CROSSPREFIX}ar
+
+SCRIPT_DIR=$(cd `dirname $0` && pwd)
+cd $SCRIPT_DIR
+
+rm -rf ./_install
+
+cd minimp4 || exit 1
+git reset --hard
+
+patch -p0 < ../minimp4.patch

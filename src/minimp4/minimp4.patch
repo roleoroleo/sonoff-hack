@@ -1,0 +1,17 @@
+--- minimp4.h.ori	2022-03-12 11:47:30.000000000 +0100
++++ minimp4.h	2022-03-12 16:51:28.164596511 +0100
+@@ -2944,8 +2944,12 @@
+         case BOX_hdlr:
+             if (tr) // When this box is within 'meta' box, the track may not be avaialable
+             {
+-                SKIP(4); // pre_defined
+-                tr->handler_type = READ(4);
++//                SKIP(4); // pre_defined
++                unsigned int m = READ(1);
++                if (m == 'm') {
++                    SKIP(3);
++                    tr->handler_type = READ(4);
++                }
+             }
+             // typically hdlr box does not contain any useful info.
+             // the rest of this box is skipped by default ...

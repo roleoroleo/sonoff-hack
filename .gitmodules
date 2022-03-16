@@ -13,3 +13,6 @@
 [submodule "src/busybox/busybox"]
 	path = src/busybox/busybox
 	url = https://github.com/mirror/busybox
+[submodule "src/minimp4/minimp4"]
+	path = src/minimp4/minimp4
+	url = https://github.com/roleoroleo/minimp4

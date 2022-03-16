@@ -17,6 +17,11 @@ validateRecDir()
     esac
 }
 
+fbasename()
+{
+    echo ${1:0:$((${#1} - 4))}
+}
+
 SONOFF_HACK_PREFIX="/mnt/mmc/sonoff-hack"
 
 . $SONOFF_HACK_PREFIX/www/cgi-bin/validate.sh
@@ -58,9 +63,16 @@ COUNT=`ls -r /mnt/mmc/sonoff-hack/www/alarm_record/$DIR | grep mp4 -c`
 IDX=1
 for f in `ls -r /mnt/mmc/sonoff-hack/www/alarm_record/$DIR | grep mp4`; do
     if [ ${#f} == 21 ]; then
+        base_name=$(fbasename "$f")
+        if [ -f /mnt/mmc/sonoff-hack/www/alarm_record/$DIR/$base_name.jpg ] && [ -s /mnt/mmc/sonoff-hack/www/alarm_record/$DIR/$base_name.jpg ]; then
+            thumbbasename="$base_name.jpg"
+        else
+            thumbbasename=""
+        fi
         printf "{\n"
         printf "\"%s\":\"%s\",\n" "time" "Time: ${f:11:2}:${f:13:2}"
-        printf "\"%s\":\"%s\"\n" "filename" "$f"
+        printf "\"%s\":\"%s\",\n" "filename" "$f"
+        printf "\"%s\":\"%s\"\n" "thumbfilename" "$thumbbasename"
         if [ "$IDX" == "$COUNT" ]; then
             printf "}\n"
         else

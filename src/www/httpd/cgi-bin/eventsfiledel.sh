@@ -27,6 +27,11 @@ validateRecFile()
     esac
 }
 
+fbasename()
+{
+    echo ${1:0:$((${#1} - 4))}
+}
+
 SONOFF_HACK_PREFIX="/mnt/mmc/sonoff-hack"
 
 . $SONOFF_HACK_PREFIX/www/cgi-bin/validate.sh
@@ -60,7 +65,9 @@ if [ "$DIR" == "none" ] || [ "$ARC" == "none" ] ; then
     exit
 fi
 
-rm -f /mnt/mmc/alarm_record/$DIR/$ARC
+BASE_NAME=$(fbasename "$ARC")
+rm -f /mnt/mmc/alarm_record/$DIR/$BASE_NAME.mp4
+rm -f /mnt/mmc/alarm_record/$DIR/$BASE_NAME.jpg
 
 printf "Content-type: application/json\r\n\r\n"
 

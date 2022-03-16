@@ -316,14 +316,14 @@ mkdir -p /var/spool/cron/crontabs/
 if [ ! -z "$CRONTAB" ]; then
     echo -e "$CRONTAB" > /var/spool/cron/crontabs/root
 fi
+echo "* * * * * /mnt/mmc/sonoff-hack/script/thumb.sh cron" >> /var/spool/cron/crontabs/root
 if [ "$FREE_SPACE" != "0" ]; then
-    echo "0 * * * * /mnt/mmc/sonoff-hack/script/clean_records.sh $FREE_SPACE" >> /var/spool/cron/crontabs/root
+    echo "0 * * * * sleep 20; /mnt/mmc/sonoff-hack/script/clean_records.sh $FREE_SPACE" >> /var/spool/cron/crontabs/root
+fi
+if [[ $(get_config FTP_UPLOAD) == "yes" ]] ; then
+    echo "* * * * * sleep 40; /mnt/mmc/sonoff-hack/script/ftppush.sh cron" >> /var/spool/cron/crontabs/root
 fi
 /usr/sbin/crond -c /var/spool/cron/crontabs/
-
-if [[ $(get_config FTP_UPLOAD) == "yes" ]] ; then
-    /mnt/mmc/sonoff-hack/script/ftppush.sh start &
-fi
 
 if [ -f "/mnt/mmc/startup.sh" ]; then
     /mnt/mmc/startup.sh

@@ -1,6 +1,6 @@
 # Ignore the install dir
 _install/
-ptz/ptz_b
-ptz/ptz_c
+ptz/ptz_h
+ptz/ptz_p
 ptz/dummylib/libptz.so
 ptz/dummylib/libhardware.so

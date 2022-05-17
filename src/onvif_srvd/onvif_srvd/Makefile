@@ -43,7 +43,6 @@ CXXFLAGS         += -DWITH_NO_C_LOCALE
 
 CXX              ?= g++
 
-LDFLAGS          += -Wl,--gc-sections -Llib -lpthread -lrt
 
 
 
@@ -54,7 +53,7 @@ LDFLAGS          += -Wl,--gc-sections -Llib -lpthread -lrt
 # make WSSE_ON=1 all
 ifdef WSSE_ON
 CXXFLAGS        += -DWITH_OPENSSL -I$(OPENSSL_DIR)/include
-LDFLAGS         += -Wl,--gc-sections openssl/libssl.a openssl/libcrypto.a -ldl
+LDFLAGS         += -Wl,--gc-sections openssl/libssl.a openssl/libcrypto.a -Llib -ldl -lpthread -lrt
 
 WSSE_SOURCES     = $(GSOAP_PLUGIN_DIR)/wsseapi.c \
                    $(GSOAP_PLUGIN_DIR)/mecevp.c  \
@@ -63,6 +62,7 @@ WSSE_SOURCES     = $(GSOAP_PLUGIN_DIR)/wsseapi.c \
 
 WSSE_IMPORT      = echo '\#import "wsse.h" ' >> $@
 else
+LDFLAGS          += -Wl,--gc-sections -Llib -ldl -lpthread -lrt
 GSOAP_CONFIGURE += --disable-ssl
 endif
 

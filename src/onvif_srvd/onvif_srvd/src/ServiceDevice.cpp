@@ -13,6 +13,11 @@
 #include "smacros.h"
 #include "stools.h"
 
+#include <chrono>
+#include <iostream>
+#include <thread>
+#include <unistd.h>
+#include <sys/reboot.h>
 
 
 
@@ -149,13 +154,23 @@ int DeviceBindingService::UpgradeSystemFirmware(_tds__UpgradeSystemFirmware *tds
 
 
 
-int DeviceBindingService::SystemReboot(_tds__SystemReboot *tds__SystemReboot, _tds__SystemRebootResponse &tds__SystemRebootResponse)
+void reboot_task()
+{
+    std::this_thread::sleep_for(std::chrono::seconds(3));
+    sync();
+    setuid(0);
+    reboot(RB_AUTOBOOT);
+}
+
+
+
+int DeviceBindingService::SystemReboot(_tds__SystemReboot *tds__SystemReboot, _t
 {
     UNUSED(tds__SystemReboot);
     DEBUG_MSG("Device: %s\n", __FUNCTION__);
 
-    system("reboot");
-
+    std::thread tr(reboot_task);
+    tr.detach();
     return SOAP_OK;
 }
 

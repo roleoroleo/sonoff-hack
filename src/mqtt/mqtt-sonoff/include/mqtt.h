@@ -7,8 +7,6 @@
 #include <errno.h>
 #include <mosquitto.h>
 
-#define MAX_RETRY   100
-
 #define EMPTY_TOPIC         "EMPTY_TOPIC"
 
 typedef struct

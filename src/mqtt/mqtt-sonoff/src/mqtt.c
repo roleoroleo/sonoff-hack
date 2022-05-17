@@ -3,7 +3,8 @@
 static struct mosquitto *mosq = NULL;
 static mqtt_conf_t *mqtt_conf;
 
-static int is_connected;
+enum conn_states {CONN_DISCONNECTED, CONN_CONNECTING, CONN_CONNECTED};
+static enum conn_states conn_state;
 static int mid_sent;
 
 static int init_mosquitto_instance();
@@ -59,7 +60,7 @@ int init_mqtt(void)
         return -2;
     }
 
-    is_connected=0;
+    conn_state=CONN_DISCONNECTED;
 
     return 0;
 }
@@ -111,7 +112,7 @@ void mqtt_check_connection()
 {
     char topic[128];
 
-    if (!is_connected) {
+    if (conn_state != CONN_CONNECTED) {
         sprintf(topic, "%s/%s", mqtt_conf->mqtt_prefix, mqtt_conf->topic_birth_will);
         mosquitto_will_set(mosq, topic, strlen(mqtt_conf->will_msg),
                     mqtt_conf->will_msg, mqtt_conf->qos, mqtt_conf->retain_birth_will == 1);
@@ -122,7 +123,6 @@ void mqtt_check_connection()
 int mqtt_connect()
 {
     int ret;
-    int retries=0;
     char topic[128];
 
     printf("Trying to connect... ");
@@ -138,45 +138,43 @@ int mqtt_connect()
         }
     }
 
-    retries=0;
+    conn_state=CONN_DISCONNECTED;
 
-    sprintf(topic, "%s/%s", mqtt_conf->mqtt_prefix, mqtt_conf->topic_birth_will);
-    mosquitto_will_set(mosq, topic, strlen(mqtt_conf->will_msg),
-                mqtt_conf->will_msg, mqtt_conf->qos, mqtt_conf->retain_birth_will == 1);
 
-    do
-    {
-        ret=mosquitto_connect(mosq, mqtt_conf->host, mqtt_conf->port,
-                                   mqtt_conf->keepalive);
+    while (conn_state!=CONN_CONNECTED) {
+        sprintf(topic, "%s/%s", mqtt_conf->mqtt_prefix, mqtt_conf->topic_birth_will);
+        mosquitto_will_set(mosq, topic, strlen(mqtt_conf->will_msg),
+                    mqtt_conf->will_msg, mqtt_conf->qos, mqtt_conf->retain_birth_will == 1);
 
-        if(ret!=MOSQ_ERR_SUCCESS)
-            fprintf(stderr, "Unable to connect (%s).\n", mosquitto_strerror(ret));
+        do
+        {
+            ret=mosquitto_connect(mosq, mqtt_conf->host, mqtt_conf->port,
+                                       mqtt_conf->keepalive);
 
-        retries++;
-        usleep(500*1000);
+            if(ret!=MOSQ_ERR_SUCCESS)
+                fprintf(stderr, "Unable to connect (%s).\n", mosquitto_strerror(ret));
 
-    } while(ret!=MOSQ_ERR_SUCCESS && retries<=(MAX_RETRY*10));
+            usleep(500*1000);
 
-    retries=0;
+        } while(ret!=MOSQ_ERR_SUCCESS);
 
-    do
-    {
-        ret=mosquitto_loop(mosq, -1, 1);
-        printf(".");
-        retries++;
-        if(!is_connected)
-            usleep(100*1000);
-    } while(!is_connected && retries<=(MAX_RETRY*10));
+        /* I'm not sure mosquitto_connect has already called the callback
+           so I only change the state if it's not already connected
+        */
+        if (conn_state==CONN_DISCONNECTED)
+            conn_state=CONN_CONNECTING;
 
-    printf(" ");
+        do
+        {
+            ret=mosquitto_loop(mosq, -1, 1);
+            printf(".");
+            if(conn_state!=CONN_CONNECTED)
+                usleep(100*1000);
+        } while(conn_state==CONN_CONNECTING);
 
-    if(!is_connected)
-    {
-        printf("timeout!\n");
-        return -2;
     }
 
-    printf("connected!\n");
+    printf("\nconnected!\n");
 
     return 0;
 }
@@ -185,12 +183,13 @@ int mqtt_send_message(mqtt_msg_t *msg, int retain)
 {
     int ret;
 
-    if(!is_connected)
+    if(conn_state!=CONN_CONNECTED)
         return -1;
 
     if ((strlen(msg->topic) >= strlen(EMPTY_TOPIC)) &&
                 (strcmp(EMPTY_TOPIC, &msg->topic[strlen(msg->topic) - strlen(EMPTY_TOPIC)]) == 0)) {
         fprintf(stderr, "No message sent: topic is empty\n");
+        return -1;
     } else {
         ret=mosquitto_publish(mosq, &mid_sent, msg->topic, msg->len, msg->msg,
                               mqtt_conf->qos, retain);
@@ -253,19 +252,19 @@ static void connect_callback(struct mosquitto *mosq, void *obj, int result)
 {
     if(result==MOSQ_ERR_SUCCESS)
     {
-        is_connected=true;
+        conn_state=CONN_CONNECTED;
         send_birth_msg();
     }
     else
     {
-        is_connected=false;
+        conn_state=CONN_DISCONNECTED;
         fprintf(stderr, "%s\n", mosquitto_connack_string(result));
     }
 }
 
 static void disconnect_callback(struct mosquitto *mosq, void *obj, int rc)
 {
-    is_connected=false;
+    conn_state=CONN_DISCONNECTED;
 }
 
 static void publish_callback(struct mosquitto *mosq, void *obj, int mid)

@@ -40,8 +40,15 @@ if [ -z $GATEWAY ]; then
 fi
 MAC_ADDR_E=$(ifconfig eth0 | awk '/HWaddr/{print substr($5,1)}')
 MAC_ADDR_W=$(ifconfig ra0 | awk '/HWaddr/{print substr($5,1)}')
-WLAN_ESSID=$(iwconfig ra0 | grep ESSID | cut -d\" -f2)
-if [ -z $WLAN_ESSID ]; then
+WLAN_ESSID_DB=$(/mnt/mmc/sonoff-hack/bin/sqlite3 /mnt/mtd/db/ipcsys.db "select c_param_value from t_sys_param where c_param_name='wf_ssid';")
+if [ ! -z "$WLAN_ESSID_DB" ]; then
+    WLAN_ESSID="$WLAN_ESSID_DB (not connected)"
+fi
+WLAN_ESSID_CONN=$(iwconfig ra0 | grep ESSID | cut -d\" -f2)
+if [ ! -z "$WLAN_ESSID_CONN" ]; then
+    WLAN_ESSID="$WLAN_ESSID_CONN (connected)"
+fi
+if [ -z "$WLAN_ESSID" ]; then
     WLAN_ESSID="N/A"
 fi
 WLAN_STRENGTH=$(cat /proc/net/wireless | awk 'END { print $3 }' | sed 's/\.$//')

@@ -164,7 +164,7 @@ void reboot_task()
 
 
 
-int DeviceBindingService::SystemReboot(_tds__SystemReboot *tds__SystemReboot, _t
+int DeviceBindingService::SystemReboot(_tds__SystemReboot *tds__SystemReboot, _tds__SystemRebootResponse &tds__SystemRebootResponse)
 {
     UNUSED(tds__SystemReboot);
     DEBUG_MSG("Device: %s\n", __FUNCTION__);

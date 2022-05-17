@@ -39,7 +39,7 @@ CXXFLAGS         += -I$(COMMON_DIR)
 CXXFLAGS         += -I$(GENERATED_DIR)
 CXXFLAGS         += -I$(GSOAP_DIR) -I$(GSOAP_CUSTOM_DIR) -I$(GSOAP_PLUGIN_DIR) -I$(GSOAP_IMPORT_DIR)
 CXXFLAGS         += -std=c++11 -Os -ffunction-sections -fdata-sections -Wall -pipe
-CXXFLAGS         += -DWITH_NO_C_LOCALE
+CXXFLAGS         += -DWITH_NO_C_LOCALE -D_GLIBCXX_USE_NANOSLEEP
 
 CXX              ?= g++
 

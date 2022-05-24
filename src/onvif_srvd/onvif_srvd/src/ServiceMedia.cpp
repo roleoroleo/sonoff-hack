@@ -46,6 +46,8 @@ int MediaBindingService::GetVideoSources(_trt__GetVideoSources *trt__GetVideoSou
     for( auto it = profiles.cbegin(); it != profiles.cend(); ++it )
     {
         trt__GetVideoSourcesResponse.VideoSources.push_back(it->second.get_video_src(this->soap));
+        // Get the video source from the 1st profile
+        break;
     }
 
 

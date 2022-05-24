@@ -425,14 +425,44 @@ int MediaBindingService::GetAudioDecoderConfiguration(_trt__GetAudioDecoderConfi
 
 int MediaBindingService::GetCompatibleVideoEncoderConfigurations(_trt__GetCompatibleVideoEncoderConfigurations *trt__GetCompatibleVideoEncoderConfigurations, _trt__GetCompatibleVideoEncoderConfigurationsResponse &trt__GetCompatibleVideoEncoderConfigurationsResponse)
 {
-    SOAP_EMPTY_HANDLER(trt__GetCompatibleVideoEncoderConfigurations, "Media");
+    DEBUG_MSG("Media: %s\n", __FUNCTION__);
+
+    ServiceContext* ctx = (ServiceContext*)this->soap->user;
+
+    auto profiles = ctx->get_profiles();
+
+    for( auto it = profiles.cbegin(); it != profiles.cend(); ++it )
+    {
+        if (trt__GetCompatibleVideoEncoderConfigurations->ProfileToken == it->second.get_profile(this->soap)->token) {
+            tt__VideoEncoderConfiguration *vec = it->second.get_video_enc_cfg(this->soap);
+            trt__GetCompatibleVideoEncoderConfigurationsResponse.Configurations.push_back(vec);
+            break;
+        }
+    }
+
+    return SOAP_OK;
 }
 
 
 
 int MediaBindingService::GetCompatibleVideoSourceConfigurations(_trt__GetCompatibleVideoSourceConfigurations *trt__GetCompatibleVideoSourceConfigurations, _trt__GetCompatibleVideoSourceConfigurationsResponse &trt__GetCompatibleVideoSourceConfigurationsResponse)
 {
-    SOAP_EMPTY_HANDLER(trt__GetCompatibleVideoSourceConfigurations, "Media");
+    DEBUG_MSG("Media: %s\n", __FUNCTION__);
+
+    ServiceContext* ctx = (ServiceContext*)this->soap->user;
+
+    auto profiles = ctx->get_profiles();
+
+    for( auto it = profiles.cbegin(); it != profiles.cend(); ++it )
+    {
+        if (trt__GetCompatibleVideoSourceConfigurations->ProfileToken == it->second.get_profile(this->soap)->token) {
+            tt__VideoSourceConfiguration *vsc = it->second.get_video_src_cnf(this->soap);
+            trt__GetCompatibleVideoSourceConfigurationsResponse.Configurations.push_back(vsc);
+            break;
+        }
+    }
+
+    return SOAP_OK;
 }
 
 

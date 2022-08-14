@@ -195,8 +195,8 @@ APP.ptz = (function($) {
             dataType: "json",
             success: function(data) {
                 for (let key in data) {
-                    if (key == "model") {
-                        if ((data[key] == "GK-200MP2B") || (data[key] == "GK-200MP2C")) {
+                    if (key == "ptz") {
+                        if (data[key] == "yes") {
                             $('#ptz_description').show();
                             $('#ptz_available').hide();
                             $('#ptz_main').show();

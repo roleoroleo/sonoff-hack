@@ -6,7 +6,9 @@ SONOFF_HACK_PREFIX="/mnt/mmc/sonoff-hack"
 SONOFF_HACK_UPGRADE_PATH="/mnt/mmc/.fw_upgrade"
 
 SONOFF_HACK_VER=$(cat /mnt/mmc/sonoff-hack/version)
-MODEL=$(cat /mnt/mtd/ipc/cfg/config_cst.cfg | grep model | cut -d'=' -f2 | cut -d'"' -f2)
+MODEL_CFG_FILE=/mnt/mtd/ipc/cfg/config_cst.cfg
+[ -f /mnt/mtd/db/conf/config_cst.ini ] && MODEL_CFG_FILE=/mnt/mtd/db/conf/config_cst.ini
+MODEL=$(cat $MODEL_CFG_FILE | grep model | cut -d'=' -f2 | cut -d'"' -f2)
 DEVICE_ID=$(cat /mnt/mtd/ipc/cfg/colink.conf | grep devid | cut -d'=' -f2 | cut -d'"' -f2)
 
 get_config()

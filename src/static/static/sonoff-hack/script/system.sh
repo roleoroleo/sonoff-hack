@@ -186,6 +186,7 @@ else
     umount /mnt/mtd/ipc/app/colink
     rm /tmp/colink
 fi
+[ $(ps | grep '/mnt/mtd/ipc/app/rtspd' | grep -v grep | grep -c ^) -eq 0 ] && /mnt/mtd/ipc/app/rtspd &
 
 if [[ $(get_config HTTPD) == "yes" ]] ; then
     mkdir -p /mnt/mmc/alarm_record

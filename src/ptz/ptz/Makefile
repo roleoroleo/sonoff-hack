@@ -1,7 +1,7 @@
 OBJECTS = ptz.o config.o
-INCLUDE = -I./dummylib
-LIB-P = -L./dummylib -lptz
-LIB-H = -L./dummylib -lhardware
+INCLUDE = -I./minilib
+LIB-P = -L./minilib -lptz
+LIB-H = -L./minilib -lhardware
 
 all: libptz ptz_p ptz_h
 
@@ -20,13 +20,13 @@ ptz_h: $(OBJECTS)
 	$(STRIP) $@
 
 libptz:
-	make -C dummylib
+	make -C minilib
 
 .PHONY: clean
 
 clean:
 	rm -f ptz_p ptz_h
 	rm -f $(OBJECTS)
-	make -C dummylib clean
+	make -C minilib clean
 
 distclean: clean

@@ -17,7 +17,8 @@ echo "#!/mnt/mmc/sonoff-hack/bin/dropbearmulti" > ../../build/sonoff-hack/bin/dr
 chmod 0755 ../../build/sonoff-hack/bin/dropbearconvert
 echo "#!/mnt/mmc/sonoff-hack/bin/dropbearmulti" > ../../build/sonoff-hack/bin/dropbearkey
 chmod 0755 ../../build/sonoff-hack/bin/dropbearkey
-echo "#!/mnt/mmc/sonoff-hack/bin/dropbearmulti" > ../../build/sonoff-hack/bin/scp
+echo "#!/bin/sh" > ../../build/sonoff-hack/bin/scp
+echo 'LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/mnt/mtd/ipc/app/lib:/mnt/mmc/sonoff-hack/lib /mnt/mmc/sonoff-hack/bin/dropbearmulti scp $@' >> ../../build/sonoff-hack/bin/scp
 chmod 0755 ../../build/sonoff-hack/bin/scp
 echo "#!/mnt/mmc/sonoff-hack/bin/dropbearmulti" > ../../build/sonoff-hack/bin/ssh
 chmod 0755 ../../build/sonoff-hack/bin/ssh

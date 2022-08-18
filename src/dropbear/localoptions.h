@@ -8,6 +8,7 @@
 
 #define DROPBEAR_PATH_SSH_PROGRAM "/mnt/mmc/sonoff-hack/bin/dbclient"
 
-#define DEFAULT_PATH "/usr/bin:/usr/sbin:/bin:/sbin:/gm/bin:/gm/tools:/mnt/mmc/sonoff-hack/bin:/mnt/mmc/sonoff-hack/sbin:/mnt/mmc/sonoff-hack/usr/bin:/mnt/mmc/sonoff-hack/usr/sbin"
+#define DEFAULT_PATH "/usr/bin:/bin:/gm/bin:/gm/tools:/mnt/mmc/sonoff-hack/bin:/mnt/mmc/sonoff-hack/usr/bin"
+#define DEFAULT_ROOT_PATH "/usr/bin:/usr/sbin:/bin:/sbin:/gm/bin:/gm/tools:/mnt/mmc/sonoff-hack/bin:/mnt/mmc/sonoff-hack/sbin:/mnt/mmc/sonoff-hack/usr/bin:/mnt/mmc/sonoff-hack/usr/sbin"
 
 #endif /* DROPBEAR_LOCALOPTIONS_H */

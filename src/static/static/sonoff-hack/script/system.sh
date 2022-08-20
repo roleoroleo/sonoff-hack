@@ -47,7 +47,7 @@ fi
 
 $SONOFF_HACK_PREFIX/script/check_conf.sh
 
-mount -o bind $SONOFF_HACK_PREFIX/etc/hostname /etc/hostname
+cp -f $SONOFF_HACK_PREFIX/etc/hostname /etc/hostname
 hostname -F $SONOFF_HACK_PREFIX/etc/hostname
 export TZ=$(get_config TIMEZONE)
 

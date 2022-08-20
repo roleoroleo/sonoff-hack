@@ -1,0 +1,18 @@
+#!/bin/bash
+
+SCRIPT_DIR=$(cd `dirname $0` && pwd)
+cd $SCRIPT_DIR
+
+
+cd openssh-portable
+
+make clean
+make -j$(nproc) \
+    sftp-server \
+    || exit 1
+
+mkdir -p ../_install
+
+cp ./sftp-server ../_install/
+
+#make install || exit 1

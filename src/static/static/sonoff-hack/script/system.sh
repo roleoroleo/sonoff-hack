@@ -6,7 +6,9 @@ SONOFF_HACK_PREFIX="/mnt/mmc/sonoff-hack"
 SONOFF_HACK_UPGRADE_PATH="/mnt/mmc/.fw_upgrade"
 
 SONOFF_HACK_VER=$(cat /mnt/mmc/sonoff-hack/version)
-MODEL=$(cat /mnt/mtd/ipc/cfg/config_cst.cfg | grep model | cut -d'=' -f2 | cut -d'"' -f2)
+MODEL_CFG_FILE=/mnt/mtd/ipc/cfg/config_cst.cfg
+[ -f /mnt/mtd/db/conf/config_cst.ini ] && MODEL_CFG_FILE=/mnt/mtd/db/conf/config_cst.ini
+MODEL=$(cat $MODEL_CFG_FILE | grep model | cut -d'=' -f2 | cut -d'"' -f2)
 DEVICE_ID=$(cat /mnt/mtd/ipc/cfg/colink.conf | grep devid | cut -d'=' -f2 | cut -d'"' -f2)
 
 get_config()
@@ -46,7 +48,7 @@ fi
 $SONOFF_HACK_PREFIX/script/check_conf.sh
 
 cp -f $SONOFF_HACK_PREFIX/etc/hostname /etc/hostname
-hostname -F /etc/hostname
+hostname -F $SONOFF_HACK_PREFIX/etc/hostname
 export TZ=$(get_config TIMEZONE)
 
 if [[ $(get_config SWAP_FILE) == "yes" ]] ; then
@@ -125,17 +127,14 @@ else
     RTSP_USERPWD="hack:hack@"
 fi
 
-cp -f $SONOFF_HACK_PREFIX/etc/passwd /etc/passwd
-cp -f $SONOFF_HACK_PREFIX/etc/shadow /etc/shadow
 PASSWORD_MD5='$1$$qRPK7m23GJusamGpoGLby/'
 if [[ x$(get_config SSH_PASSWORD) != "x" ]] ; then
     SSH_PASSWORD=$(get_config SSH_PASSWORD)
     PASSWORD_MD5="$(echo "${SSH_PASSWORD}" | mkpasswd --method=MD5 --stdin)"
 fi
-CUR_PASSWORD_MD5=$(awk -F":" '$1 == "root" { print $2 } ' /etc/shadow)
-if [[ x$CUR_PASSWORD_MD5 != x$PASSWORD_MD5 ]] ; then
-    sed -i 's|^\(root:\)[^:]*:|root:'${PASSWORD_MD5}':|g' "/etc/shadow"
-fi
+sed -i 's|^\(root:\)[^:]*:|root:'${PASSWORD_MD5}':|g' "$SONOFF_HACK_PREFIX/etc/shadow"
+mount -o bind $SONOFF_HACK_PREFIX/etc/passwd /etc/passwd
+mount -o bind $SONOFF_HACK_PREFIX/etc/shadow /etc/shadow
 
 case $(get_config RTSP_PORT) in
     ''|*[!0-9]*) RTSP_PORT=554 ;;
@@ -159,6 +158,8 @@ if [[ $(get_config PTZ_PRESET_BOOT) != "default" ]] ; then
 fi
 
 if [[ $(get_config DISABLE_CLOUD) == "yes" ]] ; then
+    cp /etc/hosts /tmp
+    mount -o bind /tmp/hosts /etc/hosts
     # Add forbidden domains
     echo "127.0.0.1               eu-dispd.coolkit.cc" >> /etc/hosts
     echo "127.0.0.1               eu-api.coolkit.cn" >> /etc/hosts
@@ -185,6 +186,7 @@ else
     umount /mnt/mtd/ipc/app/colink
     rm /tmp/colink
 fi
+[ $(ps | grep '/mnt/mtd/ipc/app/rtspd' | grep -v grep | grep -c ^) -eq 0 ] && /mnt/mtd/ipc/app/rtspd &
 
 if [[ $(get_config HTTPD) == "yes" ]] ; then
     mkdir -p /mnt/mmc/alarm_record
@@ -211,11 +213,7 @@ if [[ $(get_config SSHD) == "yes" ]] ; then
         dropbearkey -t ecdsa -f /tmp/dropbear_ecdsa_host_key
         mv /tmp/dropbear_ecdsa_host_key $SONOFF_HACK_PREFIX/etc/dropbear/
     fi
-    # Restore keys
-    mkdir -p /etc/dropbear
-    cp -f $SONOFF_HACK_PREFIX/etc/dropbear/* /etc/dropbear/
-    chmod 0600 /etc/dropbear/*
-    dropbear -R
+    dropbear -E -r $SONOFF_HACK_PREFIX/etc/dropbear/dropbear_ecdsa_host_key
 fi
 
 if [[ $(get_config NTPD) == "yes" ]] ; then

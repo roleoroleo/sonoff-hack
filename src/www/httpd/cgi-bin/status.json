@@ -2,11 +2,14 @@
 
 printf "Content-type: application/json\r\n\r\n"
 
+MODEL_CFG_FILE=/mnt/mtd/ipc/cfg/config_cst.cfg
+[ -f /mnt/mtd/db/conf/config_cst.ini ] && MODEL_CFG_FILE=/mnt/mtd/db/conf/config_cst.ini
+
 NAME="sonoff-hack"
 HOSTNAME=$(hostname)
 FW_VERSION=$(cat /mnt/mmc/sonoff-hack/version)
 HOME_VERSION=$(cat /mnt/mtd/ipc/cfg/version)
-MODEL=$(cat /mnt/mtd/ipc/cfg/config_cst.cfg | grep model | cut -d'=' -f2 | cut -d'"' -f2)
+MODEL=$(cat $MODEL_CFG_FILE | grep model | cut -d'=' -f2 | cut -d'"' -f2)
 PTZ="yes"
 SERIAL_NUMBER=$(cat /mnt/mtd/ipc/cfg/colink.conf | grep devid | cut -d "=" -f2 | cut -d'"' -f2)
 DEVICE_ID=$(cat /mnt/mtd/ipc/cfg/colink.conf | grep devid | cut -d "=" -f2 | cut -d'"' -f2)

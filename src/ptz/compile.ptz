@@ -25,10 +25,13 @@ make clean
 make || exit 1
 
 mkdir -p ../_install/bin || exit 1
+mkdir -p ../_install/lib || exit 1
 mkdir -p ../_install/etc || exit 1
 
 cp ./ptz_p ../_install/bin/ptz_p || exit 1
 cp ./ptz_h ../_install/bin/ptz_h || exit 1
+cp ./minilib/libptz.so ../_install/lib/libptz.so || exit 1
 cp ./conf/ptz_presets.conf ../_install/etc/ || exit 1
 
 ${STRIP} ../_install/bin/* || exit 1
+${STRIP} ../_install/lib/* || exit 1

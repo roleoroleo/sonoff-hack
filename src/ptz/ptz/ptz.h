@@ -32,6 +32,8 @@
 #define ACTION_SET_PRESET      114
 #define ACTION_GO_PRESET       214
 
+#define ACTION_GET_COORD       300
+
 #define DEFAULT_ACTION_TIME    500
 
 #define MAXLINE                100

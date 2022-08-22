@@ -36,7 +36,7 @@ void print_usage(char *progname)
 {
     fprintf(stderr, "\nUsage: %s OPTIONS\n\n", progname);
     fprintf(stderr, "\t-a ACTION, --action ACTION\n");
-    fprintf(stderr, "\t\tset PTZ action: stop, right, left, down, up, go, go_preset, set_preset\n");
+    fprintf(stderr, "\t\tset PTZ action: stop, right, left, down, up, go, go_preset, set_preset, get_coord\n");
     fprintf(stderr, "\t-t TIME, --time TIME\n");
     fprintf(stderr, "\t\tset action duration in milliseconds (right, left, down and up)\n");
     fprintf(stderr, "\t\tdefault 500\n");
@@ -223,6 +223,8 @@ int main(int argc, char **argv)
                 action = ACTION_SET_PRESET;
             } else if (strcasecmp("go_preset", optarg) == 0) {
                 action = ACTION_GO_PRESET;
+            } else if (strcasecmp("get_coord", optarg) == 0) {
+                action = ACTION_GET_COORD;
             }
             break;
 
@@ -362,6 +364,18 @@ int main(int argc, char **argv)
         fprintf(stderr, "clear flag must be used with a valid preset number.\n");
         print_usage(argv[0]);
         return -1;
+    }
+
+    if (action == ACTION_GET_COORD) {
+        memset(preset_buffer, '\0', sizeof(preset_buffer));
+        if (hw_ptz_pos_read(0, preset_buffer, 0, 0) != 0) {
+            fprintf(stderr, "Error reading position\n");
+            return -2;
+        }
+        x = preset_buffer[3];
+        y = preset_buffer[4];
+        fprintf(stderr, "Current position: (%d, %d)\n", x, y);
+        return 0;
     }
 
     if (debug) fprintf(stderr, "Running action %d\n", action);

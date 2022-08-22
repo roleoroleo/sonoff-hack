@@ -43,7 +43,7 @@
 #define MIN_X                  0
 #define MAX_X                  3500
 #define MIN_Y                  0
-#define MAX_Y                  900
+#define MAX_Y                  1350
 
 struct preset {
     int x;

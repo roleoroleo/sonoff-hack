@@ -8,7 +8,7 @@
 	</a>
 </p>
 
-# Custom firmware for Sonoff camera (model GK-200MP2B and GK-200MP2C)
+# Custom firmware for Sonoff camera (model GK-200MP* see below)
 
 This firmware is based on the yi-hack-Allwinner project.
 https://github.com/roleoroleo/yi-hack-Allwinner
@@ -81,7 +81,10 @@ If you notice problems and you have a SD to waste, try to enable swap file.
 
 ## Supported cameras
 
-Currently this project supports GK-200MP2B camera with firmware version V2524.1.245build20191030 and GK-200MP2C with firmware version V0525.1.72build202011031649
+Currently this project supports:
+- GK-200MP2B with firmware version V2524.1.245build20191030
+- GK-200MP2C with firmware version V0525.1.72build202011031649
+- GK-200MP2-B with firmware version V5520.2053.0402build20220712 (thanks to @puuu)
 
 USE AT YOUR OWN RISK.
 

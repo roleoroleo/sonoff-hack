@@ -87,8 +87,9 @@ STATIC_DIR=$BASE_DIR/static
 BUILD_DIR=$BASE_DIR/build
 OUT_DIR=$BASE_DIR/out/$CAMERA_NAME
 VER=$(cat VERSION)
-CROSSLINK_SYSROOT=$(dirname $(dirname $(which arm-sonoff-linux-uclibcgnueabi-gcc)))/arm-sonoff-linux-uclibcgnueabi/sysroot
-if [ ! -d $CROSSLINK_SYSROOT ]; then
+if [ ! -z $(which arm-sonoff-linux-uclibcgnueabi-gcc) ]; then
+    CROSSLINK_SYSROOT=$(dirname $(dirname $(which arm-sonoff-linux-uclibcgnueabi-gcc)))/arm-sonoff-linux-uclibcgnueabi/sysroot
+else
     CROSSLINK_SYSROOT=/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/arm-sonoff-linux-uclibcgnueabi/sysroot
 fi
 
@@ -124,9 +125,11 @@ cp -R $BUILD_DIR/sonoff-hack/* $TMP_DIR/sonoff-hack || exit 1
 echo "done!"
 
 # copy files from crosslink sysroot to the temp dir
-echo -n ">>> Copying files from the crosslink sysroot directory to ${TMP_DIR}... "
-cp $CROSSLINK_SYSROOT/lib/libcrypt.so.0 $TMP_DIR/sonoff-hack/lib || exit 1
-echo "done!"
+if [ "$CAMERA_ID" = "GK-200MP2-B" ]; then
+    echo -n ">>> Copying files from the crosslink sysroot directory to ${TMP_DIR}... "
+    cp $CROSSLINK_SYSROOT/lib/libcrypt.so.0 $TMP_DIR/sonoff-hack/lib || exit 1
+    echo "done!"
+fi
 
 # rename binaries based on camera name
 #echo -n ">>> Rename binaries... "

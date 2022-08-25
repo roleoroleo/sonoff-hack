@@ -26,6 +26,7 @@ declare -A CAMERAS
 
 CAMERAS["GK-200MP2B"]="GK-200MP2B"
 CAMERAS["GK-200MP2C"]="GK-200MP2C"
+CAMERAS["GK-200MP2-B"]="GK-200MP2-B"
 
 ###############################################################################
 # Common functions

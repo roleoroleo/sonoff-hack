@@ -2,5 +2,5 @@
 _install/
 ptz/ptz_h
 ptz/ptz_p
-ptz/dummylib/libptz.so
-ptz/dummylib/libhardware.so
+ptz/minilib/libptz.so
+ptz/minilib/libhardware.so

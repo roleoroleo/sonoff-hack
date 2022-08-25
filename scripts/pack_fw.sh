@@ -131,6 +131,13 @@ if [ "$CAMERA_ID" = "GK-200MP2-B" ]; then
     echo "done!"
 fi
 
+# remove libptz.so if old versions
+if [ "$CAMERA_ID" != "GK-200MP2-B" ]; then
+    echo -n ">>> Removing libptz.so from ${TMP_DIR}... "
+    rm $TMP_DIR/sonoff-hack/lib/libptz.so || exit 1
+    echo "done!"
+fi
+
 # rename binaries based on camera name
 #echo -n ">>> Rename binaries... "
 #(cd $TMP_DIR/sonoff-hack/bin/ && cp ptz_$CAMERA_NAME ptz > /dev/null 2>&1)

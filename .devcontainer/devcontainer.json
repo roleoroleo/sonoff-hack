@@ -1,0 +1,9 @@
+{
+	"name": "sonoff-hack",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"args": { "VARIANT": "debian-10" }
+	},
+
+	"remoteUser": "vscode"
+}

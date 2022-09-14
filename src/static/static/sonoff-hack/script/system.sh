@@ -148,11 +148,14 @@ case $(get_config HTTPD_PORT) in
 esac
 
 # Restart ptz driver
-rmmod ptz_drv.ko
-sleep 1
-insmod /mnt/mtd/ipc//app/drive/ptz_drv.ko factory="Links" AutoRun=1 Horizontal=3500 Vertical=900
-if [[ $(get_config PTZ_PRESET_BOOT) != "default" ]] ; then
-    (sleep 20 && /mnt/mmc/sonoff-hack/bin/ptz -a go_preset -f $SONOFF_HACK_PREFIX/etc/ptz_presets.conf -n $(get_config PTZ_PRESET_BOOT)) &
+PTZ_PRESENT=$(cat /proc/modules | grep ptz_drv | grep -c ^)
+if [[ $PTZ_PRESENT -eq 1 ]]; then
+    rmmod ptz_drv.ko
+    sleep 1
+    insmod /mnt/mtd/ipc//app/drive/ptz_drv.ko factory="Links" AutoRun=1 Horizontal=3500 Vertical=900
+    if [[ $(get_config PTZ_PRESET_BOOT) != "default" ]] ; then
+        (sleep 20 && /mnt/mmc/sonoff-hack/bin/ptz -a go_preset -f $SONOFF_HACK_PREFIX/etc/ptz_presets.conf -n $(get_config PTZ_PRESET_BOOT)) &
+    fi
 fi
 
 if [[ $(get_config DISABLE_CLOUD) == "yes" ]] ; then
@@ -285,15 +288,17 @@ if [[ $(get_config ONVIF) == "yes" ]] ; then
         echo "" >> $ONVIF_SRVD_CONF
     fi
 
-    echo "#PTZ" >> $ONVIF_SRVD_CONF
-    echo "ptz=1" >> $ONVIF_SRVD_CONF
-    echo "move_left=/mnt/mmc/sonoff-hack/bin/ptz -a left" >> $ONVIF_SRVD_CONF
-    echo "move_right=/mnt/mmc/sonoff-hack/bin/ptz -a right" >> $ONVIF_SRVD_CONF
-    echo "move_up=/mnt/mmc/sonoff-hack/bin/ptz -a up" >> $ONVIF_SRVD_CONF
-    echo "move_down=/mnt/mmc/sonoff-hack/bin/ptz -a down" >> $ONVIF_SRVD_CONF
-    echo "move_stop=/mnt/mmc/sonoff-hack/bin/ptz -a stop" >> $ONVIF_SRVD_CONF
-    echo "move_preset=/mnt/mmc/sonoff-hack/bin/ptz -f /mnt/mmc/sonoff-hack/etc/ptz_presets.conf -a go_preset -n %t" >> $ONVIF_SRVD_CONF
-    echo "set_preset=/mnt/mmc/sonoff-hack/bin/ptz -f /mnt/mmc/sonoff-hack/etc/ptz_presets.conf -a set_preset -e %n -n %t" >> $ONVIF_SRVD_CONF
+    if [[ $PTZ_PRESENT -eq 1 ]]; then
+        echo "#PTZ" >> $ONVIF_SRVD_CONF
+        echo "ptz=1" >> $ONVIF_SRVD_CONF
+        echo "move_left=/mnt/mmc/sonoff-hack/bin/ptz -a left" >> $ONVIF_SRVD_CONF
+        echo "move_right=/mnt/mmc/sonoff-hack/bin/ptz -a right" >> $ONVIF_SRVD_CONF
+        echo "move_up=/mnt/mmc/sonoff-hack/bin/ptz -a up" >> $ONVIF_SRVD_CONF
+        echo "move_down=/mnt/mmc/sonoff-hack/bin/ptz -a down" >> $ONVIF_SRVD_CONF
+        echo "move_stop=/mnt/mmc/sonoff-hack/bin/ptz -a stop" >> $ONVIF_SRVD_CONF
+        echo "move_preset=/mnt/mmc/sonoff-hack/bin/ptz -f /mnt/mmc/sonoff-hack/etc/ptz_presets.conf -a go_preset -n %t" >> $ONVIF_SRVD_CONF
+        echo "set_preset=/mnt/mmc/sonoff-hack/bin/ptz -f /mnt/mmc/sonoff-hack/etc/ptz_presets.conf -a set_preset -e %n -n %t" >> $ONVIF_SRVD_CONF
+    fi
 
     onvif_srvd --conf_file $ONVIF_SRVD_CONF
 

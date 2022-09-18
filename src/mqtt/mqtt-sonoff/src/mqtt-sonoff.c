@@ -124,7 +124,7 @@ int main(int argc, char **argv)
     if(ret!=0)
         exit(EXIT_FAILURE);
 
-    ret=sql_init();
+    ret=sql_init(conf.ipcsys_db);
     if(ret!=0)
         exit(EXIT_FAILURE);
 
@@ -213,6 +213,13 @@ static void handle_config(const char *key, const char *value)
         nvalue=strtol(value, NULL, 10);
         if(errno==0)
             conf.retain_motion_image=nvalue;
+    }
+    else if(strcmp(key, "MQTT_IPCSYS_DB")==0)
+    {
+        errno=0;
+        nvalue=strtol(value, NULL, 10);
+        if(errno==0)
+            conf.ipcsys_db=nvalue;
     }
     else if(strcmp(key, "MQTT_PREFIX")==0)
     {

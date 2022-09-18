@@ -23,6 +23,7 @@
 
 static pthread_t *tr_sql;
 int tr_sql_routine;
+int ipcsys_db = 1;
 sqlite3 *dbc = NULL;
 char last_msg[32];
 
@@ -53,12 +54,18 @@ static func_ptr_t *sql_callbacks;
 // INIT
 //-----------------------------------------------------------------------------
 
-int sql_init()
+int sql_init(int sysdb)
 {
     int ret = 0;
+    ipcsys_db = sysdb;
 
     memset(last_msg, '\0', sizeof(last_msg));
-    ret = sqlite3_open_v2(IPCSYS_DB, &dbc, SQLITE_OPEN_READONLY, NULL);
+    if (ipcsys_db) {
+        ret = sqlite3_open_v2(IPCSYS_DB, &dbc, SQLITE_OPEN_READONLY, NULL);
+    } else {
+        ret = sqlite3_open_v2(IPCMMC_DB, &dbc, SQLITE_OPEN_READONLY, NULL);
+    }
+
     if (ret != SQLITE_OK) {
         fprintf(stderr, "Error opening db\n");
         return -1;
@@ -112,8 +119,11 @@ static void *sql_thread(void *args)
     sqlite3_stmt *stmt = NULL;
     int ret = 0;
     char buffer[1024];
-
-    sprintf (buffer, "select max(c_alarm_time), c_alarm_context from t_alarm_log;");
+    if (ipcsys_db) {
+        sprintf (buffer, "select max(c_alarm_time), c_alarm_context from t_alarm_log;");
+    } else {
+        sprintf (buffer, "select max(c_alarm_time), c_alarm_code from T_RecordFile;");
+    }
     ret = sqlite3_prepare_v2(dbc, buffer, -1, &stmt, NULL);
     if (ret != SQLITE_OK) {
         fprintf(stderr, "Failed to fetch data: %s\n", sqlite3_errmsg(dbc));

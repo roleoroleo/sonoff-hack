@@ -10,7 +10,13 @@ HOSTNAME=$(hostname)
 FW_VERSION=$(cat /mnt/mmc/sonoff-hack/version)
 HOME_VERSION=$(cat /mnt/mtd/ipc/cfg/version)
 MODEL=$(cat $MODEL_CFG_FILE | grep model | cut -d'=' -f2 | cut -d'"' -f2)
-PTZ="yes"
+PTZ=$(cat /proc/modules | grep -o ptz_drv)
+if [ -n "$PTZ" ]; then
+    PTZ="yes"
+else
+    PTZ="no"
+fi
+
 SERIAL_NUMBER=$(cat /mnt/mtd/ipc/cfg/colink.conf | grep devid | cut -d "=" -f2 | cut -d'"' -f2)
 DEVICE_ID=$(cat /mnt/mtd/ipc/cfg/colink.conf | grep devid | cut -d "=" -f2 | cut -d'"' -f2)
 LOCAL_TIME=$(date)

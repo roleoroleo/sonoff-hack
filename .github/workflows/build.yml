@@ -17,6 +17,7 @@ jobs:
             sudo apt install yui-compressor libxml2-utils flex 
             wget -q https://github.com/roleoroleo/sonoff-hack/releases/download/toolchain-0.0.1/arm-sonoff-linux-uclibcgnueabi.tgz
             tar xf arm-sonoff-linux-uclibcgnueabi.tgz && rm -rf arm-sonoff-linux-uclibcgnueabi.tgz
+            echo "${GITHUB_WORKSPACE}/arm-sonoff-linux-uclibcgnueabi/bin" >> $GITHUB_PATH
             git submodule update --init
       
       - name: Build Submodules
@@ -29,7 +30,8 @@ jobs:
 
       - name: Pack stuff
         run: |    
-            sudo bash -x ./scripts/pack_fw.all.sh
+            bash -x ./scripts/pack_fw.all.sh
+            ls -l out/*
             ls -la
             pwd           
             
@@ -44,3 +46,9 @@ jobs:
         with:
           name: GK-200MP2C.tar.gz
           path: out/GK-200MP2C/**.tgz
+
+      - name: Upload Artifact GK-200MP2-B
+        uses: actions/upload-artifact@v2
+        with:
+          name: GK-200MP2-B.tar.gz
+          path: out/GK-200MP2-B/**.tgz

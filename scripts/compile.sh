@@ -79,10 +79,6 @@ echo " SONOFF-HACK - SRC COMPILER"
 echo "------------------------------------------------------------------------"
 echo ""
 
-# this is needed because with sudo the PATH apparently doesn't contain it. Idk why
-# Hisilicon Linux, Cross-Toolchain PATH
-export PATH="/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin:$PATH"
-
 rm -rf "$(get_script_dir)/../build/"
 
 mkdir -p "$(get_script_dir)/../build/sonoff-hack"

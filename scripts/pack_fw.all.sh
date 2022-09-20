@@ -20,14 +20,14 @@
 
 get_script_dir()
 {
-    echo "$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+    echo "$(cd `dirname $0` && pwd)"
 }
 
 ###############################################################################
 
-source "$(get_script_dir)/common.sh"
-
 SCRIPT_DIR=$(get_script_dir)
+
+source "${SCRIPT_DIR}/common.sh"
 
 for CAMERA_NAME in "${!CAMERAS[@]}"; do 
     $SCRIPT_DIR/pack_fw.sh $CAMERA_NAME

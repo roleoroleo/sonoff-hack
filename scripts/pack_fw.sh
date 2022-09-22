@@ -64,8 +64,6 @@ pack_image()
 
 source "$(get_script_dir)/common.sh"
 
-require_root
-
 
 if [ $# -ne 1 ]; then
     echo "Usage: pack_sw.sh camera_name"
@@ -158,11 +156,6 @@ echo -n ">>> Creating the model suffix file... "
 echo $CAMERA_ID > $TMP_DIR/sonoff-hack/model
 echo "done!"
 
-# fix the files ownership
-echo -n ">>> Fixing the files ownership... "
-chown -R root:root $TMP_DIR/*
-echo "done!"
-
 # Copy the sdhack to the output dir
 echo ">>> Copying the sdhack contents to $TMP_DIR... "
 echo "    Copying sdhack..."
@@ -171,7 +164,7 @@ echo "    done!"
 
 # create tar.gz
 rm -f $TMP_DIR/*.tgz
-(cd $TMP_DIR && tar zcvf ${CAMERA_NAME}_${VER}.tgz *)
+(cd $TMP_DIR && tar --owner=root --group=root -zcvf ${CAMERA_NAME}_${VER}.tgz *)
 
 # copy files to the output dir
 echo ">>> Copying files to $OUT_DIR... "

@@ -85,6 +85,7 @@ Currently this project supports:
 - GK-200MP2B with firmware version V2524.1.245build20191030
 - GK-200MP2C with firmware version V0525.1.72build202011031649
 - GK-200MP2-B with firmware version V5520.2053.0402build20220712 (thanks to @puuu)
+- S-CAM with firmware version V5520.2053.0402build20220712 (use the GK-200MP2-B release firmware)
 
 USE AT YOUR OWN RISK.
 
@@ -128,8 +129,8 @@ https://github.com/roleoroleo/yi-hack_ha_integration
 
 ## Build your own firmware
 If you want to build your own firmware, clone this git and compile it using a linux machine.
-Quick explanation:
-- Download and install the toolchain I compiled.
+Quick explanation:).
+- Download and install the toolchain I compiled (or use the VSCode devcontainer files included in this repository, which will setup the toolchain and all required packages in a handy container)
 - Prepare the system installing all the necessary packages.
 - Clone this git.
 - git submodule update --init

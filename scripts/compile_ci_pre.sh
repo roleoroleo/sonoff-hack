@@ -33,6 +33,10 @@ echo " SONOFF-HACK - SRC COMPILER"
 echo "------------------------------------------------------------------------"
 echo ""
 
+if [ -d /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi ]; then
+    export PATH="/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin:$PATH"
+fi
+
 mkdir -p "${SCRIPT_DIR}/../build/sonoff-hack"
 SRC_DIR=${SCRIPT_DIR}/../src
 

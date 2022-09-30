@@ -23,81 +23,8 @@ get_script_dir()
     echo "$(cd `dirname $0` && pwd)"
 }
 
-compile_module()
-{
-    (
-    local MOD_DIR=$1
-    local MOD_NAME=$(basename "$MOD_DIR")
+SCRIPT_DIR=$(get_script_dir)
 
-    local MOD_INIT="init.$MOD_NAME"
-    local MOD_COMPILE="compile.$MOD_NAME"
-    local MOD_INSTALL="install.$MOD_NAME"
-
-    printf "MOD_DIR:        %s\n" "$MOD_DIR"
-    printf "MOD_NAME:       %s\n" "$MOD_NAME"
-    printf "MOD_INIT:       %s\n" "$MOD_INIT"
-    printf "MOD_COMPILE:    %s\n" "$MOD_COMPILE"
-    printf "MOD_INSTALL:    %s\n" "$MOD_INSTALL"
-
-    cd "$MOD_DIR"
-
-    if [ ! -f $MOD_INIT ]; then
-        echo "$MOD_INIT not found.. exiting."
-        exit 1
-    fi
-    if [ ! -f $MOD_COMPILE ]; then
-        echo "$MOD_COMPILE not found.. exiting."
-        exit 1
-    fi
-    if [ ! -f $MOD_INSTALL ]; then
-        echo "$MOD_INSTALL not found.. exiting."
-        exit 1
-    fi
-
-    echo ""
-
-    printf "Initializing $MOD_NAME...\n\n"
-    ./$MOD_INIT || exit 1
-
-    printf "Compiling $MOD_NAME...\n\n"
-    ./$MOD_COMPILE || exit 1
-
-    printf "Installing '$MOD_INSTALL' in the firmware...\n\n"
-    ./$MOD_INSTALL || exit 1
-
-    printf "\n\nDone!\n\n"
-    )
-}
-
-###############################################################################
-
-source "$(get_script_dir)/common.sh"
-
-echo ""
-echo "------------------------------------------------------------------------"
-echo " SONOFF-HACK - SRC COMPILER"
-echo "------------------------------------------------------------------------"
-echo ""
-
-# this is needed because with sudo the PATH apparently doesn't contain it. Idk why
-# Hisilicon Linux, Cross-Toolchain PATH
-export PATH="/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin:$PATH"
-
-rm -rf "$(get_script_dir)/../build/"
-
-mkdir -p "$(get_script_dir)/../build/sonoff-hack"
-
-SRC_DIR=$(get_script_dir)/../src
-
-for SUB_DIR in $SRC_DIR/* ; do
-    if [ -d ${SUB_DIR} ]; then # Will not run if no directories are available
-        compile_module $(normalize_path "$SUB_DIR") || exit 1
-    fi
-done
-
-BIN_DIR=$(get_script_dir)/../bin
-BUILD_DIR=$(get_script_dir)/../build
-
-if [ -d "$BIN_DIR" ]; then
-    cp -R $BIN_DIR/* $BUILD_DIR/
-fi
+[ -z "$1" ] && rm -rf "${SCRIPT_DIR}/../build"
+source ${SCRIPT_DIR}/compile_ci_pre.sh
+source ${SCRIPT_DIR}/compile_ci_post.sh

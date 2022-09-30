@@ -23,55 +23,7 @@ get_script_dir()
     echo "$(cd `dirname $0` && pwd)"
 }
 
-compile_module()
-{
-    (
-    local MOD_DIR=$1
-    local MOD_NAME=$(basename "$MOD_DIR")
-
-    local MOD_INIT="init.$MOD_NAME"
-    local MOD_COMPILE="compile.$MOD_NAME"
-    local MOD_INSTALL="install.$MOD_NAME"
-
-    printf "MOD_DIR:        %s\n" "$MOD_DIR"
-    printf "MOD_NAME:       %s\n" "$MOD_NAME"
-    printf "MOD_INIT:       %s\n" "$MOD_INIT"
-    printf "MOD_COMPILE:    %s\n" "$MOD_COMPILE"
-    printf "MOD_INSTALL:    %s\n" "$MOD_INSTALL"
-
-    cd "$MOD_DIR"
-
-    if [ ! -f $MOD_INIT ]; then
-        echo "$MOD_INIT not found.. exiting."
-        exit 1
-    fi
-    if [ ! -f $MOD_COMPILE ]; then
-        echo "$MOD_COMPILE not found.. exiting."
-        exit 1
-    fi
-    if [ ! -f $MOD_INSTALL ]; then
-        echo "$MOD_INSTALL not found.. exiting."
-        exit 1
-    fi
-
-    echo ""
-
-    printf "Initializing $MOD_NAME...\n\n"
-    ./$MOD_INIT || exit 1
-
-    printf "Compiling $MOD_NAME...\n\n"
-    ./$MOD_COMPILE || exit 1
-
-    printf "Installing '$MOD_INSTALL' in the firmware...\n\n"
-    ./$MOD_INSTALL || exit 1
-
-    printf "\n\nDone!\n\n"
-    )
-}
-
-###############################################################################
-
-export SCRIPT_DIR=$(get_script_dir)
+SCRIPT_DIR=$(get_script_dir)
 
 source "${SCRIPT_DIR}/common.sh"
 
@@ -80,6 +32,10 @@ echo "------------------------------------------------------------------------"
 echo " SONOFF-HACK - SRC COMPILER"
 echo "------------------------------------------------------------------------"
 echo ""
+
+if [ -d /home/user/x-tools/arm-sonoff-linux-uclibcgnueabi ]; then
+    export PATH="/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin:$PATH"
+fi
 
 mkdir -p "${SCRIPT_DIR}/../build/sonoff-hack"
 SRC_DIR=${SCRIPT_DIR}/../src

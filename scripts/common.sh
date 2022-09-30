@@ -77,3 +77,49 @@ get_camera_id()
     check_camera_name $CAMERA_NAME
     echo ${CAMERAS[$CAMERA_NAME]}
 }
+
+compile_module()
+{
+    (
+    local MOD_DIR=$1
+    local MOD_NAME=$(basename "$MOD_DIR")
+
+    local MOD_INIT="init.$MOD_NAME"
+    local MOD_COMPILE="compile.$MOD_NAME"
+    local MOD_INSTALL="install.$MOD_NAME"
+
+    printf "MOD_DIR:        %s\n" "$MOD_DIR"
+    printf "MOD_NAME:       %s\n" "$MOD_NAME"
+    printf "MOD_INIT:       %s\n" "$MOD_INIT"
+    printf "MOD_COMPILE:    %s\n" "$MOD_COMPILE"
+    printf "MOD_INSTALL:    %s\n" "$MOD_INSTALL"
+
+    cd "$MOD_DIR"
+
+    if [ ! -f $MOD_INIT ]; then
+        echo "$MOD_INIT not found.. exiting."
+        exit 1
+    fi
+    if [ ! -f $MOD_COMPILE ]; then
+        echo "$MOD_COMPILE not found.. exiting."
+        exit 1
+    fi
+    if [ ! -f $MOD_INSTALL ]; then
+        echo "$MOD_INSTALL not found.. exiting."
+        exit 1
+    fi
+
+    echo ""
+
+    printf "Initializing $MOD_NAME...\n\n"
+    ./$MOD_INIT || exit 1
+
+    printf "Compiling $MOD_NAME...\n\n"
+    ./$MOD_COMPILE || exit 1
+
+    printf "Installing '$MOD_INSTALL' in the firmware...\n\n"
+    ./$MOD_INSTALL || exit 1
+
+    printf "\n\nDone!\n\n"
+    )
+}

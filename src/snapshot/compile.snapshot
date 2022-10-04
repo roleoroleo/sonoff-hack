@@ -1,6 +1,7 @@
 #!/bin/bash
 
-export CROSSPATH=/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin
+CROSSLINK_BASE=${CROSSLINK_BASE:=/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi}
+export CROSSPATH=${CROSSLINK_BASE}/bin
 export PATH=${PATH}:${CROSSPATH}
 
 export TARGET=arm-sonoff-linux-uclibcgnueabi

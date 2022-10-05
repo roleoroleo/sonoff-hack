@@ -32,6 +32,7 @@
 #define SQL_DEBUG             0
 
 #define IPCSYS_DB             "/mnt/mtd/db/ipcsys.db"
+#define IPCMMC_DB             "/mnt/mmc/AVRecordFile.db"
 
 typedef enum
 {
@@ -44,7 +45,7 @@ typedef enum
 // INIT
 //-----------------------------------------------------------------------------
 
-int sql_init();
+int sql_init(int);
 void sql_stop();
 
 //-----------------------------------------------------------------------------

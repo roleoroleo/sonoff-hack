@@ -85,11 +85,7 @@ STATIC_DIR=$BASE_DIR/static
 BUILD_DIR=$BASE_DIR/build
 OUT_DIR=$BASE_DIR/out/$CAMERA_NAME
 VER=$(cat VERSION)
-if [ ! -z $(which arm-sonoff-linux-uclibcgnueabi-gcc) ]; then
-    CROSSLINK_SYSROOT=$(dirname $(dirname $(which arm-sonoff-linux-uclibcgnueabi-gcc)))/arm-sonoff-linux-uclibcgnueabi/sysroot
-else
-    CROSSLINK_SYSROOT=/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/arm-sonoff-linux-uclibcgnueabi/sysroot
-fi
+CROSSLINK_SYSROOT=${CROSSLINK_BASE}/arm-sonoff-linux-uclibcgnueabi/sysroot
 
 echo ""
 echo "------------------------------------------------------------------------"

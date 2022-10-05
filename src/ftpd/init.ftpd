@@ -1,5 +1,7 @@
 #!/bin/bash
 
+CROSSLINK_BASE=${CROSSLINK_BASE:=/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi}
+
 SCRIPT_DIR=$(cd `dirname $0` && pwd)
 cd $SCRIPT_DIR
 
@@ -12,7 +14,7 @@ git reset --hard || exit 1
 
 ./configure CC=arm-sonoff-linux-uclibcgnueabi-gcc \
     --prefix=$SCRIPT_DIR/_install \
-    CFLAGS="-Os -I/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include -L/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/arm-sonoff-linux-uclibcgnueabi/sysroot/lib" \
+    CFLAGS="-Os -I${CROSSLINK_BASE}/arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include -L${CROSSLINK_BASE}/arm-sonoff-linux-uclibcgnueabi/sysroot/lib" \
     AR=arm-sonoff-linux-uclibcgnueabi-ar \
     RANLIB=arm-sonoff-linux-uclibcgnueabi-ranlib \
     --host=arm \

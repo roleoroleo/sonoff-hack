@@ -6,7 +6,7 @@ RUN export DEBIAN_FRONTEND=noninteractive               && \
     apt-get -y install --no-install-recommends             \
       git wget unzip build-essential lib32z1 libtool       \
       bison bisonc++ libbison-dev autoconf autotools-dev   \
-      automake libssl-dev zlib1g-dev flex libfl-dev        \
+      automake libssl-dev zlib1g-dev flex libfl-dev cmake  \
       yui-compressor closure-compiler optipng jpegoptim    \
       libtidy5deb1 sassc sass-spec libxml2-utils rsync
 

@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -e
+
+SCRIPT_DIR=$(cd `dirname $0` && pwd)
+cd $SCRIPT_DIR
+
+rm -rf ./_install
+
+cd cJSON
+git reset --hard
+
+rm -rf ./build
+mkdir -p ./build

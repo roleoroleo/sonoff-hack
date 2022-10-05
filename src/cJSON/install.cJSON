@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -e
+
+SCRIPT_DIR=$(cd `dirname $0` && pwd)
+cd $SCRIPT_DIR
+
+mkdir -p ../../build/sonoff-hack/lib/
+#mkdir -p ../../build/sonoff-hack/include/cjson
+
+cp -vf ./_install/lib/libcjson.so.1 ../../build/sonoff-hack/lib/
+chmod 0755 ../../build/sonoff-hack/lib/libcjson.so.1
+
+#cp -avf ./_install/include ../../build/sonoff-hack/
+

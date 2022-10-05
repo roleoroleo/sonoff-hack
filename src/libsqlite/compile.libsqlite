@@ -2,12 +2,6 @@
 
 export PATH=${PATH}:/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi/bin
 
-export TARGET=arm-sonoff-linux-uclibcgnueabi
-export CROSS=arm-sonoff-linux-uclibcgnueabi
-export BUILD=x86_64-pc-linux-gnu
-
-export CROSSPREFIX=${CROSS}-
-
 SQLITE_VER="3080701"
 ARCHIVE=sqlite-autoconf-$SQLITE_VER
 
@@ -18,11 +12,7 @@ cd $ARCHIVE || exit 1
 
 make clean
 make || exit 1
-mkdir -p $SCRIPT_DIR/_install/bin
-cp .libs/sqlite3 $SCRIPT_DIR/_install/bin/
-mkdir -p $SCRIPT_DIR/_install/lib
-cp .libs/libsqlite3.so.0.8.6 $SCRIPT_DIR/_install/lib/
-ln -s libsqlite3.so.0.8.6 $SCRIPT_DIR/_install/lib/libsqlite3.so.0
-ln -s libsqlite3.so.0.8.6 $SCRIPT_DIR/_install/lib/libsqlite3.so
+
+make install-exec
 
 arm-sonoff-linux-uclibcgnueabi-strip ../_install/bin/*

@@ -306,8 +306,8 @@ define build_openssl
     # build
     if [ ! -f openssl/libcrypto.so.1.0.0 ] || [ ! -f openssl/libssl.so.1.0.0 ]; then \
         cd openssl; \
-        CC=arm-sonoff-linux-uclibcgnueabi-gcc ./Configure linux-sonoff && \
-        CC=arm-sonoff-linux-uclibcgnueabi-gcc make; \
+        ./Configure linux-sonoff --cross-compile-prefix=arm-sonoff-linux-uclibcgnueabi- && \
+        make; \
         cd ..;\
     fi
 endef

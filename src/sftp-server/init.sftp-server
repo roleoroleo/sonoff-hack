@@ -10,9 +10,9 @@ git reset --hard
 
 autoreconf || exit 1
 
-./configure CC=arm-sonoff-linux-uclibcgnueabi-gcc \
+./configure \
     --prefix=$SCRIPT_DIR/_install \
-    --host=arm \
+    --host=arm-sonoff-linux-uclibcgnueabi \
     --without-openssl \
     --without-zlib \
     || exit 1

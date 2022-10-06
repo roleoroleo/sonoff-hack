@@ -14,5 +14,7 @@ fi
 tar zxvf $ARCHIVE.tar.gz
 cd $ARCHIVE || exit 1
 
-export CFLAGS="-Os"
-./configure --host=arm-sonoff-linux-uclibcgnueabi
+./configure \
+    --prefix=$SCRIPT_DIR/_install \
+    CFLAGS="-Os" \
+    --host=arm-sonoff-linux-uclibcgnueabi

@@ -3,6 +3,7 @@
 TARGET = mqtt-sonoff
 
 LIBS = -L../lib \
+            -lcjson \
             -lmosquitto \
             -lsqlite3 \
             -lrt \

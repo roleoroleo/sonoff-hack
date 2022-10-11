@@ -187,8 +187,7 @@ int mqtt_send_message(mqtt_msg_t *msg, int retain)
     if(conn_state!=CONN_CONNECTED)
         return -1;
 
-    if ((strlen(msg->topic) >= strlen(EMPTY_TOPIC)) &&
-                (strcmp(EMPTY_TOPIC, &msg->topic[strlen(msg->topic) - strlen(EMPTY_TOPIC)]) == 0)) {
+    if (strcmp("/", &msg->topic[strlen(msg->topic)-1])==0) {
         fprintf(stderr, "No message sent: topic is empty\n");
         return -1;
     } else {

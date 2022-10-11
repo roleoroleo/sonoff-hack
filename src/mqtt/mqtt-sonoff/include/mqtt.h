@@ -7,7 +7,7 @@
 #include <errno.h>
 #include <mosquitto.h>
 
-#define EMPTY_TOPIC         "EMPTY_TOPIC"
+#define EMPTY_TOPIC         ""
 
 typedef struct
 {

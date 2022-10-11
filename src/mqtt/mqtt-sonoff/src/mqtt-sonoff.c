@@ -43,7 +43,7 @@ void callback_motion_start()
 
     mqtt_send_message(&msg, conf.retain_motion);
 
-    if (strcmp(EMPTY_TOPIC, mqtt_sonoff_conf.topic_motion_image) != 0) {
+    if (strlen(mqtt_sonoff_conf.topic_motion_image)) {
         // Send image
         printf("Wait %.1f seconds and take a snapshot\n", mqtt_sonoff_conf.motion_image_delay);
         tmpnam(bufferFile);

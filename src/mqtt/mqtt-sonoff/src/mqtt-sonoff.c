@@ -146,7 +146,6 @@ int main(int argc, char **argv)
 
 static void handle_config(const char *key, const char *value)
 {
-    int nvalue;
 
     // Ok, the configuration handling is UGLY, unsafe and repetitive.
     // It should be fixed in the future by writing a better config
@@ -164,114 +163,79 @@ static void handle_config(const char *key, const char *value)
     }
     else if(strcmp(key, "MQTT_USER")==0)
     {
-        conf.user=malloc((char)strlen(value)+1);
-        strcpy(conf.user, value);
+        conf.user=conf_set_string(value);
     }
     else if(strcmp(key, "MQTT_PASSWORD")==0)
     {
-        conf.password=malloc((char)strlen(value)+1);
-        strcpy(conf.password, value);
+        conf.password=conf_set_string(value);
     }
     else if(strcmp(key, "MQTT_PORT")==0)
     {
-        errno=0;
-        nvalue=strtol(value, NULL, 10);
-        if(errno==0)
-            conf.port=nvalue;
+        conf_set_int(value, &conf.port);
     }
     else if(strcmp(key, "MQTT_KEEPALIVE")==0)
     {
-        errno=0;
-        nvalue=strtol(value, NULL, 10);
-        if(errno==0)
-            conf.keepalive=nvalue;
+        conf_set_int(value, &conf.keepalive);
     }
     else if(strcmp(key, "MQTT_QOS")==0)
     {
-        errno=0;
-        nvalue=strtol(value, NULL, 10);
-        if(errno==0)
-            conf.qos=nvalue;
+        conf_set_int(value, &conf.qos);
     }
     else if(strcmp(key, "MQTT_RETAIN_BIRTH_WILL")==0)
     {
-        errno=0;
-        nvalue=strtol(value, NULL, 10);
-        if(errno==0)
-            conf.retain_birth_will=nvalue;
+        conf_set_int(value, &conf.retain_birth_will);
     }
     else if(strcmp(key, "MQTT_RETAIN_MOTION")==0)
     {
-        errno=0;
-        nvalue=strtol(value, NULL, 10);
-        if(errno==0)
-            conf.retain_motion=nvalue;
+        conf_set_int(value, &conf.retain_motion);
     }
     else if(strcmp(key, "MQTT_RETAIN_MOTION_IMAGE")==0)
     {
-        errno=0;
-        nvalue=strtol(value, NULL, 10);
-        if(errno==0)
-            conf.retain_motion_image=nvalue;
+        conf_set_int(value, &conf.retain_motion_image);
     }
     else if(strcmp(key, "MQTT_IPCSYS_DB")==0)
     {
-        errno=0;
-        nvalue=strtol(value, NULL, 10);
-        if(errno==0)
-            conf.ipcsys_db=nvalue;
+        conf_set_int(value, &conf.ipcsys_db);
     }
     else if(strcmp(key, "MQTT_PREFIX")==0)
     {
-        conf.mqtt_prefix=malloc((char)strlen(value)+1);
-        strcpy(conf.mqtt_prefix, value);
-        mqtt_sonoff_conf.mqtt_prefix=malloc((char)strlen(value)+1);
-        strcpy(mqtt_sonoff_conf.mqtt_prefix, value);
+        conf.mqtt_prefix=conf_set_string(value);
+        mqtt_sonoff_conf.mqtt_prefix=conf.mqtt_prefix;
     }
     else if(strcmp(key, "TOPIC_BIRTH_WILL")==0)
     {
-        conf.topic_birth_will=malloc((char)strlen(value)+1);
-        strcpy(conf.topic_birth_will, value);
-        mqtt_sonoff_conf.topic_birth_will=malloc((char)strlen(value)+1);
-        strcpy(mqtt_sonoff_conf.topic_birth_will, value);
+        conf.topic_birth_will=conf_set_string(value);
+        mqtt_sonoff_conf.topic_birth_will=conf.topic_birth_will;
     }
     else if(strcmp(key, "TOPIC_MOTION")==0)
     {
-        mqtt_sonoff_conf.topic_motion=malloc((char)strlen(value)+1);
-        strcpy(mqtt_sonoff_conf.topic_motion, value);
+        mqtt_sonoff_conf.topic_motion=conf_set_string(value);
     }
     else if(strcmp(key, "TOPIC_MOTION_IMAGE")==0)
     {
-        mqtt_sonoff_conf.topic_motion_image=malloc((char)strlen(value)+1);
-        strcpy(mqtt_sonoff_conf.topic_motion_image, value);
+        mqtt_sonoff_conf.topic_motion_image=conf_set_string(value);
     }
     else if(strcmp(key, "MOTION_IMAGE_DELAY")==0)
     {
-        mqtt_sonoff_conf.motion_image_delay=strtod(value, NULL);
+        conf_set_double(value, &mqtt_sonoff_conf.motion_image_delay);
     }
     else if(strcmp(key, "BIRTH_MSG")==0)
     {
-        conf.birth_msg=malloc((char)strlen(value)+1);
-        strcpy(conf.birth_msg, value);
-        mqtt_sonoff_conf.birth_msg=malloc((char)strlen(value)+1);
-        strcpy(mqtt_sonoff_conf.birth_msg, value);
+        conf.birth_msg=conf_set_string(value);
+        mqtt_sonoff_conf.birth_msg=conf.birth_msg;
     }
     else if(strcmp(key, "WILL_MSG")==0)
     {
-        conf.will_msg=malloc((char)strlen(value)+1);
-        strcpy(conf.will_msg, value);
-        mqtt_sonoff_conf.will_msg=malloc((char)strlen(value)+1);
-        strcpy(mqtt_sonoff_conf.will_msg, value);
+        conf.will_msg=conf_set_string(value);
+        mqtt_sonoff_conf.will_msg=conf.will_msg;
     }
     else if(strcmp(key, "MOTION_START_MSG")==0)
     {
-        mqtt_sonoff_conf.motion_start_msg=malloc((char)strlen(value)+1);
-        strcpy(mqtt_sonoff_conf.motion_start_msg, value);
+        mqtt_sonoff_conf.motion_start_msg=conf_set_string(value);
     }
     else if(strcmp(key, "MOTION_STOP_MSG")==0)
     {
-        mqtt_sonoff_conf.motion_stop_msg=malloc((char)strlen(value)+1);
-        strcpy(mqtt_sonoff_conf.motion_stop_msg, value);
+        mqtt_sonoff_conf.motion_stop_msg=conf_set_string(value);
     }
     else
     {
@@ -305,62 +269,39 @@ static void init_mqtt_sonoff_config()
     // Setting default for all char* vars
     if(conf.mqtt_prefix == NULL)
     {
-        conf.mqtt_prefix=malloc((char)strlen("sonoffcam")+1);
-        strcpy(conf.mqtt_prefix, "sonoffcam");
+        conf.mqtt_prefix=conf_set_string("sonoffcam");
+        mqtt_sonoff_conf.mqtt_prefix=conf.mqtt_prefix;
     }
-    if(mqtt_sonoff_conf.mqtt_prefix == NULL)
-    {
-        mqtt_sonoff_conf.mqtt_prefix=malloc((char)strlen("sonoffcam")+1);
-        strcpy(mqtt_sonoff_conf.mqtt_prefix, "sonoffcam");
-    }
+
     if(conf.topic_birth_will == NULL)
     {
-        conf.topic_birth_will=malloc((char)strlen(EMPTY_TOPIC)+1);
-        strcpy(conf.topic_birth_will, EMPTY_TOPIC);
-    }
-    if(mqtt_sonoff_conf.topic_birth_will == NULL)
-    {
-        mqtt_sonoff_conf.topic_birth_will=malloc((char)strlen(EMPTY_TOPIC)+1);
-        strcpy(mqtt_sonoff_conf.topic_birth_will, EMPTY_TOPIC);
+        conf.topic_birth_will=conf_set_string(EMPTY_TOPIC);
+        mqtt_sonoff_conf.topic_birth_will=conf.topic_birth_will;
     }
     if(mqtt_sonoff_conf.topic_motion == NULL)
     {
-        mqtt_sonoff_conf.topic_motion=malloc((char)strlen(EMPTY_TOPIC)+1);
-        strcpy(mqtt_sonoff_conf.topic_motion, EMPTY_TOPIC);
+        mqtt_sonoff_conf.topic_motion=conf_set_string(EMPTY_TOPIC);
     }
     if(mqtt_sonoff_conf.topic_motion_image == NULL)
     {
-        mqtt_sonoff_conf.topic_motion_image=malloc((char)strlen(EMPTY_TOPIC)+1);
-        strcpy(mqtt_sonoff_conf.topic_motion_image, EMPTY_TOPIC);
+        mqtt_sonoff_conf.topic_motion_image=conf_set_string(EMPTY_TOPIC);
     }
     if(conf.birth_msg == NULL)
     {
-        conf.birth_msg=malloc((char)strlen("online")+1);
-        strcpy(conf.birth_msg, "online");
-    }
-    if(mqtt_sonoff_conf.birth_msg == NULL)
-    {
-        mqtt_sonoff_conf.birth_msg=malloc((char)strlen("online")+1);
-        strcpy(mqtt_sonoff_conf.birth_msg, "online");
+        conf.birth_msg=conf_set_string("online");
+        mqtt_sonoff_conf.birth_msg=conf.birth_msg;
     }
     if(conf.will_msg == NULL)
     {
-        conf.will_msg=malloc((char)strlen("offline")+1);
-        strcpy(conf.will_msg, "offline");
-    }
-    if(mqtt_sonoff_conf.will_msg == NULL)
-    {
-        mqtt_sonoff_conf.will_msg=malloc((char)strlen("offline")+1);
-        strcpy(mqtt_sonoff_conf.will_msg, "offline");
+        conf.will_msg=conf_set_string("offline");
+        mqtt_sonoff_conf.will_msg=conf.will_msg;
     }
     if(mqtt_sonoff_conf.motion_start_msg == NULL)
     {
-        mqtt_sonoff_conf.motion_start_msg=malloc((char)strlen("motion_start")+1);
-        strcpy(mqtt_sonoff_conf.motion_start_msg, "motion_start");
+        mqtt_sonoff_conf.motion_start_msg=conf_set_string("motion_start");
     }
     if(mqtt_sonoff_conf.motion_stop_msg == NULL)
     {
-        mqtt_sonoff_conf.motion_stop_msg=malloc((char)strlen("motion_stop")+1);
-        strcpy(mqtt_sonoff_conf.motion_stop_msg, "motion_stop");
+        mqtt_sonoff_conf.motion_stop_msg=conf_set_string("motion_stop");
     }
 }

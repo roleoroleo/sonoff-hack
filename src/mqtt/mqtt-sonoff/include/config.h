@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <errno.h>
+#include <stdlib.h>
 #include <string.h>
 
 #define MAX_LINE_LENGTH     512
@@ -14,5 +15,9 @@ void stop_config();
 
 void config_set_handler(void (*f)(const char* key, const char* value));
 void config_parse();
+
+void conf_set_double(const char* value, double* conf);
+void conf_set_int(const char* value, int* conf);
+char *conf_set_string(const char* value);
 
 #endif // CONFIG_H

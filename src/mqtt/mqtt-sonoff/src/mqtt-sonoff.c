@@ -19,9 +19,6 @@ mqtt_sonoff_conf_t mqtt_sonoff_conf;
 static void init_mqtt_sonoff_config();
 static void handle_config(const char *key, const char *value);
 
-int files_delay = 70;        // Wait for xx seconds before search for mp4 files
-int files_max_events = 50;   // Number of files reported in the message
-
 void callback_motion_start()
 {
     char topic[128];

@@ -19,6 +19,13 @@ mqtt_sonoff_conf_t mqtt_sonoff_conf;
 static void init_mqtt_sonoff_config();
 static void handle_config(const char *key, const char *value);
 
+char *default_prefix = "sonoffcam";
+char *default_online = "online";
+char *default_offline = "offline";
+char *default_start = "motion_start";
+char *default_stop = "motion_stop";
+char *default_topic = EMPTY_TOPIC;
+
 void callback_motion_start()
 {
     char topic[128];
@@ -266,39 +273,39 @@ static void init_mqtt_sonoff_config()
     // Setting default for all char* vars
     if(conf.mqtt_prefix == NULL)
     {
-        conf.mqtt_prefix=conf_set_string("sonoffcam");
+        conf.mqtt_prefix=default_prefix;
         mqtt_sonoff_conf.mqtt_prefix=conf.mqtt_prefix;
     }
 
     if(conf.topic_birth_will == NULL)
     {
-        conf.topic_birth_will=conf_set_string(EMPTY_TOPIC);
+        conf.topic_birth_will=default_topic;
         mqtt_sonoff_conf.topic_birth_will=conf.topic_birth_will;
     }
     if(mqtt_sonoff_conf.topic_motion == NULL)
     {
-        mqtt_sonoff_conf.topic_motion=conf_set_string(EMPTY_TOPIC);
+        mqtt_sonoff_conf.topic_motion=default_topic;
     }
     if(mqtt_sonoff_conf.topic_motion_image == NULL)
     {
-        mqtt_sonoff_conf.topic_motion_image=conf_set_string(EMPTY_TOPIC);
+        mqtt_sonoff_conf.topic_motion_image=default_topic;
     }
     if(conf.birth_msg == NULL)
     {
-        conf.birth_msg=conf_set_string("online");
+        conf.birth_msg=default_online;
         mqtt_sonoff_conf.birth_msg=conf.birth_msg;
     }
     if(conf.will_msg == NULL)
     {
-        conf.will_msg=conf_set_string("offline");
+        conf.will_msg=default_offline;
         mqtt_sonoff_conf.will_msg=conf.will_msg;
     }
     if(mqtt_sonoff_conf.motion_start_msg == NULL)
     {
-        mqtt_sonoff_conf.motion_start_msg=conf_set_string("motion_start");
+        mqtt_sonoff_conf.motion_start_msg=default_start;
     }
     if(mqtt_sonoff_conf.motion_stop_msg == NULL)
     {
-        mqtt_sonoff_conf.motion_stop_msg=conf_set_string("motion_stop");
+        mqtt_sonoff_conf.motion_stop_msg=default_stop;
     }
 }

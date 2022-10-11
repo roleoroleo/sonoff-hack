@@ -20,15 +20,15 @@
 
 typedef struct
 {
-    char *mqtt_prefix;
-    char *topic_birth_will;
-    char *topic_motion;
-    char *topic_motion_image;
-    double motion_image_delay;
-    char *birth_msg;
-    char *will_msg;
-    char *motion_start_msg;
-    char *motion_stop_msg;
+    char    *mqtt_prefix;
+    char    *topic_birth_will;
+    char    *topic_motion;
+    char    *topic_motion_image;
+    double   motion_image_delay;
+    char    *birth_msg;
+    char    *will_msg;
+    char    *motion_start_msg;
+    char    *motion_stop_msg;
 } mqtt_sonoff_conf_t;
 
 #endif // MQTT_SONOFF_H

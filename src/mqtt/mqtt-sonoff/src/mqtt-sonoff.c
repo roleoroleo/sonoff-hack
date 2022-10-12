@@ -136,7 +136,6 @@ int main(int argc, char **argv)
 
     sql_stop();
     stop_mqtt();
-    stop_config();
 
     return 0;
 }
@@ -262,6 +261,7 @@ static void init_mqtt_sonoff_config()
 
     config_set_handler(&handle_config);
     config_parse();
+    stop_config();
 
     // Setting default for all char* vars
     if(conf.mqtt_prefix == NULL)

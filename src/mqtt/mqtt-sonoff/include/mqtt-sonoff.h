@@ -15,6 +15,7 @@
 
 #define MQTT_SONOFF_VERSION      "0.1.0"
 #define MQTT_SONOFF_CONF_FILE    "/mnt/mmc/sonoff-hack/etc/mqtt-sonoff.conf"
+#define COLINK_CONF_FILE         "/mnt/mtd/ipc/cfg/colink.conf"
 
 #define MQTT_SONOFF_SNAPSHOT     "/mnt/mmc/sonoff-hack/bin/snapshot"
 
@@ -29,6 +30,11 @@ typedef struct
     char    *will_msg;
     char    *motion_start_msg;
     char    *motion_stop_msg;
+    int      ha_enable_discovery;
+    char    *ha_conf_prefix;
+    char    *ha_name_prefix;
+    char    *device_id;
+    char    *device_model;
 } mqtt_sonoff_conf_t;
 
 #endif // MQTT_SONOFF_H

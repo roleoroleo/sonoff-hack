@@ -93,6 +93,43 @@
                 </table>
             </div>
         </div>
+        <h4 class="no-margin">Home Assistant Discovery</h4>
+        <hr class="tiny-margin"/>
+        <div class="row">
+            <div class="twelve columns configs-switch">
+                <table class="u-full-width padded-table config-table">
+                    <tbody>
+                        <tr class="row">
+                            <td>Enable MQTT Discovery</td>
+                            <td>
+                                <input class="u-full-width" type="text" placeholder="1" data-key="HA_DISCOVERY"/>
+                                <span class="switch-description">
+                                    Enable auto-discovery of camera in Home Asisstant. (1 = enabled, 0 = disabled)
+                                </span>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td>Name</td>
+                            <td>
+                                <input class="u-full-width" type="text" placeholder="" data-key="HA_NAME_PREFIX"/>
+                                <span class="switch-description">
+                                    Set the name of the device that is shown in Home Assistant. Will also be set as a prefix for sensor and entity names. Optional, Naming can be set directly in Home Assistant settings.
+                                </span>
+                            </td>
+                        </tr>
+                        <tr class="row">
+                            <td>Discovery Prefix</td>
+                            <td>
+                                <input class="u-full-width" type="text" placeholder="homeassistant" data-key="HA_CONF_PREFIX"/>
+                                <span class="switch-description">
+                                    Set the discovery prefix. This must match the mqtt discovery_prefix setting in Home Assistant. (Default: homeassistant)
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
         <h4 class="no-margin">Topics</h4>
         <hr class="tiny-margin"/>
         <div class="row">

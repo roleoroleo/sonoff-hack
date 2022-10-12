@@ -240,6 +240,18 @@ static void handle_config(const char *key, const char *value)
     {
         mqtt_sonoff_conf.motion_stop_msg=conf_set_string(value);
     }
+    else if(strcmp(key, "HA_DISCOVERY")==0)
+    {
+        conf_set_int(value, &mqtt_sonoff_conf.ha_enable_discovery);
+    }
+    else if(strcmp(key, "HA_NAME_PREFIX")==0)
+    {
+        mqtt_sonoff_conf.ha_name_prefix=conf_set_string(value);
+    }
+    else if(strcmp(key, "HA_CONF_PREFIX")==0)
+    {
+        mqtt_sonoff_conf.ha_conf_prefix=conf_set_string(value);
+    }
     else
     {
         printf("key: %s | value: %s\n", key, value);
@@ -259,6 +271,8 @@ static void init_mqtt_sonoff_config()
     mqtt_sonoff_conf.will_msg=NULL;
     mqtt_sonoff_conf.motion_start_msg=NULL;
     mqtt_sonoff_conf.motion_stop_msg=NULL;
+    mqtt_sonoff_conf.ha_conf_prefix=NULL;
+    mqtt_sonoff_conf.ha_name_prefix=NULL;
 
     if(init_config(MQTT_SONOFF_CONF_FILE)!=0)
     {

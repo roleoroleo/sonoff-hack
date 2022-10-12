@@ -53,7 +53,7 @@ export TZ=$(get_config TIMEZONE)
 
 if [[ $(get_config SWAP_FILE) == "yes" ]] ; then
     SD_PRESENT=$(mount | grep mmc | grep -c ^)
-    if [[ $SD_PRESENT -eq 1 ]]; then
+    if [[ $SD_PRESENT -ge 1 ]]; then
         if [[ -f /mnt/mmc/swapfile ]]; then
             swapon /mnt/mmc/swapfile
         else

@@ -51,6 +51,10 @@ cp -f $SONOFF_HACK_PREFIX/etc/hostname /etc/hostname
 hostname -F $SONOFF_HACK_PREFIX/etc/hostname
 export TZ=$(get_config TIMEZONE)
 
+if [[ $(get_config SYSLOGD) == "yes" ]] ; then
+    syslogd
+fi
+
 if [[ $(get_config SWAP_FILE) == "yes" ]] ; then
     SD_PRESENT=$(mount | grep mmc | grep -c ^)
     if [[ $SD_PRESENT -ge 1 ]]; then

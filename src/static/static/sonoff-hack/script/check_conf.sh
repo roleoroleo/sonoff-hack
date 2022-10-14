@@ -6,7 +6,7 @@ MQTT_SONOFF_CONF_FILE="/mnt/mmc/sonoff-hack/etc/mqtt-sonoff.conf"
 
 PARMS1="
 HTTPD=yes
-TELNETD=yes
+TELNETD=no
 SSHD=yes
 FTPD=yes
 BUSYBOX_FTPD=no

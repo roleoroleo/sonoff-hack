@@ -137,6 +137,7 @@ fi
 sed -i 's|^\(root:\)[^:]*:|root:'${PASSWORD_MD5}':|g' "$SONOFF_HACK_PREFIX/etc/shadow"
 mount -o bind $SONOFF_HACK_PREFIX/etc/passwd /etc/passwd
 mount -o bind $SONOFF_HACK_PREFIX/etc/shadow /etc/shadow
+mount -o bind $SONOFF_HACK_PREFIX/etc/profile /etc/profile
 
 case $(get_config RTSP_PORT) in
     ''|*[!0-9]*) RTSP_PORT=554 ;;

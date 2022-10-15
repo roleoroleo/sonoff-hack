@@ -18,6 +18,8 @@ mqtt_sonoff_conf_t mqtt_sonoff_conf;
 
 static void init_mqtt_sonoff_config();
 static void handle_config(const char *key, const char *value);
+static void init_sonoff_colink_config();
+static void handle_colink_config(const char *key, const char *value);
 
 char *default_prefix = "sonoffcam";
 char *default_online = "online";
@@ -117,8 +119,9 @@ int main(int argc, char **argv)
     printf("Starting mqtt_sonoff v%s\n", MQTT_SONOFF_VERSION);
 
     mqtt_init_conf(&conf);
-    init_mqtt_sonoff_config();
     mqtt_set_conf(&conf);
+    init_mqtt_sonoff_config();
+    init_sonoff_colink_config();
 
     ret=init_mqtt();
     if(ret!=0)
@@ -322,4 +325,39 @@ static void init_mqtt_sonoff_config()
     {
         mqtt_sonoff_conf.motion_stop_msg=default_stop;
     }
+}
+
+static void init_sonoff_colink_config(){
+    mqtt_sonoff_conf.device_id=NULL;
+    mqtt_sonoff_conf.device_model=NULL;
+
+    if(init_config(COLINK_CONF_FILE)!=0)
+    {
+        printf("Cannot open config file. Skipping.\n");
+        return;
+    }
+
+    config_set_handler(&handle_colink_config);
+    config_parse();
+    stop_config();
+}
+
+static void handle_colink_config(const char *key, const char *value)
+{
+
+    char *tmpValue=conf_set_string(value);
+
+    //strip quote from end of value
+    tmpValue[strlen(tmpValue)-1] = '\0';
+
+    if(strcmp(key, "devid")==0)
+    {
+        mqtt_sonoff_conf.device_id=conf_set_string(tmpValue+1); //skip leading "
+    }
+    else if(strcmp(key, "model")==0)
+    {
+        mqtt_sonoff_conf.device_model=conf_set_string(tmpValue+1);
+    }
+
+    free(tmpValue);
 }

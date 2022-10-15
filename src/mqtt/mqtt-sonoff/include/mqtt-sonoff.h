@@ -12,6 +12,7 @@
 #include "config.h"
 #include "sql.h"
 #include "mqtt.h"
+#include "cJSON.h"
 
 #define MQTT_SONOFF_VERSION      "0.1.0"
 #define MQTT_SONOFF_CONF_FILE    "/mnt/mmc/sonoff-hack/etc/mqtt-sonoff.conf"

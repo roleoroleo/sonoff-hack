@@ -21,6 +21,11 @@ static void handle_config(const char *key, const char *value);
 static void init_sonoff_colink_config();
 static void handle_colink_config(const char *key, const char *value);
 
+static void send_ha_discovery();
+static char *print_motion_json();
+static char *print_image_json();
+static int json_common(cJSON *confObject, const char **suffix);
+
 char *default_prefix = "sonoffcam";
 char *default_online = "online";
 char *default_offline = "offline";
@@ -130,6 +135,8 @@ int main(int argc, char **argv)
     ret=mqtt_connect();
     if(ret!=0)
         exit(EXIT_FAILURE);
+
+    send_ha_discovery();
 
     ret=sql_init(conf.ipcsys_db);
     if(ret!=0)
@@ -360,4 +367,171 @@ static void handle_colink_config(const char *key, const char *value)
     }
 
     free(tmpValue);
+}
+static void send_ha_discovery() {
+    char topic[128];
+    const int retain = true;
+    mqtt_msg_t msg;
+    msg.topic=topic;
+
+    if (mqtt_sonoff_conf.ha_enable_discovery) {
+        // Send motion config
+        msg.msg=print_motion_json();
+        cJSON_Minify(msg.msg);
+        msg.len=strlen(msg.msg);
+
+        sprintf(topic, "%s/binary_sensor/%s_motion/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
+        mqtt_send_message(&msg, retain);
+        free(msg.msg);
+
+        // Send motion image config
+        msg.msg=print_image_json();
+        cJSON_Minify(msg.msg);
+        msg.len=strlen(msg.msg);
+
+        sprintf(topic, "%s/camera/%s_image/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
+        mqtt_send_message(&msg, retain);
+        free(msg.msg);
+    }
+}
+
+static char *print_motion_json() {
+    const char *suffix = "motion";
+    char *json = NULL;
+    cJSON * confObject = cJSON_CreateObject();
+
+    char stopic[128];
+    sprintf(stopic, "%s/%s", mqtt_sonoff_conf.mqtt_prefix, mqtt_sonoff_conf.topic_motion);
+    if (cJSON_AddStringToObject(confObject, "state_topic", stopic) == NULL) {
+        goto end;
+    }
+    if (json_common(confObject, &suffix) == 0) {
+        goto end;
+    }
+    if (cJSON_AddStringToObject(confObject, "device_class", "motion") == NULL) {
+        goto end;
+    }
+    if (cJSON_AddStringToObject(confObject, "payload_on", mqtt_sonoff_conf.motion_start_msg) == NULL) {
+        goto end;
+    }
+    if (cJSON_AddStringToObject(confObject, "payload_off", mqtt_sonoff_conf.motion_stop_msg) == NULL) {
+        goto end;
+    }
+
+    json = cJSON_Print(confObject);
+    if (json == NULL) {
+        fprintf(stderr, "Error preparing HA discovery config");
+    }
+
+end:
+    cJSON_Delete(confObject);
+    return json;
+}
+
+static char *print_image_json() {
+
+    const char *suffix = "image";
+    char *json = NULL;
+    cJSON * confObject = cJSON_CreateObject();
+
+    char stopic[128];
+    sprintf(stopic, "%s/%s", mqtt_sonoff_conf.mqtt_prefix, mqtt_sonoff_conf.topic_motion_image);
+    if (cJSON_AddStringToObject(confObject, "topic", stopic) == NULL) {
+        goto end;
+    }
+    if (json_common(confObject, &suffix) == 0) {
+        goto end;
+    }
+    if (cJSON_AddStringToObject(confObject, "icon", "mdi:camera") == NULL) {
+        goto end;
+    }
+
+    json = cJSON_Print(confObject);
+    if (json == NULL) {
+        fprintf(stderr, "Error preparing HA discovery config");
+    }
+
+
+end:
+    cJSON_Delete(confObject);
+    return json;
+}
+
+static int json_common(cJSON *confObject, const char **suffix) {
+
+    char dname[128];
+    if (mqtt_sonoff_conf.ha_name_prefix) {
+        sprintf(dname, "%s %s", mqtt_sonoff_conf.ha_name_prefix, *suffix);
+    } else {
+        strcpy(dname, *suffix);
+    }
+    if (cJSON_AddStringToObject(confObject, "name", dname) == NULL) {
+        goto end;
+    }
+    cJSON *availArray = cJSON_AddArrayToObject(confObject, "availability");
+    if (availArray == NULL ) {
+        goto end;
+    }
+    cJSON *availObj = cJSON_CreateObject();
+    if (availObj == NULL ) {
+        goto end;
+    }
+    cJSON_AddItemToArray(availArray, availObj);
+
+    char bwtopic[128];
+    sprintf(bwtopic, "%s/%s", mqtt_sonoff_conf.mqtt_prefix, mqtt_sonoff_conf.topic_birth_will);
+    if (cJSON_AddStringToObject(availObj, "topic", bwtopic) == NULL) {
+        goto end;
+    }
+    if (strcmp(mqtt_sonoff_conf.birth_msg, "online") != 0) {
+        if (cJSON_AddStringToObject(availObj, "payload_available", mqtt_sonoff_conf.birth_msg) == NULL) {
+            goto end;
+        }
+    }
+    if (strcmp(mqtt_sonoff_conf.will_msg, "offline") != 0) {
+        if (cJSON_AddStringToObject(availObj, "payload_not_available", mqtt_sonoff_conf.will_msg) == NULL) {
+            goto end;
+        }
+    }
+    //build device object for device registry association
+    cJSON *deviceObj = cJSON_AddObjectToObject(confObject, "device");
+    if (deviceObj == NULL ) {
+        goto end;
+    }
+    cJSON *idents = cJSON_AddArrayToObject(deviceObj, "identifiers");
+    if (idents == NULL ) {
+        goto end;
+    }
+    cJSON *ident_string = cJSON_CreateString(mqtt_sonoff_conf.device_id);
+    if (ident_string == NULL ) {
+        goto end;
+    }
+    cJSON_AddItemToArray(idents, ident_string);
+
+    if (mqtt_sonoff_conf.ha_name_prefix){
+        if (cJSON_AddStringToObject(deviceObj, "name", mqtt_sonoff_conf.ha_name_prefix) == NULL) {
+            goto end;
+        }
+    }
+
+    if (cJSON_AddStringToObject(deviceObj, "manufacturer", "Sonoff") == NULL) {
+        goto end;
+    }
+    if (cJSON_AddStringToObject(deviceObj, "model", mqtt_sonoff_conf.device_model) == NULL) {
+        goto end;
+    }
+
+    char uuid[128];
+    sprintf(uuid, "%s_%s", mqtt_sonoff_conf.device_id, *suffix);
+    if (cJSON_AddStringToObject(confObject, "unique_id", uuid) == NULL) {
+        goto end;
+    }
+    if (cJSON_AddNumberToObject(confObject, "qos", conf.qos) == NULL) {
+        goto end;
+    }
+    return 1;
+end:
+    printf("Error generating common json config payload");
+    return 0;
+
 }

@@ -37,8 +37,8 @@ void config_parse()
     if(fp==NULL)
         return;
 
-    while(!feof(fp)){
-        fgets(buf, MAX_LINE_LENGTH, fp);
+    while(fgets(buf, MAX_LINE_LENGTH, fp))
+    {
         if(buf[0]!='#') // ignore the comments
         {
             parsed=sscanf(buf, "%[^=] = %s", key, value);
@@ -58,4 +58,36 @@ static int open_conf_file(const char* filename)
     }
 
     return 0;
+}
+
+void conf_set_double(const char* value, double* conf){
+    double dvalue;
+
+    errno=0;
+    dvalue=strtod(value, NULL);
+    if(errno==0)
+        *conf=dvalue;
+}
+
+void conf_set_int(const char* value, int* conf){
+    int nvalue;
+
+    errno=0;
+    nvalue=strtol(value, NULL, 10);
+    if(errno==0)
+        *conf=nvalue;
+}
+
+char *conf_set_string(const char* value){
+    char *conf;
+    conf = malloc(strlen(value)+1);
+    //strcpy will probably segfault if conf is null
+    if (conf == NULL) {
+        perror("Memory allocation failed");
+        return NULL;
+    }
+
+    strcpy(conf, value);
+
+    return conf;
 }

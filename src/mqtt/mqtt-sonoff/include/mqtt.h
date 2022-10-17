@@ -11,7 +11,7 @@
 
 typedef struct
 {
-    char        client_id[64];
+    char       *client_id;
     char       *user;
     char       *password;
     char        host[128];

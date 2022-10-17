@@ -170,10 +170,6 @@ static void handle_config(const char *key, const char *value)
     {
         strcpy(conf.host, value);
     }
-    else if(strcmp(key, "MQTT_CLIENT_ID")==0)
-    {
-        strcpy(conf.client_id, value);
-    }
     else if(strcmp(key, "MQTT_USER")==0)
     {
         conf.user=conf_set_string(value);
@@ -363,6 +359,7 @@ static void handle_colink_config(const char *key, const char *value)
     if(strcmp(key, "devid")==0)
     {
         mqtt_sonoff_conf.device_id=conf_set_string(tmpValue+1); //skip leading "
+        conf.client_id=mqtt_sonoff_conf.device_id;
     }
     else if(strcmp(key, "model")==0)
     {

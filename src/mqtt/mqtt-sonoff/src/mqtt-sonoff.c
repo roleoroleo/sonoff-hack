@@ -337,6 +337,7 @@ static void init_mqtt_sonoff_config()
 static void init_sonoff_colink_config(){
     mqtt_sonoff_conf.device_id=NULL;
     mqtt_sonoff_conf.device_model=NULL;
+    mqtt_sonoff_conf.fw_version=NULL;
 
     if(init_config(COLINK_CONF_FILE)!=0)
     {
@@ -347,6 +348,8 @@ static void init_sonoff_colink_config(){
     config_set_handler(&handle_colink_config);
     config_parse();
     stop_config();
+
+    mqtt_sonoff_conf.fw_version=get_conf_file_single(HACK_VERSION_FILE);
 }
 
 static void handle_colink_config(const char *key, const char *value)
@@ -519,6 +522,11 @@ static int json_common(cJSON *confObject, const char **suffix) {
     }
     if (cJSON_AddStringToObject(deviceObj, "model", mqtt_sonoff_conf.device_model) == NULL) {
         goto end;
+    }
+    if (mqtt_sonoff_conf.fw_version) {
+        if (cJSON_AddStringToObject(deviceObj, "sw_version", mqtt_sonoff_conf.fw_version) == NULL) {
+            goto end;
+        }
     }
 
     char uuid[128];

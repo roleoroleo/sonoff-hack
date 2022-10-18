@@ -67,8 +67,8 @@ APP.eventsfile = (function($) {
                         var record = data.records[i];
                         html += "<tr><td>" + record.time + "</td>";
                         if (record.thumbfilename != "") {
-                            html += "<td><a href=\"record/" + getUrlVar('dirname') + "/" + record.thumbfilename + "\">";
-                            html += "<img src=\"record/" + getUrlVar('dirname') + "/" + record.thumbfilename + "\" width=\"100\"></a></td>";
+                            html += "<td><a href=\"alarm_record/" + getUrlVar('dirname') + "/" + record.thumbfilename + "\">";
+                            html += "<img src=\"alarm_record/" + getUrlVar('dirname') + "/" + record.thumbfilename + "\" width=\"100\"></a></td>";
                         } else {
                             html += "<td>No preview</td>";
                         }

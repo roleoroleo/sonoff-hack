@@ -291,12 +291,6 @@ static void init_mqtt_sonoff_config()
     stop_config();
 
     // Setting default for all char* vars
-    if(conf.mqtt_prefix == NULL)
-    {
-        conf.mqtt_prefix=default_prefix;
-        mqtt_sonoff_conf.mqtt_prefix=conf.mqtt_prefix;
-    }
-
     if(conf.topic_birth_will == NULL)
     {
         conf.topic_birth_will=default_topic;
@@ -346,6 +340,14 @@ static void init_sonoff_colink_config(){
     stop_config();
 
     mqtt_sonoff_conf.fw_version=get_conf_file_single(HACK_VERSION_FILE);
+
+    if(conf.mqtt_prefix == NULL)
+    {
+        char prefix[128];
+        sprintf(prefix, "%s/%s", default_prefix, mqtt_sonoff_conf.device_id);
+        conf.mqtt_prefix=conf_set_string(prefix);
+        mqtt_sonoff_conf.mqtt_prefix=conf.mqtt_prefix;
+    }
 }
 
 static void handle_colink_config(const char *key, const char *value)

@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -e
+
+SCRIPT_DIR=$(cd `dirname $0` && pwd)
+cd $SCRIPT_DIR
+
+cd cJSON/build
+
+cmake .. \
+    -DCMAKE_TOOLCHAIN_FILE="$SCRIPT_DIR/arm-sonoff-linux-uclibcgnueabi-toolchain.cmake" \
+    -DENABLE_CJSON_TEST=Off \
+    -DCMAKE_INSTALL_PREFIX=$SCRIPT_DIR/_install \
+    -DENABLE_TARGET_EXPORT=Off
+
+make -j$(nproc)
+make install/strip

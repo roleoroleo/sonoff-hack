@@ -82,10 +82,9 @@ void mqtt_loop(void)
 
 void mqtt_init_conf(mqtt_conf_t *conf)
 {
-    strcpy(conf->client_id, "sonoff-cam");
-
     conf->user=NULL;
     conf->password=NULL;
+    conf->client_id=NULL;
 
     strcpy(conf->host, "127.0.0.1");
     strcpy(conf->bind_address, "0.0.0.0");

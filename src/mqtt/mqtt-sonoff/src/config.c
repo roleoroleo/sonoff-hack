@@ -91,3 +91,27 @@ char *conf_set_string(const char* value){
 
     return conf;
 }
+
+char *get_conf_file_single(const char* filename)
+{
+    char buf[MAX_LINE_LENGTH];
+    FILE *fps;
+
+    fps=fopen(filename, "r");
+    if(fps==NULL)
+    {
+        fprintf(stderr, "Can't open file \"%s\": %s\n", filename, strerror(errno));
+        return NULL;
+    }
+
+    while(fgets(buf, MAX_LINE_LENGTH, fps))
+    {
+        if(buf[0]!='#') // ignore comments
+        {
+            buf[strcspn(buf, "\n")] = 0;
+            fclose(fps);
+            return conf_set_string(buf);
+        }
+    }
+    return NULL;
+}

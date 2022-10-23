@@ -1,0 +1,46 @@
+From 2b054ab0be2f16d1c362165e6bda5018f4b598ca Mon Sep 17 00:00:00 2001
+From: Tim Lunn <tim@feathertop.org>
+Date: Sat, 8 Oct 2022 11:26:40 +1100
+Subject: [PATCH] mosquitto remove pthread_setname
+
+---
+ lib/dummypthread.h | 2 +-
+ lib/thread_mosq.c  | 7 -------
+ 2 files changed, 1 insertion(+), 8 deletions(-)
+
+diff --git a/lib/dummypthread.h b/lib/dummypthread.h
+index c0eb2c15..eef64e58 100644
+--- a/lib/dummypthread.h
++++ b/lib/dummypthread.h
+@@ -4,7 +4,7 @@
+ #define pthread_create(A, B, C, D)
+ #define pthread_join(A, B)
+ #define pthread_cancel(A)
+-#define pthread_testcancel()
++#define pthread_testcancel(void)
+ 
+ #define pthread_mutex_init(A, B)
+ #define pthread_mutex_destroy(A)
+diff --git a/lib/thread_mosq.c b/lib/thread_mosq.c
+index a792bc12..254bd8df 100644
+--- a/lib/thread_mosq.c
++++ b/lib/thread_mosq.c
+@@ -43,13 +43,6 @@ int mosquitto_loop_start(struct mosquitto *mosq)
+ 
+ 	mosq->threaded = mosq_ts_self;
+ 	if(!pthread_create(&mosq->thread_id, NULL, mosquitto__thread_main, mosq)){
+-#if defined(__linux__)
+-		pthread_setname_np(mosq->thread_id, "mosquitto loop");
+-#elif defined(__NetBSD__)
+-		pthread_setname_np(mosq->thread_id, "%s", "mosquitto loop");
+-#elif defined(__FreeBSD__) || defined(__OpenBSD__)
+-		pthread_set_name_np(mosq->thread_id, "mosquitto loop");
+-#endif
+ 		return MOSQ_ERR_SUCCESS;
+ 	}else{
+ 		return MOSQ_ERR_ERRNO;
+-- 
+2.37.2
+
+
+

@@ -59,8 +59,9 @@ This firmware contains the following features.
   - Snapshot service - allows to get a jpg (1920x1080) with a web request.
     - http://IP-CAM/cgi-bin/snapshot.sh
   - MQTT - Motion detection through mqtt protocol.
+  - MQTT - Auto Discovery of sensors in Home Assistant.
   - Web server - web configuration interface (port 80).
-  - SSH server - dropbear.
+  - SSH and SFTP server - dropbear.
   - FTP server.
   - Authentication for HTTP, RTSP and ONVIF server.
   - Management of motion detect events and videos through a web page.
@@ -122,7 +123,9 @@ For both streams if you've set a custom username and password on the config scre
 ## Home Assistant integration
 Are you using Home Assistant?
 
-Do you want to integrate your cam?
+Once MQTT is configured on the cam, Home Assistant will automatically discover the camera and create the mqtt motion sensors. You just need to find your camera under device settings and add these to your dashboard.
+
+Do you want to integrate more features of your cam?
 
 Try this custom integration:
 https://github.com/roleoroleo/yi-hack_ha_integration

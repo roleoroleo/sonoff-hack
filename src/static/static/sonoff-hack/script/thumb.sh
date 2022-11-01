@@ -72,14 +72,16 @@ checkFiles ()
 {
 	#
 	logAdd "[INFO] checkFiles"
+
+	L_PATH=$(find . -type d -maxdepth 1 | sort -r | head -1)
 	#
 	# Search for new files.
 	if [ -f "/usr/bin/sort" ]; then
 		# Default: Optimized for busybox
-		L_FILE_LIST="$(find "${FOLDER_TO_WATCH}" -mindepth ${FOLDER_MINDEPTH} -type f \( -name "${FILE_WATCH_PATTERN}" \) | sort -k 1 -n)"
+		L_FILE_LIST="$(find "${L_PATH}" -mindepth ${FOLDER_MINDEPTH} -type f \( -name "${FILE_WATCH_PATTERN}" \) | sort -k 1 -n)"
 	else
 		# Alternative: Unsorted output
-		L_FILE_LIST="$(find "${FOLDER_TO_WATCH}" -mindepth ${FOLDER_MINDEPTH} -type f \( -name "${FILE_WATCH_PATTERN}" \))"
+		L_FILE_LIST="$(find "${L_PATH}" -mindepth ${FOLDER_MINDEPTH} -type f \( -name "${FILE_WATCH_PATTERN}" \))"
 	fi
 	if [ -z "${L_FILE_LIST}" ]; then
 		return 0

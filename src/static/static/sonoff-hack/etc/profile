@@ -1,0 +1,6 @@
+# Dropbear should have set correct PATH
+if [ -z "$PATH" ]; then
+    export PATH=/usr/bin:/bin:/gm/bin:/gm/tools:/mnt/mmc/sonoff-hack/bin:/mnt/mmc/sonoff-hack/usr/bin
+fi
+export LD_LIBRARY_PATH=/lib:/mnt/mtd/ipc/app/lib:/mnt/mmc/sonoff-hack/lib:$LD_LIBRARY_PATH
+PS1="[$USER@\h]# "

@@ -51,9 +51,13 @@ cp -f $SONOFF_HACK_PREFIX/etc/hostname /etc/hostname
 hostname -F $SONOFF_HACK_PREFIX/etc/hostname
 export TZ=$(get_config TIMEZONE)
 
+if [[ $(get_config SYSLOGD) == "yes" ]] ; then
+    syslogd
+fi
+
 if [[ $(get_config SWAP_FILE) == "yes" ]] ; then
     SD_PRESENT=$(mount | grep mmc | grep -c ^)
-    if [[ $SD_PRESENT -eq 1 ]]; then
+    if [[ $SD_PRESENT -ge 1 ]]; then
         if [[ -f /mnt/mmc/swapfile ]]; then
             swapon /mnt/mmc/swapfile
         else
@@ -133,6 +137,7 @@ fi
 sed -i 's|^\(root:\)[^:]*:|root:'${PASSWORD_MD5}':|g' "$SONOFF_HACK_PREFIX/etc/shadow"
 mount -o bind $SONOFF_HACK_PREFIX/etc/passwd /etc/passwd
 mount -o bind $SONOFF_HACK_PREFIX/etc/shadow /etc/shadow
+mount -o bind $SONOFF_HACK_PREFIX/etc/profile /etc/profile
 
 case $(get_config RTSP_PORT) in
     ''|*[!0-9]*) RTSP_PORT=554 ;;

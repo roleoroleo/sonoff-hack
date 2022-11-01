@@ -2,6 +2,9 @@
 
 echo "############## Starting Hack ##############"
 
+# Fix log path
+mount --bind /var/sdcard/log /var/log
+
 # Remove audio messages during boot
 touch /tmp/di.wav
 touch /tmp/Internet_connected_Welcome_to_use_cloud_camera.wav

@@ -8,7 +8,8 @@ DAEMON_NO_CHDIR       = 1
 DAEMON_NO_CLOSE_STDIO = 0
 
 
-GSOAP_VERSION     = 2.8.92
+GSOAP_VERSION     = 2.8.104
+GSOAP_HASH        = 0199360d3f631720ad9846d96b08390c7ff8756d797239be1121b2a52ac0ffbe7df32b01444f8ea7a4aa1d836d9fa93cf5b2879708e93f7f07972fc6d4df92b1
 GSOAP_INSTALL_DIR = ./gsoap-2.8
 GSOAP_DIR         = $(GSOAP_INSTALL_DIR)/gsoap
 GSOAP_CUSTOM_DIR  = $(GSOAP_DIR)/custom
@@ -72,9 +73,10 @@ endif
 
 
 
-SOAP_SRC = $(GSOAP_DIR)/stdsoap2.cpp        \
-           $(GSOAP_DIR)/dom.cpp             \
-           $(GSOAP_CUSTOM_DIR)/duration.c
+SOAP_SRC = $(GSOAP_DIR)/stdsoap2.cpp            \
+           $(GSOAP_DIR)/dom.cpp                 \
+           $(GSOAP_CUSTOM_DIR)/duration.c       \
+           $(GSOAP_CUSTOM_DIR)/struct_timeval.c
 
 
 
@@ -264,10 +266,8 @@ define build_gsoap
     # get archive
     if [ ! -f SDK/gsoap.zip ]; then \
         mkdir -p SDK; \
-        wget -O ./SDK/gsoap.zip.tmp "http://dl.t2-project.org/mirror/trunk/g/gsoap_$(GSOAP_VERSION).zip" || \
-        wget -O ./SDK/gsoap.zip.tmp "https://sourceforge.net/projects/gsoap2/files/gsoap-2.8/gsoap_$(GSOAP_VERSION).zip/download"   || \
-        wget -O ./SDK/gsoap.zip.tmp "https://sourceforge.net/projects/gsoap2/files/oldreleases/gsoap_$(GSOAP_VERSION).zip/download" || \
-        wget -O ./SDK/gsoap.zip.tmp "https://master.dl.sourceforge.net/project/gsoap2/oldreleases/gsoap_$(GSOAP_VERSION).zip"       && \
+        wget -O ./SDK/gsoap.zip.tmp \
+        "https://src.fedoraproject.org/lookaside/extras/gsoap/gsoap_$(GSOAP_VERSION).zip/sha512/$(GSOAP_HASH)/gsoap_$(GSOAP_VERSION).zip" && \
         mv ./SDK/gsoap.zip.tmp ./SDK/gsoap.zip; \
     fi
 

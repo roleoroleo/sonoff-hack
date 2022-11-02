@@ -16,7 +16,7 @@ GSOAP_CUSTOM_DIR  = $(GSOAP_DIR)/custom
 GSOAP_PLUGIN_DIR  = $(GSOAP_DIR)/plugin
 GSOAP_IMPORT_DIR  = $(GSOAP_DIR)/import
 OPENSSL_DIR       = ./openssl
-
+OPENSSL_VERSION   = 1.1.1s
 
 SOAPCPP2          = $(GSOAP_DIR)/src/soapcpp2
 WSDL2H            = $(GSOAP_DIR)/wsdl/wsdl2h
@@ -290,23 +290,22 @@ endef
 define build_openssl
 
     # get archive
-    if [ ! -f SDK/openssl.tar.gz ]; then \
+    if [ ! -f SDK/openssl-$(OPENSSL_VERSION).tar.gz ]; then \
         mkdir -p SDK; \
-        wget -O ./SDK/openssl.tar.gz.tmp "https://www.openssl.org/source/old/1.0.2/openssl-1.0.2u.tar.gz" && \
-        mv ./SDK/openssl.tar.gz.tmp ./SDK/openssl.tar.gz; \
+        wget -P ./SDK/ "https://www.openssl.org/source/openssl-$(OPENSSL_VERSION).tar.gz"; \
     fi
 
     # untar
-    if [ ! -f openssl-1.0.2u/README ]; then \
-        tar zxvf ./SDK/openssl.tar.gz; \
-        ln -s openssl-1.0.2u openssl; \
-        cp Configure.openssl openssl/Configure; \
+    if [ ! -f openssl-$(OPENSSL_VERSION)/README ]; then \
+        tar zxvf ./SDK/openssl-$(OPENSSL_VERSION).tar.gz; \
+        ln -s ./openssl-$(OPENSSL_VERSION) ./openssl; \
     fi
 
     # build
-    if [ ! -f openssl/libcrypto.so.1.0.0 ] || [ ! -f openssl/libssl.so.1.0.0 ]; then \
+    if [ ! -f openssl/libcrypto.so.${OPENSSL_VERSION:0:3} ] || [ ! -f openssl/libssl.so.${OPENSSL_VERSION:0:3} ]; then \
         cd openssl; \
-        ./Configure linux-sonoff --cross-compile-prefix=arm-sonoff-linux-uclibcgnueabi- && \
+        ./Configure linux-generic32 --cross-compile-prefix=arm-sonoff-linux-uclibcgnueabi- \
+        CFLAGS="-Os -ffunction-sections -fdata-sections" no-async && \
         make; \
         cd ..;\
     fi

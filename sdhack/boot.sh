@@ -3,6 +3,7 @@
 echo "############## Starting Hack ##############"
 
 # Fix log path
+mkdir -p /var/log
 mount --bind /var/sdcard/log /var/log
 
 # Remove audio messages during boot

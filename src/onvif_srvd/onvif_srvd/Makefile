@@ -226,13 +226,13 @@ $(GENERATED_DIR)/onvif.h:
 	@$(build_openssl)
 	@$(build_gsoap)
 	@mkdir -p $(GENERATED_DIR)
-	$(WSDL2H) -O2 -d -t ./wsdl/typemap.dat  -o $@  $(WSDL_FILES)
+	$(WSDL2H) -O4 -P -d -t ./wsdl/typemap.dat  -o $@  $(WSDL_FILES)
 	$(WSSE_IMPORT)
 
 
 
 $(GENERATED_DIR)/soapC.cpp: $(GENERATED_DIR)/onvif.h
-	$(SOAPCPP2) -j -L -x -S -d $(GENERATED_DIR) -I$(GSOAP_DIR):$(GSOAP_IMPORT_DIR) $<
+	$(SOAPCPP2) -2 -j -L -x -S -d $(GENERATED_DIR) -I$(GSOAP_DIR):$(GSOAP_IMPORT_DIR) $<
 
 
 

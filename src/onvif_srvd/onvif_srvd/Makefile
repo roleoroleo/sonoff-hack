@@ -305,8 +305,9 @@ define build_openssl
     if [ ! -f openssl/libcrypto.so.${OPENSSL_VERSION:0:3} ] || [ ! -f openssl/libssl.so.${OPENSSL_VERSION:0:3} ]; then \
         cd openssl; \
         ./Configure linux-generic32 --cross-compile-prefix=arm-sonoff-linux-uclibcgnueabi- \
-        CFLAGS="-Os -ffunction-sections -fdata-sections" no-async && \
-        make; \
+        CFLAGS="-Os -ffunction-sections -fdata-sections" \
+        no-async no-shared no-weak-ssl-ciphers no-hw no-engine no-dso no-dtls no-srp no-sm2 no-psk no-tests && \
+        make build_libs; \
         cd ..;\
     fi
 endef

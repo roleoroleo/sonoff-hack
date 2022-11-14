@@ -21,6 +21,17 @@ do
     VAL="$(echo $QUERY_STRING | cut -d'&' -f$I | cut -d'=' -f2)"
 
     if [ "$CONF" == "dir" ] ; then
+        if [ -f /tmp/.mirror ]; then
+            if [ "$VAL" == "right" ]; then
+                VAL="left"
+            elif [ "$VAL" == "left" ]; then
+                VAL="right"
+            elif [ "$VAL" == "up" ]; then
+                VAL="down"
+            elif [ "$VAL" == "down" ]; then
+                VAL="up"
+            fi
+        fi
         DIR="-a $VAL"
     elif [ "$CONF" == "time" ] ; then
         TIME="$VAL"

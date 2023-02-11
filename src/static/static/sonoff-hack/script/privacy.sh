@@ -1,7 +1,5 @@
 #!/bin/sh
 
-# for backwards compatibility
-
 CONF_FILE="etc/system.conf"
 SONOFF_HACK_PREFIX="/mnt/mmc/sonoff-hack"
 
@@ -38,40 +36,25 @@ stop_rtsp()
     killall rtspd
 }
 
-
-. $SONOFF_HACK_PREFIX/www/cgi-bin/validate.sh
-
-if ! $(validateQueryString $QUERY_STRING); then
-    printf "Content-type: application/json\r\n\r\n"
-    printf "{\n"
-    printf "\"%s\":\"%s\"\\n" "error" "true"
-    printf "}"
-    exit
-fi
-
-VALUE="none"
 RES="none"
 
-CONF="$(echo $QUERY_STRING | cut -d'&' -f1 | cut -d'=' -f1)"
-VAL="$(echo $QUERY_STRING | cut -d'&' -f1 | cut -d'=' -f2)"
-
-if [ "$CONF" == "value" ] ; then
-    VALUE="$VAL"
+if [ $# -ne 1 ]; then
+    exit
 fi
 
 init_config
 
-if [ "$VALUE" == "on" ] ; then
+if [ "$1" == "on" ] || [ "$1" == "yes" ]; then
     touch /tmp/privacy
     touch /tmp/snapshot.disabled
     stop_rtsp
     RES="on"
-elif [ "$VALUE" == "off" ] ; then
+elif [ "$1" == "off" ] || [ "$1" == "no" ]; then
     rm -f /tmp/snapshot.disabled
     start_rtsp
     rm -f /tmp/privacy
     RES="off"
-elif [ "$VALUE" == "status" ] ; then
+elif [ "$1" == "status" ] ; then
     if [ -f /tmp/privacy ]; then
         RES="on"
     else
@@ -79,10 +62,6 @@ elif [ "$VALUE" == "status" ] ; then
     fi
 fi
 
-printf "Content-type: application/json\r\n\r\n"
-printf "{\n"
 if [ ! -z "$RES" ]; then
-    printf "\"status\": \"$RES\",\n"
+    echo $RES
 fi
-printf "\"%s\":\"%s\"\\n" "error" "false"
-printf "}"

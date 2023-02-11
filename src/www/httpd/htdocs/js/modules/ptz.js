@@ -183,8 +183,9 @@ APP.ptz = (function($) {
             jQuery.get('cgi-bin/snapshot.sh?base64=yes', function(data) {
                 image = document.getElementById('imgSnap');
                 image.src = 'data:image/jpeg;base64,' + data;
-            })
-            setTimeout(p, interval);
+            }).always(function() {
+                setTimeout(p, interval);
+            });
         })();
     }
 

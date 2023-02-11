@@ -120,6 +120,12 @@ For both streams if you've set a custom username and password on the config scre
 * PTZ Port: 1000
     * In Blue Iris you need to manually enable "PTZ Controls" and change it to "ONFIV (OXML)" in the camera settings. If PTZ doesn't work delete the camera and add it again, also try to set the port to "1000" manually.
 
+## PTZ not working
+If the PTZ controls aren't working at all even on the Web Interface you may have to experiment which of the PTZ control binaries you need.  
+Connect via SSH onto your camera and first run `ptz -a right` to confirm that it's indeed not moving. Afterwards try `ptz_h -a right` or `ptz_p -a right` and see which one makes your camera move.  
+Once you found which one works go to your SD card (or connect via SSH/FTP) and rename the corrosponding `ptz_h` or `ptz_p` file in "sonoff-hack/bin/" (for SSH/FTP it's "/mnt/mmc/sonoff-hack/bin/") to just `ptz`. Reboot your camera and enjoy some movement :)  
+More infos here: https://github.com/roleoroleo/sonoff-hack/issues/93#issuecomment-1351556506
+
 ## Home Assistant integration
 Are you using Home Assistant?
 

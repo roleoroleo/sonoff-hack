@@ -239,6 +239,7 @@ fi
 
 if [[ $(get_config MQTT) == "yes" ]] ; then
     $SONOFF_HACK_PREFIX/bin/mqtt-sonoff &
+    $SONOFF_HACK_PREFIX/bin/mqtt-config &
 fi
 
 if [[ $RTSP_PORT != "554" ]] ; then

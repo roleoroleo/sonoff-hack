@@ -125,7 +125,7 @@ int mqtt_connect()
     int ret;
     char topic[128];
 
-    printf("Trying to connect... ");
+    fprintf(stderr, "Trying to connect... ");
 
     if(mqtt_conf->user!=NULL && strcmp(mqtt_conf->user, "")!=0)
     {
@@ -167,14 +167,14 @@ int mqtt_connect()
         do
         {
             ret=mosquitto_loop(mosq, -1, 1);
-            printf(".");
+            fprintf(stderr, ".");
             if(conn_state!=CONN_CONNECTED)
                 usleep(100*1000);
         } while(conn_state==CONN_CONNECTING);
 
     }
 
-    printf("\nconnected!\n");
+    fprintf(stderr, "\nconnected!\n");
 
     return 0;
 }
@@ -280,5 +280,5 @@ static void publish_callback(struct mosquitto *mosq, void *obj, int mid)
 
 static void log_callback(struct mosquitto *mosq, void *obj, int level, const char *str)
 {
-    printf("%s\n", str);
+    fprintf(stderr, "%s\n", str);
 }

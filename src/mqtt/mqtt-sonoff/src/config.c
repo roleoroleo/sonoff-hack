@@ -92,6 +92,20 @@ char *conf_set_string(const char* value){
     return conf;
 }
 
+char *conf_set_strings(const char* value1, const char* value2){
+    char *conf;
+    conf = malloc(strlen(value1)+strlen(value2)+1);
+    //strcpy will probably segfault if conf is null
+    if (conf == NULL) {
+        perror("Memory allocation failed");
+        return NULL;
+    }
+
+    sprintf(conf, "%s%s", value1, value2);
+
+    return conf;
+}
+
 char *get_conf_file_single(const char* filename)
 {
     char buf[MAX_LINE_LENGTH];

@@ -24,6 +24,7 @@
 typedef struct
 {
     char    *mqtt_prefix;
+    char    *mqtt_prefix_stat;
     char    *topic_birth_will;
     char    *topic_motion;
     char    *topic_motion_image;

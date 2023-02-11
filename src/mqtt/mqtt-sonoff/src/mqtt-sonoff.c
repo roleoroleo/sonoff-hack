@@ -33,6 +33,8 @@ char *default_start = "motion_start";
 char *default_stop = "motion_stop";
 char *default_topic = EMPTY_TOPIC;
 
+extern char *sql_cmd_params[][2];
+
 void callback_motion_start()
 {
     char topic[128];
@@ -114,9 +116,32 @@ void callback_motion_start()
     mqtt_send_message(&msg, conf.retain_motion);
 }
 
+void callback_command(void *arg)
+{
+    char topic[128];
+    char *key, *value;
+    mqtt_msg_t msg;
+    SQL_COMMAND_TYPE *cmd_type = (SQL_COMMAND_TYPE *) arg;
+
+    fprintf(stderr, "CALLBACK COMMAND\n");
+
+    key = sql_cmd_params[*cmd_type][0];
+    value = sql_cmd_params[*cmd_type][1];
+
+    // Send stat message
+    msg.msg=value;
+    msg.len=strlen(msg.msg);
+    msg.topic=topic;
+
+    sprintf(topic, "%s/camera/%s", mqtt_sonoff_conf.mqtt_prefix_stat, key);
+
+    mqtt_send_message(&msg, 1);
+}
+
 int main(int argc, char **argv)
 {
     int ret;
+    SQL_COMMAND_TYPE privacy = -1;
 
     setbuf(stdout, NULL);
     setbuf(stderr, NULL);
@@ -143,11 +168,26 @@ int main(int argc, char **argv)
         exit(EXIT_FAILURE);
 
     sql_set_callback(SQL_MSG_MOTION_START, &callback_motion_start);
+    sql_set_callback(SQL_MSG_COMMAND, &callback_command);
 
     while(1)
     {
         mqtt_check_connection();
         mqtt_loop();
+
+        // Check if privacy is enabled
+        if (access("/tmp/privacy", F_OK ) == 0 ) {
+            if (privacy != PRIVACY_ON) {
+                privacy = PRIVACY_ON;
+                callback_command((void *) &privacy);
+            }
+        } else {
+            if (privacy != PRIVACY_OFF) {
+                privacy = PRIVACY_OFF;
+                callback_command((void *) &privacy);
+            }
+        }
+
         usleep(500*1000);
     }
 
@@ -210,6 +250,7 @@ static void handle_config(const char *key, const char *value)
     {
         conf.mqtt_prefix=conf_set_string(value);
         mqtt_sonoff_conf.mqtt_prefix=conf.mqtt_prefix;
+        mqtt_sonoff_conf.mqtt_prefix_stat=conf_set_strings(value, "/stat");
     }
     else if(strcmp(key, "TOPIC_BIRTH_WILL")==0)
     {
@@ -269,6 +310,7 @@ static void init_mqtt_sonoff_config()
 {
     // Setting conf vars to NULL
     mqtt_sonoff_conf.mqtt_prefix=NULL;
+    mqtt_sonoff_conf.mqtt_prefix_stat=NULL;
     mqtt_sonoff_conf.topic_birth_will=NULL;
     mqtt_sonoff_conf.topic_motion=NULL;
     mqtt_sonoff_conf.topic_motion_image=NULL;
@@ -347,6 +389,7 @@ static void init_sonoff_colink_config(){
         sprintf(prefix, "%s/%s", default_prefix, mqtt_sonoff_conf.device_id);
         conf.mqtt_prefix=conf_set_string(prefix);
         mqtt_sonoff_conf.mqtt_prefix=conf.mqtt_prefix;
+        mqtt_sonoff_conf.mqtt_prefix_stat=conf_set_strings(prefix, "/stat");
     }
 }
 

@@ -19,6 +19,7 @@ void config_parse();
 void conf_set_double(const char* value, double* conf);
 void conf_set_int(const char* value, int* conf);
 char *conf_set_string(const char* value);
+char *conf_set_strings(const char* value1, const char* value2);
 char *get_conf_file_single(const char* filename);
 
 #endif // CONFIG_H

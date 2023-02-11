@@ -48,9 +48,11 @@ if [ "$1" == "on" ] || [ "$1" == "yes" ]; then
     touch /tmp/privacy
     touch /tmp/snapshot.disabled
     stop_rtsp
+    killall AVRecorder
     RES="on"
 elif [ "$1" == "off" ] || [ "$1" == "no" ]; then
     rm -f /tmp/snapshot.disabled
+    /mnt/mtd/ipc/app/AVRecorder &
     start_rtsp
     rm -f /tmp/privacy
     RES="off"

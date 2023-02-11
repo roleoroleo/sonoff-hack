@@ -65,9 +65,11 @@ if [ "$VALUE" == "on" ] ; then
     touch /tmp/privacy
     touch /tmp/snapshot.disabled
     stop_rtsp
+    killall AVRecorder
     RES="on"
 elif [ "$VALUE" == "off" ] ; then
     rm -f /tmp/snapshot.disabled
+    /mnt/mtd/ipc/app/AVRecorder &
     start_rtsp
     rm -f /tmp/privacy
     RES="off"

@@ -18,10 +18,9 @@ mount --bind /tmp/di.wav $WAV_FILE_DIR/di.wav
 mount --bind /tmp/Internet_connected_Welcome_to_use_cloud_camera.wav $WAV_FILE_DIR/Internet_connected_Welcome_to_use_cloud_camera.wav
 mount --bind /tmp/WiFi_connect_success.wav $WAV_FILE_DIR/WiFi_connect_success.wav
 
-# Fix hostname
+# Add script for network management
 cp /mnt/mtd/ipc/app/script/dhcp.sh /tmp/dhcp.sh
-HOSTNAME=$(cat /var/sdcard/sonoff-hack/etc/hostname)
-sed -i "s/dhcpname=\$2/dhcpname=$HOSTNAME/g" /tmp/dhcp.sh
+sed -i "s/udhcpc -a.*/\/mnt\/mmc\/network.sh \$1/g" /tmp/dhcp.sh
 mount --bind /tmp/dhcp.sh /mnt/mtd/ipc/app/script/dhcp.sh
 
 # Remove colink binary

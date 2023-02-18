@@ -27,11 +27,17 @@ if [ "$VAL" == "info" ] ; then
 
     FW_VERSION=`cat /mnt/mmc/sonoff-hack/version`
     LATEST_FW=`/mnt/mmc/sonoff-hack/usr/bin/wget -O -  https://api.github.com/repos/roleoroleo/sonoff-hack/releases/latest 2>&1 | grep '"tag_name":' | sed -r 's/.*"([^"]+)".*/\1/'`
+    if [ -f /tmp/sd/${MODEL_SUFFIX}_x.x.x.tgz ]; then
+        LOCAL_FW="true"
+    else
+        LOCAL_FW="false"
+    fi
 
     printf "{\n"
     printf "\"%s\":\"%s\",\n" "error" "false"
     printf "\"%s\":\"%s\",\n" "fw_version"      "$FW_VERSION"
-    printf "\"%s\":\"%s\"\n" "latest_fw"       "$LATEST_FW"
+    printf "\"%s\":\"%s\",\n" "latest_fw"       "$LATEST_FW"
+    printf "\"%s\":\"%s\"\n" "local_fw"         "$LOCAL_FW"
     printf "}"
 
 elif [ "$VAL" == "upgrade" ] ; then

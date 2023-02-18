@@ -340,7 +340,9 @@ mkdir -p /var/spool/cron/crontabs/
 if [ ! -z "$CRONTAB" ]; then
     echo -e "$CRONTAB" > /var/spool/cron/crontabs/root
 fi
-echo "* * * * * /mnt/mmc/sonoff-hack/script/thumb.sh cron" >> /var/spool/cron/crontabs/root
+if [[ $(get_config SNAPSHOT_VIDEO) == "yes" ]] ; then
+    echo "* * * * * /mnt/mmc/sonoff-hack/script/thumb.sh cron" >> /var/spool/cron/crontabs/root
+fi
 if [ "$FREE_SPACE" != "0" ]; then
     echo "0 * * * * sleep 20; /mnt/mmc/sonoff-hack/script/clean_records.sh $FREE_SPACE" >> /var/spool/cron/crontabs/root
 fi

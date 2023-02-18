@@ -73,7 +73,7 @@ checkFiles ()
 	#
 	logAdd "[INFO] checkFiles"
 
-	L_PATH=$(find . -type d -maxdepth 1 | sort -r | head -1)
+	L_PATH=$(find "${FOLDER_TO_WATCH}" -type d -maxdepth 1 | sort -r | head -1)
 	#
 	# Search for new files.
 	if [ -f "/usr/bin/sort" ]; then
@@ -91,21 +91,32 @@ checkFiles ()
 		BASE_NAME=$(lbasename "$file")
 		if [ ! -f $BASE_NAME.jpg ]; then
 			minimp4_sonoff -t 0 $file $BASE_NAME.h26x
-			if [ $? -lt 0 ]; then
+			if [ $? -ne 0 ]; then
 				logAdd "[ERROR] checkFiles: demux mp4 FAILED - [${file}]."
-				return 0
-			fi
-			imggrabber -f $BASE_NAME.h26x -r high -q 50 -w > $BASE_NAME.jpg
-			if [ $? -lt 0 ]; then
-				logAdd "[ERROR] checkFiles: create jpg FAILED - [${file}]."
 				rm -f $BASE_NAME.h26x
 				return 0
 			fi
+			imggrabber -f $BASE_NAME.h26x -r high -q 50 -w > $BASE_NAME.jpg
+			if [ $? -ne 0 ]; then
+				logAdd "[ERROR] checkFiles: create jpg FAILED - [${file}]."
+				rm -f $BASE_NAME.h26x
+				rm -f $BASE_NAME.jpg
+				return 0
+			fi
 			rm -f $BASE_NAME.h26x
+			resize_jpg -i $BASE_NAME.jpg -o $BASE_NAME.low.jpg
+			if [ $? -ne 0 ]; then
+				logAdd "[ERROR] checkFiles: resize jpg FAILED - [${file}]."
+				rm -f $BASE_NAME.h26x
+				rm -f $BASE_NAME.jpg
+				rm -f $BASE_NAME.low.jpg
+				return 0
+			fi
+			mv $BASE_NAME.low.jpg $BASE_NAME.jpg
 			logAdd "[INFO] checkFiles: createThumb SUCCEEDED - [${file}]."
 			sync
 		else
-			logAdd "[INFO] checkFiles: ignore file [${file}] - already present."
+			logAdd "[INFO] checkFiles: ignore file [$BASE_NAME.jpg] - already present."
 		fi
 		#
 	done
@@ -134,9 +145,7 @@ serviceMain ()
 			chmod -R 0755 "${FOLDER_TO_WATCH}"
 		fi
 		#
-#		if [[ $(get_config FTP_UPLOAD) == "yes" ]] ; then
-			checkFiles
-#		fi
+		checkFiles
 		#
 		if [ "${1}" = "--one-shot" ]; then
 			break

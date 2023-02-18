@@ -30,6 +30,7 @@ mkdir -p ../_install/etc/wm_res || exit 1
 
 cp ./snapshot ../_install/bin || exit 1
 cp ./imggrabber ../_install/bin || exit 1
+cp ./resize_jpg ../_install/bin || exit 1
 cp -r ./wm_res/* ../_install/etc/wm_res || exit 1
 
 ${STRIP} ../_install/bin/* || exit 1

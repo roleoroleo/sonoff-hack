@@ -1,5 +1,6 @@
 OBJECTS_1 = snapshot.o
 OBJECTS_2 = add_water.o convert2jpg.o imggrabber.o water_mark.o
+OBJECTS_3 = resize_jpg.o
 FFMPEG = ffmpeg-4.0.4
 FFMPEG_DIR = ./$(FFMPEG)
 INC_FF = -I$(FFMPEG_DIR)
@@ -10,7 +11,7 @@ INC_J = -I$(JPEGLIB_DIR)
 LIB_J = $(JPEGLIB_DIR)/.libs/libjpeg.a
 OPTS = -Os -ffunction-sections -fdata-sections
 
-all: snapshot libs imggrabber
+all: snapshot libs imggrabber resize_jpg
 
 %.o : %.c $(HEADERS)
 	$(CC) -c $< $(OPTS) $(INC_J) $(INC_FF) -fPIC -o $@
@@ -27,11 +28,16 @@ imggrabber: $(OBJECTS_2)
 	$(CC) -Os -Wl,--gc-sections $(OBJECTS_2) $(LIB_J) $(LIB_FF) -fPIC -o $@
 	$(STRIP) $@
 
+resize_jpg: $(OBJECTS_3)
+	$(CC) -Os -Wl,--gc-sections $(OBJECTS_3) $(LIB_J) -fPIC -o $@
+	$(STRIP) $@
+
 .PHONY: clean
 
 clean:
 	rm -f snapshot
 	rm -f imggrabber
+	rm -f resize_jpg
 	rm -f $(OBJECTS_1) $(OBJECTS_2)
 	rm -rf $(FFMPEG)
 

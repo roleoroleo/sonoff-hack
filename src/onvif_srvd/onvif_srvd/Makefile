@@ -8,14 +8,15 @@ DAEMON_NO_CHDIR       = 1
 DAEMON_NO_CLOSE_STDIO = 0
 
 
-GSOAP_VERSION     = 2.8.92
+GSOAP_VERSION     = 2.8.104
+GSOAP_HASH        = 0199360d3f631720ad9846d96b08390c7ff8756d797239be1121b2a52ac0ffbe7df32b01444f8ea7a4aa1d836d9fa93cf5b2879708e93f7f07972fc6d4df92b1
 GSOAP_INSTALL_DIR = ./gsoap-2.8
 GSOAP_DIR         = $(GSOAP_INSTALL_DIR)/gsoap
 GSOAP_CUSTOM_DIR  = $(GSOAP_DIR)/custom
 GSOAP_PLUGIN_DIR  = $(GSOAP_DIR)/plugin
 GSOAP_IMPORT_DIR  = $(GSOAP_DIR)/import
 OPENSSL_DIR       = ./openssl
-
+OPENSSL_VERSION   = 1.1.1s
 
 SOAPCPP2          = $(GSOAP_DIR)/src/soapcpp2
 WSDL2H            = $(GSOAP_DIR)/wsdl/wsdl2h
@@ -72,9 +73,10 @@ endif
 
 
 
-SOAP_SRC = $(GSOAP_DIR)/stdsoap2.cpp        \
-           $(GSOAP_DIR)/dom.cpp             \
-           $(GSOAP_CUSTOM_DIR)/duration.c
+SOAP_SRC = $(GSOAP_DIR)/stdsoap2.cpp            \
+           $(GSOAP_DIR)/dom.cpp                 \
+           $(GSOAP_CUSTOM_DIR)/duration.c       \
+           $(GSOAP_CUSTOM_DIR)/struct_timeval.c
 
 
 
@@ -224,13 +226,13 @@ $(GENERATED_DIR)/onvif.h:
 	@$(build_openssl)
 	@$(build_gsoap)
 	@mkdir -p $(GENERATED_DIR)
-	$(WSDL2H) -O2 -d -t ./wsdl/typemap.dat  -o $@  $(WSDL_FILES)
+	$(WSDL2H) -O4 -P -d -t ./wsdl/typemap.dat  -o $@  $(WSDL_FILES)
 	$(WSSE_IMPORT)
 
 
 
 $(GENERATED_DIR)/soapC.cpp: $(GENERATED_DIR)/onvif.h
-	$(SOAPCPP2) -j -L -x -S -d $(GENERATED_DIR) -I$(GSOAP_DIR):$(GSOAP_IMPORT_DIR) $<
+	$(SOAPCPP2) -2 -j -L -x -S -d $(GENERATED_DIR) -I$(GSOAP_DIR):$(GSOAP_IMPORT_DIR) $<
 
 
 
@@ -264,10 +266,8 @@ define build_gsoap
     # get archive
     if [ ! -f SDK/gsoap.zip ]; then \
         mkdir -p SDK; \
-        wget -O ./SDK/gsoap.zip.tmp "http://dl.t2-project.org/mirror/trunk/g/gsoap_$(GSOAP_VERSION).zip" || \
-        wget -O ./SDK/gsoap.zip.tmp "https://sourceforge.net/projects/gsoap2/files/gsoap-2.8/gsoap_$(GSOAP_VERSION).zip/download"   || \
-        wget -O ./SDK/gsoap.zip.tmp "https://sourceforge.net/projects/gsoap2/files/oldreleases/gsoap_$(GSOAP_VERSION).zip/download" || \
-        wget -O ./SDK/gsoap.zip.tmp "https://master.dl.sourceforge.net/project/gsoap2/oldreleases/gsoap_$(GSOAP_VERSION).zip"       && \
+        wget -O ./SDK/gsoap.zip.tmp \
+        "https://src.fedoraproject.org/lookaside/extras/gsoap/gsoap_$(GSOAP_VERSION).zip/sha512/$(GSOAP_HASH)/gsoap_$(GSOAP_VERSION).zip" && \
         mv ./SDK/gsoap.zip.tmp ./SDK/gsoap.zip; \
     fi
 
@@ -290,24 +290,24 @@ endef
 define build_openssl
 
     # get archive
-    if [ ! -f SDK/openssl.tar.gz ]; then \
+    if [ ! -f SDK/openssl-$(OPENSSL_VERSION).tar.gz ]; then \
         mkdir -p SDK; \
-        wget -O ./SDK/openssl.tar.gz.tmp "https://www.openssl.org/source/old/1.0.2/openssl-1.0.2u.tar.gz" && \
-        mv ./SDK/openssl.tar.gz.tmp ./SDK/openssl.tar.gz; \
+        wget -P ./SDK/ "https://www.openssl.org/source/openssl-$(OPENSSL_VERSION).tar.gz"; \
     fi
 
     # untar
-    if [ ! -f openssl-1.0.2u/README ]; then \
-        tar zxvf ./SDK/openssl.tar.gz; \
-        ln -s openssl-1.0.2u openssl; \
-        cp Configure.openssl openssl/Configure; \
+    if [ ! -f openssl-$(OPENSSL_VERSION)/README ]; then \
+        tar zxvf ./SDK/openssl-$(OPENSSL_VERSION).tar.gz; \
+        ln -s ./openssl-$(OPENSSL_VERSION) ./openssl; \
     fi
 
     # build
-    if [ ! -f openssl/libcrypto.so.1.0.0 ] || [ ! -f openssl/libssl.so.1.0.0 ]; then \
+    if [ ! -f openssl/libcrypto.so.${OPENSSL_VERSION:0:3} ] || [ ! -f openssl/libssl.so.${OPENSSL_VERSION:0:3} ]; then \
         cd openssl; \
-        ./Configure linux-sonoff --cross-compile-prefix=arm-sonoff-linux-uclibcgnueabi- && \
-        make; \
+        ./Configure linux-generic32 --cross-compile-prefix=arm-sonoff-linux-uclibcgnueabi- \
+        CFLAGS="-Os -ffunction-sections -fdata-sections" \
+        no-async no-shared no-weak-ssl-ciphers no-hw no-engine no-dso no-dtls no-srp no-sm2 no-psk no-tests && \
+        make build_libs; \
         cd ..;\
     fi
 endef

@@ -199,7 +199,7 @@
 
 #       Uncomment the line below to use timeval with usec precision xsd:dateTime
 #       Then rerun wsdl2h and also compile and link custom/struct_timeval.c.
-# xsd__dateTime = #import "custom/struct_timeval.h" | xsd__dateTime
+xsd__dateTime = #import "custom/struct_timeval.h" | xsd__dateTime
 
 #       Uncomment the line below to use std::chrono::system_clock::time_point
 #       for xsd:dateTime.

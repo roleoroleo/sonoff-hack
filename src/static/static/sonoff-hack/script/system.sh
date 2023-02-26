@@ -287,7 +287,7 @@ if [[ $(get_config ONVIF) == "yes" ]] ; then
     echo "serial_num=$DEVICE_ID" >> $ONVIF_SRVD_CONF
     echo "ifs=$ONVIF_NETIF" >> $ONVIF_SRVD_CONF
     echo "port=$ONVIF_PORT" >> $ONVIF_SRVD_CONF
-    echo "scope=onvif://www.onvif.org/Profile/S" >> $ONVIF_SRVD_CONF
+    echo "scope=onvif://www.onvif.org/Profile/Streaming" >> $ONVIF_SRVD_CONF
     echo "" >> $ONVIF_SRVD_CONF
     if [ ! -z $ONVIF_PROFILE_0 ]; then
         echo "#Profile 0" >> $ONVIF_SRVD_CONF

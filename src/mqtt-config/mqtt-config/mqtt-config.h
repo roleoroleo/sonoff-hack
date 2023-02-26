@@ -13,7 +13,7 @@
 
 #define MQTT_CONF_FILE    "/mnt/mmc/sonoff-hack/etc/mqtt-sonoff.conf"
 #define CONF_FILE_PATH    "/mnt/mmc/sonoff-hack/etc"
-
+#define CONF2MQTT_SCRIPT  "/mnt/mmc/sonoff-hack/script/conf2mqtt.sh"
 #define SWITCH_ON_SCRIPT  "/mnt/mmc/sonoff-hack/script/privacy.sh"
 
 typedef struct

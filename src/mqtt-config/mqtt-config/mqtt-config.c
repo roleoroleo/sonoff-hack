@@ -63,7 +63,7 @@ void message_callback(struct mosquitto *mosq, void *obj, const struct mosquitto_
     char *slash;
     bool match = 0;
     int len;
-    char sys_cmd[128];
+    char cmd_line[1024];
 
     if (debug) printf("Received message '%.*s' for topic '%s'\n", message->payloadlen, (char*) message->payload, message->topic);
     /*
@@ -140,11 +140,11 @@ void message_callback(struct mosquitto *mosq, void *obj, const struct mosquitto_
 
     if (strcasecmp("switch_on", param) == 0) {
         if ((strcasecmp("on", (char *) message->payload) == 0) || (strcasecmp("yes", (char *) message->payload) == 0)) {
-            sprintf(sys_cmd, "%s off", SWITCH_ON_SCRIPT);
-            system(sys_cmd);
+            sprintf(cmd_line, "%s off", SWITCH_ON_SCRIPT);
+            system(cmd_line);
         } else if ((strcasecmp("off", (char *) message->payload) == 0) || (strcasecmp("no", (char *) message->payload) == 0)) {
-            sprintf(sys_cmd, "%s on", SWITCH_ON_SCRIPT);
-            system(sys_cmd);
+            sprintf(cmd_line, "%s on", SWITCH_ON_SCRIPT);
+            system(cmd_line);
         }
     }
 }

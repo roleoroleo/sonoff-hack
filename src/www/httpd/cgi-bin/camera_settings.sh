@@ -50,9 +50,15 @@ do
         fi
     elif [ "$CONF" == "motion_detection" ] ; then
         if [ "$VAL" == "no" ] ; then
-            sqlite3 /mnt/mtd/db/ipcsys.db "update t_mdarea set c_left=0,c_top=0,c_right=1920,c_bottom=1080,c_sensitivity=0,c_enable=0,c_name=\"P2P_SET\" where c_index=0;"
+            sqlite3 /mnt/mtd/db/ipcsys.db <<EOF &
+.timeout 3000
+update t_mdarea set c_left=0,c_top=0,c_right=1920,c_bottom=1080,c_sensitivity=0,c_enable=0,c_name="P2P_SET" where c_index=0;
+EOF
         else
-            sqlite3 /mnt/mtd/db/ipcsys.db "update t_mdarea set c_left=0,c_top=0,c_right=1920,c_bottom=1080,c_sensitivity=25,c_enable=1,c_name=\"P2P_SET\" where c_index=0;"
+            sqlite3 /mnt/mtd/db/ipcsys.db <<EOF &
+.timeout 3000
+update t_mdarea set c_left=0,c_top=0,c_right=1920,c_bottom=1080,c_sensitivity=25,c_enable=1,c_name="P2P_SET" where c_index=0;
+EOF
         fi
     elif [ "$CONF" == "sensitivity" ] ; then
         if [ -z "$VAL" ]; then
@@ -66,12 +72,21 @@ do
         elif [ "$VAL" == "high" ]; then
             VAL=75
         fi
-        sqlite3 /mnt/mtd/db/ipcsys.db "update t_mdarea set c_sensitivity=$VAL where c_index=0;"
+            sqlite3 /mnt/mtd/db/ipcsys.db <<EOF &
+.timeout 3000
+update t_mdarea set c_sensitivity=$VAL where c_index=0;
+EOF
     elif [ "$CONF" == "local_record" ] ; then
         if [ "$VAL" == "no" ] ; then
-            sqlite3 /mnt/mtd/db/ipcsys.db "update t_record_plan set c_enabled=0 where c_recplan_no=1;"
+            sqlite3 /mnt/mtd/db/ipcsys.db <<EOF &
+.timeout 3000
+update t_record_plan set c_enabled=0 where c_recplan_no=1;
+EOF
         else
-            sqlite3 /mnt/mtd/db/ipcsys.db "update t_record_plan set c_enabled=1 where c_recplan_no=1;"
+            sqlite3 /mnt/mtd/db/ipcsys.db <<EOF &
+.timeout 3000
+update t_record_plan set c_enabled=1 where c_recplan_no=1;
+EOF
         fi
     elif [ "$CONF" == "ir" ] ; then
         if [ -z "$VAL" ]; then
@@ -83,14 +98,29 @@ do
         elif [ "$VAL" == "off" ]; then
             VAL=1
         fi
-        sqlite3 /mnt/mtd/db/ipcsys.db "update t_sys_param set c_param_value=$VAL where c_param_name=\"InfraredLamp\";"
+            sqlite3 /mnt/mtd/db/ipcsys.db <<EOF &
+.timeout 3000
+update t_sys_param set c_param_value=$VAL where c_param_name="InfraredLamp";
+EOF
     elif [ "$CONF" == "rotate" ] ; then
         if [ "$VAL" == "no" ] ; then
-            sqlite3 /mnt/mtd/db/ipcsys.db "update t_sys_param set c_param_value=\"0\" where c_param_name=\"flip\";"
-            sqlite3 /mnt/mtd/db/ipcsys.db "update t_sys_param set c_param_value=\"0\" where c_param_name=\"mirror\";"
+            sqlite3 /mnt/mtd/db/ipcsys.db <<EOF &
+.timeout 3000
+update t_sys_param set c_param_value="0" where c_param_name="flip";
+EOF
+            sqlite3 /mnt/mtd/db/ipcsys.db <<EOF &
+.timeout 3000
+update t_sys_param set c_param_value="0" where c_param_name="mirror";
+EOF
         else
-            sqlite3 /mnt/mtd/db/ipcsys.db "update t_sys_param set c_param_value=\"1\" where c_param_name=\"flip\";"
-            sqlite3 /mnt/mtd/db/ipcsys.db "update t_sys_param set c_param_value=\"1\" where c_param_name=\"mirror\";"
+            sqlite3 /mnt/mtd/db/ipcsys.db <<EOF &
+.timeout 3000
+update t_sys_param set c_param_value="1" where c_param_name="flip";
+EOF
+            sqlite3 /mnt/mtd/db/ipcsys.db <<EOF &
+.timeout 3000
+update t_sys_param set c_param_value="1" where c_param_name="mirror";
+EOF
         fi
     fi
     sleep 1

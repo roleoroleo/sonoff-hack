@@ -115,9 +115,15 @@ if [ "$CONF_TYPE" == "system" ] && [ x$USERNAME != "xnone" ] ; then
     if [ x$SQL_USER != x$USERNAME ] || [ x$SQL_PWD != x$PASSWORD ]; then
         sqlite3 /mnt/mtd/db/ipcsys.db "delete from t_user where C_UserID=10101;"
         if [[ x$USERNAME != "x" ]] ; then
-            sqlite3 /mnt/mtd/db/ipcsys.db "insert into t_user (C_UserID, c_role_id, C_UserName, C_PassWord) values (10101, 1, '$USERNAME', '$PASSWORD');"
+            sqlite3 /mnt/mtd/db/ipcsys.db <<EOF &
+.timeout 3000
+insert into t_user (C_UserID, c_role_id, C_UserName, C_PassWord) values (10101, 1, '$USERNAME', '$PASSWORD');
+EOF
         else
-            sqlite3 /mnt/mtd/db/ipcsys.db "insert into t_user (C_UserID, c_role_id, C_UserName, C_PassWord) values (10101, 1, 'hack', 'hack');"
+            sqlite3 /mnt/mtd/db/ipcsys.db <<EOF &
+.timeout 3000
+insert into t_user (C_UserID, c_role_id, C_UserName, C_PassWord) values (10101, 1, 'hack', 'hack');
+EOF
         fi
     fi
 fi
@@ -129,7 +135,10 @@ if [ "$CONF_TYPE" == "system" ] && [ x$TIMEZONE != "xnone" ] ; then
     for TZR in $TZS; do
         TZR1=$(echo $TZR | cut -d"|" -f1)
         if [ "$TZR1" == "$TIMEZONE" ]; then
-            sqlite3 /mnt/mtd/db/ipcsys.db "update t_sys_param set c_param_value='$COUNTER' where c_param_name='ZoneTimeName';"
+            sqlite3 /mnt/mtd/db/ipcsys.db <<EOF &
+.timeout 3000
+update t_sys_param set c_param_value='$COUNTER' where c_param_name='ZoneTimeName';
+EOF
             break
         fi
         let COUNTER=COUNTER+1

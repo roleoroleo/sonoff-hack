@@ -1,4 +1,0 @@
-# Ignore the install dir
-_install/
-mqtt-config/lib
-mqtt-config/mqtt-config

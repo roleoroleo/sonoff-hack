@@ -1,17 +1,20 @@
-#include "mqtt-sonoff.h"
-
 /*
- * Just a quick disclaimer.
- * This code is ugly and it is the result of some testing
- * and madness with the MQTT.
+ * Copyright (c) 2023 roleo.
  *
- * It will be probably re-written from the ground-up to
- * handle more configurations, messages and callbacks.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3.
  *
- * Warning: No clean exit.
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
  *
- * Crypto
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
+#include "mqtt-sonoff.h"
 
 mqtt_conf_t conf;
 mqtt_sonoff_conf_t mqtt_sonoff_conf;
@@ -35,6 +38,8 @@ char *default_topic = EMPTY_TOPIC;
 
 extern char *sql_cmd_params[][2];
 
+int debug;
+
 void callback_motion_start()
 {
     char topic[128];
@@ -45,7 +50,7 @@ void callback_motion_start()
     char *bufferImage;
     mqtt_msg_t msg;
 
-    printf("CALLBACK MOTION START\n");
+    if (debug) fprintf(stderr, "CALLBACK MOTION START\n");
 
     // Send start message
     msg.msg=mqtt_sonoff_conf.motion_start_msg;
@@ -58,7 +63,7 @@ void callback_motion_start()
 
     if (strlen(mqtt_sonoff_conf.topic_motion_image)) {
         // Send image
-        printf("Wait %.1f seconds and take a snapshot\n", mqtt_sonoff_conf.motion_image_delay);
+        if (debug) fprintf(stderr, "Wait %.1f seconds and take a snapshot\n", mqtt_sonoff_conf.motion_image_delay);
         tmpnam(bufferFile);
         sprintf(cmd, "%s -f %s", MQTT_SONOFF_SNAPSHOT, bufferFile);
         usleep((unsigned int) (mqtt_sonoff_conf.motion_image_delay * 1000.0 * 1000.0));
@@ -66,7 +71,7 @@ void callback_motion_start()
 
         fImage = fopen(bufferFile, "r");
         if (fImage == NULL) {
-            printf("Cannot open image file\n");
+            fprintf(stderr, "Cannot open image file\n");
             remove(bufferFile);
             return;
         }
@@ -76,13 +81,13 @@ void callback_motion_start()
 
         bufferImage = (char *) malloc(sz * sizeof(char));
         if (bufferImage == NULL) {
-            printf("Cannot allocate memory\n");
+            fprintf(stderr, "Cannot allocate memory\n");
             fclose(fImage);
             remove(bufferFile);
             return;
         }
         if (fread(bufferImage, 1, sz, fImage) != sz) {
-            printf("Cannot read image file\n");
+            fprintf(stderr, "Cannot read image file\n");
             free(bufferImage);
             fclose(fImage);
             remove(bufferFile);
@@ -103,7 +108,7 @@ void callback_motion_start()
         remove(bufferFile);
     }
 
-    printf("WAIT 10 S AND SEND MOTION STOP\n");
+    if (debug) fprintf(stderr, "WAIT 10 S AND SEND MOTION STOP\n");
     sleep(10);
 
     // Send start message
@@ -123,7 +128,7 @@ void callback_command(void *arg)
     mqtt_msg_t msg;
     SQL_COMMAND_TYPE *cmd_type = (SQL_COMMAND_TYPE *) arg;
 
-    fprintf(stderr, "CALLBACK COMMAND\n");
+    if (debug) fprintf(stderr, "CALLBACK COMMAND\n");
 
     key = sql_cmd_params[*cmd_type][0];
     value = sql_cmd_params[*cmd_type][1];
@@ -138,15 +143,76 @@ void callback_command(void *arg)
     mqtt_send_message(&msg, 1);
 }
 
+void print_usage(char *progname)
+{
+    fprintf(stderr, "\nUsage: %s OPTIONS\n\n", progname);
+    fprintf(stderr, "\t-a, --ha_discovery\n");
+    fprintf(stderr, "\t\tenable Home Assistant discovery (default disabled)\n");
+    fprintf(stderr, "\t-d, --debug\n");
+    fprintf(stderr, "\t\tenable debug\n");
+    fprintf(stderr, "\t-h, --help\n");
+    fprintf(stderr, "\t\tprint this help\n");
+}
+
 int main(int argc, char **argv)
 {
     int ret;
     SQL_COMMAND_TYPE privacy = -1;
 
+    int c;
+    int errno;
+
+    int ha_discovery = 0;
+    debug = 0;
+
+    while (1) {
+        static struct option long_options[] =
+        {
+            {"ha_discrovery",  no_argument, 0, 'a'},
+            {"debug",  no_argument, 0, 'd'},
+            {"help",  no_argument, 0, 'h'},
+            {0, 0, 0, 0}
+        };
+        /* getopt_long stores the option index here. */
+        int option_index = 0;
+
+        c = getopt_long (argc, argv, "adh",
+                         long_options, &option_index);
+
+        /* Detect the end of the options. */
+        if (c == -1)
+            break;
+
+        switch (c) {
+
+        case 'a':
+            ha_discovery = 1;
+            break;
+
+        case 'd':
+            fprintf (stderr, "debug on\n");
+            debug = 1;
+            break;
+
+        case 'h':
+            print_usage(argv[0]);
+            return -1;
+            break;
+
+        case '?':
+            /* getopt_long already printed an error message. */
+            break;
+
+        default:
+            print_usage(argv[0]);
+            return -1;
+        }
+    }
+
     setbuf(stdout, NULL);
     setbuf(stderr, NULL);
 
-    printf("Starting mqtt_sonoff v%s\n", MQTT_SONOFF_VERSION);
+    if (debug) fprintf(stderr, "Starting mqtt_sonoff v%s\n", MQTT_SONOFF_VERSION);
 
     mqtt_init_conf(&conf);
     mqtt_set_conf(&conf);
@@ -251,6 +317,7 @@ static void handle_config(const char *key, const char *value)
         conf.mqtt_prefix=conf_set_string(value);
         mqtt_sonoff_conf.mqtt_prefix=conf.mqtt_prefix;
         mqtt_sonoff_conf.mqtt_prefix_stat=conf_set_strings(value, "/stat");
+        conf.mqtt_prefix_cmnd=conf_set_strings(value, "/cmnd/#");
     }
     else if(strcmp(key, "TOPIC_BIRTH_WILL")==0)
     {
@@ -301,7 +368,7 @@ static void handle_config(const char *key, const char *value)
     }
     else
     {
-        printf("key: %s | value: %s\n", key, value);
+        fprintf(stderr, "key: %s | value: %s\n", key, value);
         fprintf(stderr, "Unrecognized config.\n");
     }
 }
@@ -324,7 +391,7 @@ static void init_mqtt_sonoff_config()
 
     if(init_config(MQTT_SONOFF_CONF_FILE)!=0)
     {
-        printf("Cannot open config file. Skipping.\n");
+        fprintf(stderr, "Cannot open config file. Skipping.\n");
         return;
     }
 
@@ -373,7 +440,7 @@ static void init_sonoff_colink_config(){
 
     if(init_config(COLINK_CONF_FILE)!=0)
     {
-        printf("Cannot open config file. Skipping.\n");
+        fprintf(stderr, "Cannot open config file. Skipping.\n");
         return;
     }
 
@@ -390,6 +457,7 @@ static void init_sonoff_colink_config(){
         conf.mqtt_prefix=conf_set_string(prefix);
         mqtt_sonoff_conf.mqtt_prefix=conf.mqtt_prefix;
         mqtt_sonoff_conf.mqtt_prefix_stat=conf_set_strings(prefix, "/stat");
+        conf.mqtt_prefix_cmnd=conf_set_strings(prefix, "/cmnd/#");
     }
 }
 
@@ -413,6 +481,7 @@ static void handle_colink_config(const char *key, const char *value)
 
     free(tmpValue);
 }
+
 static void send_ha_discovery() {
     char topic[128];
     const int retain = true;
@@ -495,7 +564,6 @@ static char *print_image_json() {
     if (json == NULL) {
         fprintf(stderr, "Error preparing HA discovery config");
     }
-
 
 end:
     cJSON_Delete(confObject);
@@ -580,8 +648,9 @@ static int json_common(cJSON *confObject, const char **suffix) {
         goto end;
     }
     return 1;
+
 end:
-    printf("Error generating common json config payload");
+    fprintf(stderr, "Error generating common json config payload");
     return 0;
 
 }

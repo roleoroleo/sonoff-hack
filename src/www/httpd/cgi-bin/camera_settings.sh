@@ -16,6 +16,8 @@ if ! $(validateQueryString $QUERY_STRING); then
 fi
 
 CONF_LAST="CONF_LAST"
+MOTION="NONE"
+SENSITIVITY="NONE"
 
 for I in 1 2 3 4 5 6
 do
@@ -43,88 +45,63 @@ do
     CONF_LAST=$CONF
 
     if [ "$CONF" == "switch_on" ] ; then
-        if [ "$VAL" == "no" ] ; then
-            $SONOFF_HACK_PREFIX/script/privacy.sh on
-        else
-            $SONOFF_HACK_PREFIX/script/privacy.sh off
+        if [ "$VAL" == "yes" ] ; then
+            $SONOFF_HACK_PREFIX/bin/ipc_cmd -t on
+        elif [ "$VAL" == "no" ] ; then
+            $SONOFF_HACK_PREFIX/bin/ipc_cmd -t off
         fi
     elif [ "$CONF" == "motion_detection" ] ; then
-        if [ "$VAL" == "no" ] ; then
-            sqlite3 /mnt/mtd/db/ipcsys.db <<EOF &
-.timeout 3000
-update t_mdarea set c_left=0,c_top=0,c_right=1920,c_bottom=1080,c_sensitivity=0,c_enable=0,c_name="P2P_SET" where c_index=0;
-EOF
-        else
-            sqlite3 /mnt/mtd/db/ipcsys.db <<EOF &
-.timeout 3000
-update t_mdarea set c_left=0,c_top=0,c_right=1920,c_bottom=1080,c_sensitivity=25,c_enable=1,c_name="P2P_SET" where c_index=0;
-EOF
+        if [ "$VAL" == "yes" ] ; then
+            MOTION="YES"
+        elif [ "$VAL" == "no" ] ; then
+            MOTION="NO"
         fi
     elif [ "$CONF" == "sensitivity" ] ; then
-        if [ -z "$VAL" ]; then
-            VAL=0
-        elif [ "$VAL" == "off" ]; then
-            VAL=0
-        elif [ "$VAL" == "low" ]; then
-            VAL=25
+        if [ "$VAL" == "low" ]; then
+            SENSITIVITY="LOW"
         elif [ "$VAL" == "medium" ]; then
-            VAL=50
+            SENSITIVITY="MEDIUM"
         elif [ "$VAL" == "high" ]; then
-            VAL=75
+            SENSITIVITY="HIGH"
         fi
-            sqlite3 /mnt/mtd/db/ipcsys.db <<EOF &
-.timeout 3000
-update t_mdarea set c_sensitivity=$VAL where c_index=0;
-EOF
     elif [ "$CONF" == "local_record" ] ; then
-        if [ "$VAL" == "no" ] ; then
-            sqlite3 /mnt/mtd/db/ipcsys.db <<EOF &
-.timeout 3000
-update t_record_plan set c_enabled=0 where c_recplan_no=1;
-EOF
-        else
-            sqlite3 /mnt/mtd/db/ipcsys.db <<EOF &
-.timeout 3000
-update t_record_plan set c_enabled=1 where c_recplan_no=1;
-EOF
+        if [ "$VAL" == "yes" ] ; then
+            $SONOFF_HACK_PREFIX/bin/ipc_cmd -l on
+        elif [ "$VAL" == "no" ] ; then
+            $SONOFF_HACK_PREFIX/bin/ipc_cmd -l off
         fi
     elif [ "$CONF" == "ir" ] ; then
-        if [ -z "$VAL" ]; then
-            VAL=2
-        elif [ "$VAL" == "auto" ]; then
-            VAL=2
+        if [ "$VAL" == "auto" ]; then
+            $SONOFF_HACK_PREFIX/bin/ipc_cmd -i auto
         elif [ "$VAL" == "on" ]; then
-            VAL=0
+            $SONOFF_HACK_PREFIX/bin/ipc_cmd -i on
         elif [ "$VAL" == "off" ]; then
-            VAL=1
+            $SONOFF_HACK_PREFIX/bin/ipc_cmd -i off
         fi
-            sqlite3 /mnt/mtd/db/ipcsys.db <<EOF &
-.timeout 3000
-update t_sys_param set c_param_value=$VAL where c_param_name="InfraredLamp";
-EOF
     elif [ "$CONF" == "rotate" ] ; then
-        if [ "$VAL" == "no" ] ; then
-            sqlite3 /mnt/mtd/db/ipcsys.db <<EOF &
-.timeout 3000
-update t_sys_param set c_param_value="0" where c_param_name="flip";
-EOF
-            sqlite3 /mnt/mtd/db/ipcsys.db <<EOF &
-.timeout 3000
-update t_sys_param set c_param_value="0" where c_param_name="mirror";
-EOF
-        else
-            sqlite3 /mnt/mtd/db/ipcsys.db <<EOF &
-.timeout 3000
-update t_sys_param set c_param_value="1" where c_param_name="flip";
-EOF
-            sqlite3 /mnt/mtd/db/ipcsys.db <<EOF &
-.timeout 3000
-update t_sys_param set c_param_value="1" where c_param_name="mirror";
-EOF
+        if [ "$VAL" == "yes" ] ; then
+            $SONOFF_HACK_PREFIX/bin/ipc_cmd -r on
+        elif [ "$VAL" == "no" ] ; then
+            $SONOFF_HACK_PREFIX/bin/ipc_cmd -r off
         fi
     fi
-    sleep 1
+    sleep 0.5
 done
+
+if [ "$MOTION" == "NO" ] ; then
+    $SONOFF_HACK_PREFIX/bin/ipc_cmd -m off
+elif [ "$MOTION" == "YES" ] ; then
+    if [ "$SENSITIVITY" == "NONE" ] ; then
+        SENSITIVITY="LOW"
+    fi
+    if [ "$SENSITIVITY" == "LOW" ] ; then
+        $SONOFF_HACK_PREFIX/bin/ipc_cmd -s low
+    elif [ "$SENSITIVITY" == "MEDIUM" ]; then
+        $SONOFF_HACK_PREFIX/bin/ipc_cmd -s medium
+    elif [ "$SENSITIVITY" == "HIGH" ]; then
+        $SONOFF_HACK_PREFIX/bin/ipc_cmd -s high
+    fi
+fi
 
 printf "Content-type: application/json\r\n\r\n"
 

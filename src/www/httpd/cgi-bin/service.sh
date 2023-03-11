@@ -238,14 +238,12 @@ if [ "$ACTION" == "start" ] ; then
         start_ftpd $PARAM1
     elif [ "$NAME" == "mqtt" ]; then
         mqtt-sonoff > /dev/null &
-        mqtt-config > /dev/null &
     elif [ "$NAME" == "all" ]; then
         start_rtsp
         start_onvif
         start_wsdd
         start_ftpd
         mqtt-sonoff > /dev/null &
-        mqtt-config > /dev/null &
     fi
 elif [ "$ACTION" == "stop" ] ; then
     if [ "$NAME" == "rtsp" ]; then
@@ -257,14 +255,12 @@ elif [ "$ACTION" == "stop" ] ; then
     elif [ "$NAME" == "ftpd" ]; then
         stop_ftpd $PARAM1
     elif [ "$NAME" == "mqtt" ]; then
-        killall mqtt-config
         killall mqtt-sonoff
     elif [ "$NAME" == "all" ]; then
         stop_rtsp
         stop_onvif
         stop_wsdd
         stop_ftpd
-        killall mqtt-config
         killall mqtt-sonoff
     fi
 elif [ "$ACTION" == "status" ] ; then

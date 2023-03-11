@@ -1,6 +1,5 @@
 /*
- * This file is part of libipc (https://github.com/TheCrypt0/libipc).
- * Copyright (c) 2019 Davide Maggioni.
+ * Copyright (c) 2023 roleo.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

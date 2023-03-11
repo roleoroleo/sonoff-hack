@@ -1,6 +1,5 @@
 /*
- * This file is part of libipc (https://github.com/TheCrypt0/libipc).
- * Copyright (c) 2019 Davide Maggioni.
+ * Copyright (c) 2023 roleo.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +42,7 @@ char *sql_cmd_params[][2] = {
 static pthread_t *tr_sql;
 int tr_sql_routine;
 int ipcsys_db = 1;
-sqlite3 *dbc = NULL, *dbc_sys = NULL, *dbc_mmc = NULL;
+sqlite3 *dbc = NULL, *dbc_sys = NULL;
 char last_msg[32];
 
 int sensitivity = -1;
@@ -78,7 +77,7 @@ static func_ptr_t *sql_callbacks;
 //=============================================================================
 
 //-----------------------------------------------------------------------------
-// INIT
+// INIT AND STOP
 //-----------------------------------------------------------------------------
 
 int sql_init(int sysdb)
@@ -88,12 +87,11 @@ int sql_init(int sysdb)
 
     memset(last_msg, '\0', sizeof(last_msg));
     if (ipcsys_db) {
-        ret = sqlite3_open_v2(IPCSYS_DB, &dbc_sys, SQLITE_OPEN_READONLY, NULL);
-        dbc = dbc_sys;
+        ret = sqlite3_open_v2(IPCSYS_DB, &dbc, SQLITE_OPEN_READONLY, NULL);
+        ret = sqlite3_open_v2(IPCSYS_DB, &dbc_sys, SQLITE_OPEN_READWRITE, NULL);
     } else {
-        ret = sqlite3_open_v2(IPCMMC_DB, &dbc_mmc, SQLITE_OPEN_READONLY, NULL);
-        dbc = dbc_mmc;
-        ret = sqlite3_open_v2(IPCSYS_DB, &dbc_sys, SQLITE_OPEN_READONLY, NULL);
+        ret = sqlite3_open_v2(IPCMMC_DB, &dbc, SQLITE_OPEN_READONLY, NULL);
+        ret = sqlite3_open_v2(IPCSYS_DB, &dbc_sys, SQLITE_OPEN_READWRITE, NULL);
     }
 
     if (ret != SQLITE_OK) {
@@ -125,8 +123,8 @@ void sql_stop()
     if (dbc_sys) {
         sqlite3_close_v2(dbc_sys);
     }
-    if (dbc_mmc) {
-        sqlite3_close_v2(dbc_mmc);
+    if (dbc) {
+        sqlite3_close_v2(dbc);
     }
 
 }
@@ -146,6 +144,10 @@ static int start_sql_thread()
 
     return 0;
 }
+
+//-----------------------------------------------------------------------------
+// READ THREAD
+//-----------------------------------------------------------------------------
 
 static void *sql_thread(void *args)
 {

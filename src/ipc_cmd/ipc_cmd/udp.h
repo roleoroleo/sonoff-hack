@@ -1,6 +1,5 @@
 /*
- * This file is part of libipc (https://github.com/TheCrypt0/libipc).
- * Copyright (c) 2019 Davide Maggioni.
+ * Copyright (c) 2023 roleo.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,30 +14,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SQL_H
-#define SQL_H
-
 #include <stdio.h>
-#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include <unistd.h>
-#include <stdarg.h>
 #include <string.h>
 #include <fcntl.h>
-#include <errno.h>
-#include <pthread.h>
-#include <mqueue.h>
-#include <sqlite3.h>
+#include <stdlib.h>
 
-#define SQL_DEBUG             0
+#define LOCALHOST          "127.0.0.1"
+#define DEVCTRL_PORT       14000
+#define ALARMSERVER_PORT   15000
+#define AVRECSCH_PORT      19000
 
-#define IPCSYS_DB             "/mnt/mtd/db/ipcsys.db"
-
-//-----------------------------------------------------------------------------
-// INIT
-//-----------------------------------------------------------------------------
-
-int sql_init();
-void sql_stop();
-int sql_update(char *key, char * value);
-
-#endif // SQL_H
+int udp_send(const char *host, int port, const unsigned char *msg, int size);

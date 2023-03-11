@@ -19,13 +19,13 @@ export AR=${CROSSPREFIX}ar
 SCRIPT_DIR=$(cd `dirname $0` && pwd)
 cd $SCRIPT_DIR
 
-cd mqtt-config
+cd ipc_cmd || exit 1
 
 make clean
-make
+make || exit 1
 
-mkdir -p ../_install/bin
+mkdir -p ../_install/bin || exit 1
 
-cp ./mqtt-config ../_install/bin
+cp ./ipc_cmd ../_install/bin || exit 1
 
 ${STRIP} ../_install/bin/* || exit 1

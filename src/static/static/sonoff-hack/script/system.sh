@@ -1,6 +1,7 @@
 #!/bin/sh
 
 CONF_FILE="etc/system.conf"
+MQTT_CONF_FILE="etc/mqtt-sonoff.conf"
 
 SONOFF_HACK_PREFIX="/mnt/mmc/sonoff-hack"
 SONOFF_HACK_UPGRADE_PATH="/mnt/mmc/.fw_upgrade"
@@ -15,6 +16,12 @@ get_config()
 {
     key=$1
     grep -w $1 $SONOFF_HACK_PREFIX/$CONF_FILE | cut -d "=" -f2
+}
+
+get_mqtt_config()
+{
+    key=$1
+    grep -w $1 $SONOFF_HACK_PREFIX/$MQTT_CONF_FILE | cut -d "=" -f2
 }
 
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/mnt/mmc/sonoff-hack/lib
@@ -238,7 +245,11 @@ if [[ $(get_config NTPD) == "yes" ]] ; then
 fi
 
 if [[ $(get_config MQTT) == "yes" ]] ; then
-    $SONOFF_HACK_PREFIX/bin/mqtt-sonoff &
+    if [[ $(get_mqtt_config HA_DISCOVERY) == "1" ]] ; then
+        $SONOFF_HACK_PREFIX/bin/mqtt-sonoff -a &
+    else
+        $SONOFF_HACK_PREFIX/bin/mqtt-sonoff &
+    fi
 fi
 
 if [[ $RTSP_PORT != "554" ]] ; then

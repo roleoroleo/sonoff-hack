@@ -1,6 +1,7 @@
 #!/bin/sh
 
 CONF_FILE="etc/system.conf"
+MQTT_CONF_FILE="etc/mqtt-sonoff.conf"
 
 SONOFF_HACK_PREFIX="/mnt/mmc/sonoff-hack"
 
@@ -12,6 +13,12 @@ get_config()
 {
     key=$1
     grep -w $1 $SONOFF_HACK_PREFIX/$CONF_FILE | cut -d "=" -f2
+}
+
+get_mqtt_config()
+{
+    key=$1
+    grep -w $1 $SONOFF_HACK_PREFIX/$MQTT_CONF_FILE | cut -d "=" -f2
 }
 
 init_config()
@@ -55,6 +62,10 @@ init_config()
         ONVIF_NETIF="ra0"
     else
         ONVIF_NETIF="eth0"
+    fi
+
+    if [[ $(get_mqtt_config HA_DISCOVERY) == "1" ]] ; then
+        MQTT_HA_DISCOVERY="-a"
     fi
 }
 
@@ -237,13 +248,13 @@ if [ "$ACTION" == "start" ] ; then
     elif [ "$NAME" == "ftpd" ]; then
         start_ftpd $PARAM1
     elif [ "$NAME" == "mqtt" ]; then
-        mqtt-sonoff > /dev/null &
+        mqtt-sonoff $MQTT_HA_DISCOVERY > /dev/null &
     elif [ "$NAME" == "all" ]; then
         start_rtsp
         start_onvif
         start_wsdd
         start_ftpd
-        mqtt-sonoff > /dev/null &
+        mqtt-sonoff $MQTT_HA_DISCOVERY > /dev/null &
     fi
 elif [ "$ACTION" == "stop" ] ; then
     if [ "$NAME" == "rtsp" ]; then

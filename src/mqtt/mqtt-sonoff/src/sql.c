@@ -21,21 +21,21 @@
 //-----------------------------------------------------------------------------
 
 char *sql_cmd_params[][2] = {
-    { "sensitivity",         "off"     },    //SQL_CMD_SENSITIVITY_0,
-    { "sensitivity",         "low"     },    //SQL_CMD_SENSITIVITY_25,
-    { "sensitivity",         "medium"  },    //SQL_CMD_SENSITIVITY_50,
-    { "sensitivity",         "high"    },    //SQL_CMD_SENSITIVITY_75,
-    { "motion_detection",    "yes"     },    //SQL_CMD_MOTION_DETECTION_ENABLED,
-    { "motion_detection",    "no"      },    //SQL_CMD_MOTION_DETECTION_DISABLED,
-    { "local_record",        "yes"     },    //SQL_CMD_LOCAL_RECORD_ENABLED,
-    { "local_record",        "no"      },    //SQL_CMD_LOCAL_RECORD_DISABLED,
-    { "ir",                  "auto"    },    //SQL_IR_AUTO
-    { "ir",                  "on"      },    //SQL_IR_ON
-    { "ir",                  "off"     },    //SQL_IR_OFF
-    { "rotate",              "yes"     },    //SQL_CMD_ROTATE_ENABLED,
-    { "rotate",              "no"      },    //SQL_CMD_ROTATE_DISABLED,
-    { "switch_on",           "yes"     },    //PRIVACY_OFF
-    { "switch_on",           "no"      },    //PRIVACY_ON
+    { "sensitivity",         "OFF"     },    //SQL_CMD_SENSITIVITY_0,
+    { "sensitivity",         "LOW"     },    //SQL_CMD_SENSITIVITY_25,
+    { "sensitivity",         "MEDIUM"  },    //SQL_CMD_SENSITIVITY_50,
+    { "sensitivity",         "HIGH"    },    //SQL_CMD_SENSITIVITY_75,
+    { "motion_detection",    "ON"      },    //SQL_CMD_MOTION_DETECTION_ENABLED,
+    { "motion_detection",    "OFF"     },    //SQL_CMD_MOTION_DETECTION_DISABLED,
+    { "local_record",        "ON"      },    //SQL_CMD_LOCAL_RECORD_ENABLED,
+    { "local_record",        "OFF"     },    //SQL_CMD_LOCAL_RECORD_DISABLED,
+    { "ir",                  "AUTO"    },    //SQL_IR_AUTO
+    { "ir",                  "ON"      },    //SQL_IR_ON
+    { "ir",                  "OFF"     },    //SQL_IR_OFF
+    { "rotate",              "ON"      },    //SQL_CMD_ROTATE_ENABLED,
+    { "rotate",              "OFF"     },    //SQL_CMD_ROTATE_DISABLED,
+    { "switch_on",           "ON"      },    //PRIVACY_OFF
+    { "switch_on",           "OFF"     },    //PRIVACY_ON
     { "",                    ""        }     //SQL_CMD_LAST
 };
 

@@ -27,6 +27,8 @@ static void handle_colink_config(const char *key, const char *value);
 static void send_ha_discovery();
 static char *print_motion_json();
 static char *print_image_json();
+static char *print_switch_json(char *switch_name, char *icon_name);
+static char *print_select_json(char *select_name, char **options, int noptions, char *icon_name);
 static int json_common(cJSON *confObject, const char **suffix);
 
 char *default_prefix = "sonoffcam";
@@ -526,6 +528,62 @@ static void send_ha_discovery() {
         sprintf(topic, "%s/camera/%s_image/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
         mqtt_send_message(&msg, retain);
         free(msg.msg);
+
+        // Send switch_on config
+        msg.msg=print_switch_json("switch_on", "mdi:video");
+        cJSON_Minify(msg.msg);
+        msg.len=strlen(msg.msg);
+
+        sprintf(topic, "%s/switch/%s_switch_on/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
+        mqtt_send_message(&msg, retain);
+        free(msg.msg);
+
+        // Send motion_detection config
+        msg.msg=print_switch_json("motion_detection", "mdi:motion-sensor");
+        cJSON_Minify(msg.msg);
+        msg.len=strlen(msg.msg);
+
+        sprintf(topic, "%s/switch/%s_motion_detection/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
+        mqtt_send_message(&msg, retain);
+        free(msg.msg);
+
+        // Send local_record config
+        msg.msg=print_switch_json("local_record", "mdi:content-save");
+        cJSON_Minify(msg.msg);
+        msg.len=strlen(msg.msg);
+
+        sprintf(topic, "%s/switch/%s_local_record/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
+        mqtt_send_message(&msg, retain);
+        free(msg.msg);
+
+        // Send rotate config
+        msg.msg=print_switch_json("rotate", "mdi:rotate-right");
+        cJSON_Minify(msg.msg);
+        msg.len=strlen(msg.msg);
+
+        sprintf(topic, "%s/switch/%s_rotate/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
+        mqtt_send_message(&msg, retain);
+        free(msg.msg);
+
+        // Send sensitivity config
+        char *opts_sensitivity[3] = {"LOW", "MEDIUM", "HIGH"};
+        msg.msg=print_select_json("sensitivity", opts_sensitivity, 3, "mdi:motion-sensor");
+        cJSON_Minify(msg.msg);
+        msg.len=strlen(msg.msg);
+
+        sprintf(topic, "%s/select/%s_sensitivity/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
+        mqtt_send_message(&msg, retain);
+        free(msg.msg);
+
+        // Send ir config
+        char *opts_ir[3] = {"AUTO", "ON", "OFF"};
+        msg.msg=print_select_json("ir", opts_ir, 3, "mdi:led-outline");
+        cJSON_Minify(msg.msg);
+        msg.len=strlen(msg.msg);
+
+        sprintf(topic, "%s/select/%s_ir/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
+        mqtt_send_message(&msg, retain);
+        free(msg.msg);
     }
 }
 
@@ -577,6 +635,80 @@ static char *print_image_json() {
         goto end;
     }
     if (cJSON_AddStringToObject(confObject, "icon", "mdi:camera") == NULL) {
+        goto end;
+    }
+
+    json = cJSON_Print(confObject);
+    if (json == NULL) {
+        fprintf(stderr, "Error preparing HA discovery config");
+    }
+
+end:
+    cJSON_Delete(confObject);
+    return json;
+}
+
+static char *print_switch_json(char *switch_name, char *icon_name) {
+
+    const char *suffix = switch_name;
+    char *json = NULL;
+    cJSON * confObject = cJSON_CreateObject();
+
+    char stopic[128];
+    strcpy(stopic, conf.mqtt_prefix_cmnd);
+    stopic[strlen(stopic) - 2] = '\0';
+    sprintf(stopic, "%s/camera/%s", stopic, switch_name);
+    if (cJSON_AddStringToObject(confObject, "command_topic", stopic) == NULL) {
+        goto end;
+    }
+    sprintf(stopic, "%s/camera/%s", mqtt_sonoff_conf.mqtt_prefix_stat, switch_name);
+    if (cJSON_AddStringToObject(confObject, "state_topic", stopic) == NULL) {
+        goto end;
+    }
+    if (json_common(confObject, &suffix) == 0) {
+        goto end;
+    }
+    if (cJSON_AddStringToObject(confObject, "icon", icon_name) == NULL) {
+        goto end;
+    }
+
+    json = cJSON_Print(confObject);
+    if (json == NULL) {
+        fprintf(stderr, "Error preparing HA discovery config");
+    }
+
+end:
+    cJSON_Delete(confObject);
+    return json;
+}
+
+static char *print_select_json(char *select_name, char **options, int noptions, char *icon_name) {
+
+    const char *suffix = select_name;
+    char *json = NULL;
+    cJSON *confObject = cJSON_CreateObject();
+    cJSON *fields = cJSON_CreateArray();
+    int i;
+
+    char stopic[128];
+    strcpy(stopic, conf.mqtt_prefix_cmnd);
+    stopic[strlen(stopic) - 2] = '\0';
+    sprintf(stopic, "%s/camera/%s", stopic, select_name);
+    if (cJSON_AddStringToObject(confObject, "command_topic", stopic) == NULL) {
+        goto end;
+    }
+    sprintf(stopic, "%s/camera/%s", mqtt_sonoff_conf.mqtt_prefix_stat, select_name);
+    if (cJSON_AddStringToObject(confObject, "state_topic", stopic) == NULL) {
+        goto end;
+    }
+    for (i=0; i<noptions; i++) {
+        cJSON_AddItemToArray(fields, cJSON_CreateString(options[i]));
+    }
+    cJSON_AddItemToObject(confObject, "options", fields);
+    if (json_common(confObject, &suffix) == 0) {
+        goto end;
+    }
+    if (cJSON_AddStringToObject(confObject, "icon", icon_name) == NULL) {
         goto end;
     }
 

@@ -40,7 +40,11 @@ extern char *sql_cmd_params[][2];
 
 int debug;
 
-void callback_motion_start()
+
+//-----------------------------------------------------------------------------
+// READ THREAD
+//-----------------------------------------------------------------------------
+static void *motion_start_thread()
 {
     char topic[128];
     char cmd[128];
@@ -73,7 +77,7 @@ void callback_motion_start()
         if (fImage == NULL) {
             fprintf(stderr, "Cannot open image file\n");
             remove(bufferFile);
-            return;
+            pthread_exit(NULL);
         }
         fseek(fImage, 0L, SEEK_END);
         sz = ftell(fImage);
@@ -84,14 +88,14 @@ void callback_motion_start()
             fprintf(stderr, "Cannot allocate memory\n");
             fclose(fImage);
             remove(bufferFile);
-            return;
+            pthread_exit(NULL);
         }
         if (fread(bufferImage, 1, sz, fImage) != sz) {
             fprintf(stderr, "Cannot read image file\n");
             free(bufferImage);
             fclose(fImage);
             remove(bufferFile);
-            return;
+            pthread_exit(NULL);
         }
 
         msg.msg=bufferImage;
@@ -119,6 +123,22 @@ void callback_motion_start()
     sprintf(topic, "%s/%s", mqtt_sonoff_conf.mqtt_prefix, mqtt_sonoff_conf.topic_motion);
 
     mqtt_send_message(&msg, conf.retain_motion);
+
+    pthread_exit(NULL);
+}
+
+void callback_motion_start()
+{
+    int ret;
+
+    pthread_t tr_motion;
+    ret = pthread_create(&tr_motion, NULL, &motion_start_thread, NULL);
+    if(ret != 0)
+    {
+        fprintf(stderr, "Can't create motion thread. Error: %d\n", ret);
+        return;
+    }
+    pthread_detach(tr_motion);
 }
 
 void callback_command(void *arg)

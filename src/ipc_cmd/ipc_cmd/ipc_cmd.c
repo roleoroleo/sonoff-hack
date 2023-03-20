@@ -145,6 +145,8 @@ int main(int argc, char ** argv)
                 ir = IR_OFF;
             } else if ((strcasecmp("on", optarg) == 0) || (strcasecmp("yes", optarg) == 0)) {
                 ir = IR_ON;
+            } else if (strcasecmp("auto", optarg) == 0) {
+                ir = IR_AUTO;
             } else {
                 print_usage(argv[0]);
                 exit(EXIT_FAILURE);

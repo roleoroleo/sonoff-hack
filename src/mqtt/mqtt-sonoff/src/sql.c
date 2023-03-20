@@ -59,6 +59,8 @@ static void call_callback(SQL_MESSAGE_TYPE type);
 static void call_callback_cmd(SQL_COMMAND_TYPE type);
 static void sql_debug(const char* fmt, ...);
 
+extern int debug;
+
 //-----------------------------------------------------------------------------
 // MESSAGES HANDLERS
 //-----------------------------------------------------------------------------
@@ -203,6 +205,7 @@ static void *sql_thread(void *args)
             }
         }
         ret = sqlite3_reset(stmt1);
+        sql_debug("stmt1 completed.\n");
 
         ret = sqlite3_step(stmt2);
         if (ret == SQLITE_ROW) {
@@ -228,6 +231,7 @@ static void *sql_thread(void *args)
             }
         }
         ret = sqlite3_reset(stmt2);
+        sql_debug("stmt2 completed.\n");
 
         ret = sqlite3_step(stmt3);
         if (ret == SQLITE_ROW) {
@@ -241,6 +245,7 @@ static void *sql_thread(void *args)
             }
         }
         ret = sqlite3_reset(stmt3);
+        sql_debug("stmt3 completed.\n");
 
         ret = sqlite3_step(stmt4);
         if (ret == SQLITE_ROW) {
@@ -256,6 +261,7 @@ static void *sql_thread(void *args)
             }
         }
         ret = sqlite3_reset(stmt4);
+        sql_debug("stmt4 completed.\n");
 
         ret = sqlite3_step(stmt5);
         if (ret == SQLITE_ROW) {
@@ -269,6 +275,7 @@ static void *sql_thread(void *args)
             }
         }
         ret = sqlite3_reset(stmt5);
+        sql_debug("stmt5 completed.\n");
 
         usleep(1000*1000);
     }
@@ -277,8 +284,9 @@ static void *sql_thread(void *args)
     sqlite3_finalize(stmt2);
     sqlite3_finalize(stmt3);
     sqlite3_finalize(stmt4);
+    sqlite3_finalize(stmt5);
 
-    return 0;
+    pthread_exit(NULL);
 }
 
 //-----------------------------------------------------------------------------
@@ -356,10 +364,10 @@ static void call_callback_cmd(SQL_COMMAND_TYPE type)
 
 static void sql_debug(const char* fmt, ...)
 {
-#if SQL_DEBUG
-    va_list args;
-    va_start(args, fmt);
-    vprintf(fmt, args);
-    va_end(args);
-#endif
+    if (debug) {
+        va_list args;
+        va_start(args, fmt);
+        vprintf(fmt, args);
+        va_end(args);
+    }
 }

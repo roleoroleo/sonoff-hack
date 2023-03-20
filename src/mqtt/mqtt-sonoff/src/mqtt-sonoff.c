@@ -249,7 +249,8 @@ int main(int argc, char **argv)
     if(ret!=0)
         exit(EXIT_FAILURE);
 
-    send_ha_discovery();
+    if (ha_discovery == 1)
+        send_ha_discovery();
 
     ret=sql_init(conf.ipcsys_db);
     if(ret!=0)

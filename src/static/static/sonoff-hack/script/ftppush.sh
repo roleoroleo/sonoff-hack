@@ -166,7 +166,7 @@ uploadToFtp ()
 	FTP_DIR_TREE="$(get_config FTP_DIR_TREE)"
 	FTP_USERNAME="$(get_config FTP_USERNAME)"
 	FTP_PASSWORD="$(get_config FTP_PASSWORD)"
-	FTP_PORT=2122
+	FTP_PORT=21
 	#
 	# Variables.
 	UTF_FULLFN="${2}"

@@ -15,3 +15,5 @@ echo "#!/mnt/mmc/sonoff-hack/bin/busybox" > ../../build/sonoff-hack/usr/bin/wget
 chmod 0755 ../../build/sonoff-hack/usr/bin/wget
 echo "#!/mnt/mmc/sonoff-hack/bin/busybox" > ../../build/sonoff-hack/usr/bin/xargs
 chmod 0755 ../../build/sonoff-hack/usr/bin/xargs
+echo "#!/mnt/mmc/sonoff-hack/bin/busybox" > ../../build/sonoff-hack/usr/bin/rmdir
+chmod 0755 ../../build/sonoff-hack/usr/bin/rmdir

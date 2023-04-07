@@ -343,6 +343,9 @@ fi
 # Run rtsp watchdog
 $SONOFF_HACK_PREFIX/script/wd_rtsp.sh &
 
+# Run fast_motion
+$SONOFF_HACK_PREFIX/script/fast_motion.sh &
+
 # Add crontab
 CRONTAB=$(get_config CRONTAB)
 FREE_SPACE=$(get_config FREE_SPACE)

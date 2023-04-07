@@ -91,7 +91,7 @@ checkFiles ()
 	if [ ! -z "${FOLDER_TO_WATCH}" ]; then
 		for d in $(find "${FOLDER_TO_WATCH}/" -mindepth 1 -type d); do
 			#find "${FOLDER_TO_WATCH}/" -mindepth 1 -type d -empty -delete
-			[ -z "`find $d -type f`" ] && rmdir $d
+			[ -z "`find $d -type f`" ] && $SONOFF_HACK_PREFIX/usr/bin/rmdir $d
 		done
 	fi
 	#
@@ -166,7 +166,7 @@ uploadToFtp ()
 	FTP_DIR_TREE="$(get_config FTP_DIR_TREE)"
 	FTP_USERNAME="$(get_config FTP_USERNAME)"
 	FTP_PASSWORD="$(get_config FTP_PASSWORD)"
-	FTP_PORT=21
+	FTP_PORT="$(get_config FTP_PORT)"
 	#
 	# Variables.
 	UTF_FULLFN="${2}"

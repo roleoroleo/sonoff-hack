@@ -48,7 +48,7 @@ APP.eventsdir = (function($) {
                 loadingStatusElem.fadeOut(500);
 
                 $.each(response, function(key, state) {
-                    if (key == "FREE_SPACE" || key == "FTP_HOST" || key == "FTP_DIR" || key == "FTP_USERNAME")
+                    if (key == "FREE_SPACE" || key == "FTP_HOST" || key == "FTP_DIR" || key == "FTP_USERNAME" || key == "FTP_PORT")
                         $('input[type="text"][data-key="' + key + '"]').prop('value', state);
                     else if (key == "FTP_PASSWORD")
                         $('input[type="password"][data-key="' + key + '"]').prop('value', state);
@@ -80,6 +80,7 @@ APP.eventsdir = (function($) {
         configs["FTP_DIR"] = $('input[type="text"][data-key="FTP_DIR"]').prop("value");
         configs["FTP_USERNAME"] = $('input[type="text"][data-key="FTP_USERNAME"]').prop("value");
         configs["FTP_PASSWORD"] = $('input[type="password"][data-key="FTP_PASSWORD"]').prop("value");
+        configs["FTP_PORT"] = $('input[type="text"][data-key="FTP_PORT"]').prop("value");
 
         $.ajax({
             type: "POST",

@@ -14,9 +14,6 @@ get_config()
     key=$1
     grep -w $1 $SONOFF_HACK_PREFIX/$CONF_FILE | cut -d "=" -f2
 }
-# Setup env.
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/mnt/mmc/sonoff-hack/lib
-export PATH=$PATH:/mnt/mmc/sonoff-hack/bin:/mnt/mmc/sonoff-hack/sbin:/mnt/mmc/sonoff-hack/usr/bin:/mnt/mmc/sonoff-hack/usr/sbin
 #
 # Script Configuration.
 FOLDER_TO_WATCH="/mnt/mmc/alarm_record"
@@ -91,7 +88,7 @@ checkFiles ()
 	if [ ! -z "${FOLDER_TO_WATCH}" ]; then
 		for d in $(find "${FOLDER_TO_WATCH}/" -mindepth 1 -type d); do
 			#find "${FOLDER_TO_WATCH}/" -mindepth 1 -type d -empty -delete
-			[ -z "`find $d -type f`" ] && $SONOFF_HACK_PREFIX/usr/bin/rmdir $d
+			[ -z "`find $d -type f`" ] && rmdir $d
 		done
 	fi
 	#

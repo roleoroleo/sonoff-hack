@@ -14,9 +14,6 @@ get_config()
     key=$1
     grep -w $1 $SONOFF_HACK_PREFIX/$CONF_FILE | cut -d "=" -f2
 }
-# Setup env.
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/mnt/mmc/sonoff-hack/lib
-export PATH=$PATH:/mnt/mmc/sonoff-hack/bin:/mnt/mmc/sonoff-hack/sbin:/mnt/mmc/sonoff-hack/usr/bin:/mnt/mmc/sonoff-hack/usr/sbin
 #
 # Script Configuration.
 FOLDER_TO_WATCH="/mnt/mmc/alarm_record"
@@ -166,6 +163,7 @@ uploadToFtp ()
 	FTP_DIR_TREE="$(get_config FTP_DIR_TREE)"
 	FTP_USERNAME="$(get_config FTP_USERNAME)"
 	FTP_PASSWORD="$(get_config FTP_PASSWORD)"
+	FTP_PORT="$(get_config FTP_PORT)"
 	#
 	# Variables.
 	UTF_FULLFN="${2}"
@@ -179,19 +177,19 @@ uploadToFtp ()
 	#
 	if [ ! -z "${FTP_DIR}" ]; then
 		# Create directory on FTP server
-		echo -e "USER ${FTP_USERNAME}\r\nPASS ${FTP_PASSWORD}\r\nmkd ${FTP_DIR}\r\nquit\r\n" | nc -w 5 ${FTP_HOST} 21 | grep "${FTP_DIR}"
+		echo -e "USER ${FTP_USERNAME}\r\nPASS ${FTP_PASSWORD}\r\nmkd ${FTP_DIR}\r\nquit\r\n" | nc -w 5 ${FTP_HOST} ${FTP_PORT} | grep "${FTP_DIR}"
 		FTP_DIR="${FTP_DIR}/"
 	fi
 	#
 	if [ "${FTP_DIR_TREE}" == "yes" ]; then
 		if [ ! -z "${FTP_DIR_DAY}" ]; then
 			# Create day directory on FTP server
-			echo -e "USER ${FTP_USERNAME}\r\nPASS ${FTP_PASSWORD}\r\nmkd ${FTP_DIR}/${FTP_DIR_DAY}\r\nquit\r\n" | nc -w 5 ${FTP_HOST} 21 | grep "${FTP_DIR_DAY}"
+			echo -e "USER ${FTP_USERNAME}\r\nPASS ${FTP_PASSWORD}\r\nmkd ${FTP_DIR}/${FTP_DIR_DAY}\r\nquit\r\n" | nc -w 5 ${FTP_HOST} ${FTP_PORT} | grep "${FTP_DIR_DAY}"
 			FTP_DIR_DAY="${FTP_DIR_DAY}/"
 		fi
 		if [ ! -z "${FTP_DIR_HOUR}" ]; then
 			# Create hour directory on FTP server
-			echo -e "USER ${FTP_USERNAME}\r\nPASS ${FTP_PASSWORD}\r\nmkd ${FTP_DIR}/${FTP_DIR_DAY}/${FTP_DIR_HOUR}\r\nquit\r\n" | nc -w 5 ${FTP_HOST} 21 | grep "${FTP_DIR_HOUR}"
+			echo -e "USER ${FTP_USERNAME}\r\nPASS ${FTP_PASSWORD}\r\nmkd ${FTP_DIR}/${FTP_DIR_DAY}/${FTP_DIR_HOUR}\r\nquit\r\n" | nc -w 5 ${FTP_HOST} ${FTP_PORT} | grep "${FTP_DIR_HOUR}"
 			FTP_DIR_HOUR="${FTP_DIR_HOUR}/"
 		fi
 	fi
@@ -202,12 +200,12 @@ uploadToFtp ()
 	fi
 	#
 	if [ "${FTP_DIR_TREE}" == "yes" ]; then
-		if ( ! ftpput -u "${FTP_USERNAME}" -p "${FTP_PASSWORD}" "${FTP_HOST}" "${FTP_DIR}${FTP_DIR_DAY}${FTP_DIR_HOUR}$(lbasename "${UTF_FULLFN}")" "${UTF_FULLFN}" ); then
+		if ( ! ftpput -u "${FTP_USERNAME}" -p "${FTP_PASSWORD}" -P ${FTP_PORT} "${FTP_HOST}" "${FTP_DIR}${FTP_DIR_DAY}${FTP_DIR_HOUR}$(lbasename "${UTF_FULLFN}")" "${UTF_FULLFN}" ); then
 			logAdd "[ERROR] uploadToFtp: ftpput FAILED."
 			return 1
 		fi
 	else
-		if ( ! ftpput -u "${FTP_USERNAME}" -p "${FTP_PASSWORD}" "${FTP_HOST}" "${FTP_DIR}$(lbasename "${UTF_FULLFN}")" "${UTF_FULLFN}" ); then
+		if ( ! ftpput -u "${FTP_USERNAME}" -p "${FTP_PASSWORD}" -P ${FTP_PORT} "${FTP_HOST}" "${FTP_DIR}$(lbasename "${UTF_FULLFN}")" "${UTF_FULLFN}" ); then
 			logAdd "[ERROR] uploadToFtp: ftpput FAILED."
 			return 1
 		fi

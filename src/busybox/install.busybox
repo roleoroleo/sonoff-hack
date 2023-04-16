@@ -5,6 +5,7 @@ cd $SCRIPT_DIR
 
 #rsync -a ./_install/* ../../build/sonoff-hack
 mkdir -p ../../build/sonoff-hack/bin
+mkdir -p ../../build/sonoff-hack/sbin
 mkdir -p ../../build/sonoff-hack/usr/bin
 cp -f ./_install/bin/busybox ../../build/sonoff-hack/bin/busybox
 echo "#!/mnt/mmc/sonoff-hack/bin/busybox" > ../../build/sonoff-hack/bin/tar

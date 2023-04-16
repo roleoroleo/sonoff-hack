@@ -30,6 +30,7 @@
 #include "config.h"
 #include "sql.h"
 #include "mqtt.h"
+#include "inotify.h"
 #include "cJSON.h"
 
 #define MQTT_SONOFF_VERSION      "0.1.0"

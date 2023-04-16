@@ -39,11 +39,12 @@ char *sql_cmd_params[][2] = {
     { "",                    ""        }     //SQL_CMD_LAST
 };
 
-static pthread_t *tr_sql;
+static pthread_t *tr_sql = NULL;
 int tr_sql_routine;
 int ipcsys_db = 1;
 sqlite3 *dbc = NULL, *dbc_sys = NULL;
 char last_msg[32];
+int *sql_thread_arg = NULL;
 
 int sensitivity = -1;
 int motion_detection = -1;
@@ -101,6 +102,8 @@ int sql_init(int sysdb)
         return -1;
     }
 
+    sql_thread_arg = (int *) malloc(sizeof(int));
+
     ret = start_sql_thread();
     if(ret != 0)
         return -2;
@@ -117,6 +120,11 @@ void sql_stop()
         tr_sql_routine = 0;
         pthread_join(*tr_sql, NULL);
         free(tr_sql);
+    }
+
+    if(sql_thread_arg != NULL)
+    {
+        free(sql_thread_arg);
     }
 
     if(sql_callbacks != NULL)
@@ -137,7 +145,12 @@ static int start_sql_thread()
 
     tr_sql = malloc(sizeof(pthread_t));
     tr_sql_routine = 1;
-    ret = pthread_create(tr_sql, NULL, &sql_thread, NULL);
+    if (ipcsys_db == 2)
+        *sql_thread_arg = 0;
+    else
+        *sql_thread_arg = 1;
+
+    ret = pthread_create(tr_sql, NULL, &sql_thread, sql_thread_arg);
     if(ret != 0)
     {
         fprintf(stderr, "Can't create sql thread. Error: %d\n", ret);
@@ -153,6 +166,7 @@ static int start_sql_thread()
 
 static void *sql_thread(void *args)
 {
+    int *sql_motion_start = (int *) args;
     sqlite3_stmt *stmt1 = NULL;
     sqlite3_stmt *stmt2 = NULL;
     sqlite3_stmt *stmt3 = NULL;
@@ -162,14 +176,17 @@ static void *sql_thread(void *args)
     int itmp = 0;
     char buffer[1024];
 
-    if (ipcsys_db) {
-        sprintf (buffer, "select max(c_alarm_time), c_alarm_context from t_alarm_log;");
-    } else {
-        sprintf (buffer, "select max(c_alarm_time), c_alarm_code from T_RecordFile;");
-    }
-    ret = sqlite3_prepare_v2(dbc, buffer, -1, &stmt1, NULL);
-    if (ret != SQLITE_OK) {
-        fprintf(stderr, "Failed to fetch data: %s\n", sqlite3_errmsg(dbc));
+    fprintf(stderr, "sql_motion_start: %d\n", *sql_motion_start);
+    if (*sql_motion_start == 1) {
+        if (ipcsys_db) {
+            sprintf (buffer, "select max(c_alarm_time), c_alarm_context from t_alarm_log;");
+        } else {
+            sprintf (buffer, "select max(c_alarm_time), c_alarm_code from T_RecordFile;");
+        }
+        ret = sqlite3_prepare_v2(dbc, buffer, -1, &stmt1, NULL);
+        if (ret != SQLITE_OK) {
+            fprintf(stderr, "Failed to fetch data: %s\n", sqlite3_errmsg(dbc));
+        }
     }
 
     sprintf (buffer, "select c_sensitivity,c_enable from t_mdarea where c_index=0;");
@@ -198,14 +215,16 @@ static void *sql_thread(void *args)
 
     while(tr_sql_routine)
     {
-        ret = sqlite3_step(stmt1);
-        if (ret == SQLITE_ROW) {
-            if (sqlite3_column_text(stmt1, 0) != NULL) {
-                parse_message((char *) sqlite3_column_text(stmt1, 0));
+        if (*sql_motion_start == 1) {
+            ret = sqlite3_step(stmt1);
+            if (ret == SQLITE_ROW) {
+                if (sqlite3_column_text(stmt1, 0) != NULL) {
+                    parse_message((char *) sqlite3_column_text(stmt1, 0));
+                }
             }
+            ret = sqlite3_reset(stmt1);
+            sql_debug("stmt1 completed.\n");
         }
-        ret = sqlite3_reset(stmt1);
-        sql_debug("stmt1 completed.\n");
 
         ret = sqlite3_step(stmt2);
         if (ret == SQLITE_ROW) {
@@ -280,7 +299,9 @@ static void *sql_thread(void *args)
         usleep(1000*1000);
     }
 
-    sqlite3_finalize(stmt1);
+    if (*sql_motion_start == 1) {
+        sqlite3_finalize(stmt1);
+    }
     sqlite3_finalize(stmt2);
     sqlite3_finalize(stmt3);
     sqlite3_finalize(stmt4);

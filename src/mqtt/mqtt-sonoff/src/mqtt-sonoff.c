@@ -190,7 +190,7 @@ int main(int argc, char **argv)
     while (1) {
         static struct option long_options[] =
         {
-            {"ha_discrovery",  no_argument, 0, 'a'},
+            {"ha_discovery",  no_argument, 0, 'a'},
             {"debug",  no_argument, 0, 'd'},
             {"help",  no_argument, 0, 'h'},
             {0, 0, 0, 0}
@@ -253,10 +253,21 @@ int main(int argc, char **argv)
         send_ha_discovery();
 
     ret=sql_init(conf.ipcsys_db);
-    if(ret!=0)
+    if(ret!=0) {
+        fprintf(stderr, "Unable to start sql feature\n");
         exit(EXIT_FAILURE);
+    }
 
-    sql_set_callback(SQL_MSG_MOTION_START, &callback_motion_start);
+    if (conf.ipcsys_db == 2) {
+        ret=inotify_start();
+        if(ret!=0) {
+            fprintf(stderr, "Unable to start inotify feature\n");
+            exit(EXIT_FAILURE);
+        }
+        inotify_set_callback(INOTIFY_MSG_MOTION_START, &callback_motion_start);
+    } else {
+        sql_set_callback(SQL_MSG_MOTION_START, &callback_motion_start);
+    }
     sql_set_callback(SQL_MSG_COMMAND, &callback_command);
 
     while(1)
@@ -281,6 +292,8 @@ int main(int argc, char **argv)
     }
 
     sql_stop();
+    if (conf.ipcsys_db == 2)
+        inotify_stop();
     stop_mqtt();
 
     return 0;

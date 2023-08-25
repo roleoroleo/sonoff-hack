@@ -739,11 +739,9 @@ end:
 static int json_common(cJSON *confObject, const char **suffix) {
 
     char dname[128];
-    if (mqtt_sonoff_conf.ha_name_prefix) {
-        sprintf(dname, "%s %s", mqtt_sonoff_conf.ha_name_prefix, *suffix);
-    } else {
-        strcpy(dname, *suffix);
-    }
+
+    strcpy(dname, *suffix);
+
     if (cJSON_AddStringToObject(confObject, "name", dname) == NULL) {
         goto end;
     }

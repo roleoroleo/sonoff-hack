@@ -87,15 +87,17 @@ static void handle_events(int fd)
 
             event = (const struct inotify_event *) ptr;
 
-            /* Print event type. */
-
-            if (event->mask & IN_CREATE) {
+            /* Handle "File created", "Metadata change, e.g. Timestamp" and "File modified" evets */
+            if (event->mask & (IN_CREATE|IN_MODIFY|IN_ATTRIB)) {
+                /* Don't handle directories */
                 if ((event->mask & IN_ISDIR) != IN_ISDIR) {
-                    /* Print the name of the file. */
+                    /* Filename (event->name) length is gt 0 */
                     if (event->len) {
-                        if (debug) fprintf(stderr, "IN_CREATE: %s\n", event->name);
-                        if (strcmp(NOTI_FILE, event->name) == 0)
+                        /* Is it the file to watch? */
+                        if (strcmp(NOTI_FILE, event->name) == 0) {
+                            if (debug) fprintf(stderr, "inotify: evt %08x on %s\n", event->mask, event->name);
                             handle_inotify_motion_start();
+                        }
                     }
                 }
             }
@@ -117,7 +119,7 @@ static void *inotify_thread(void *arg)
     }
 
     /* Add watch to the directory. */
-    wd = inotify_add_watch(fd, TMP_DIR, IN_CREATE);
+    wd = inotify_add_watch(fd, TMP_DIR, IN_CREATE|IN_MODIFY|IN_ATTRIB);
     if (wd == -1) {
         fprintf(stderr, "Cannot watch '%s': %s\n", TMP_DIR, strerror(errno));
         return NULL;

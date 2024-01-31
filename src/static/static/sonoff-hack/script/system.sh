@@ -56,7 +56,13 @@ $SONOFF_HACK_PREFIX/script/check_conf.sh
 
 cp -f $SONOFF_HACK_PREFIX/etc/hostname /etc/hostname
 hostname -F $SONOFF_HACK_PREFIX/etc/hostname
-export TZ=$(get_config TIMEZONE)
+TIMEZONE_N=$(sqlite3 /mnt/mtd/db/ipcsys.db "select c_param_value from t_sys_param where c_param_name='ZoneTimeName';")
+if [ ! -z $TIMEZONE_N ]; then
+    let TIMEZONE_N=TIMEZONE_N-1
+    TIMEZONE=$(sqlite3 /mnt/mtd/db/ipcsys.db "select * from t_zonetime_info LIMIT 1 OFFSET $TIMEZONE_N;")
+    export TZ=$(echo $TIMEZONE | cut -d"|" -f1)
+fi
+
 
 if [[ $(get_config SYSLOGD) == "yes" ]] ; then
     syslogd

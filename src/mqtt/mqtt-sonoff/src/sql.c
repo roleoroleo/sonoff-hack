@@ -232,7 +232,8 @@ static void *sql_thread(void *args)
             if (sensitivity != itmp) {
                 sensitivity = itmp;
                 if (sensitivity == 0)
-                    handle_sql_command(SQL_CMD_SENSITIVITY_0);
+                    sql_debug("SQL_CMD_SENSITIVITY_0 - don't handle.\n");
+//                    handle_sql_command(SQL_CMD_SENSITIVITY_0);
                 else if (sensitivity == 25)
                     handle_sql_command(SQL_CMD_SENSITIVITY_25);
                 else if (sensitivity == 50)

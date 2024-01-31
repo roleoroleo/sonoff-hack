@@ -2,6 +2,26 @@
 
 RES=""
 
+start_rtsp()
+{
+    /mnt/mtd/ipc/app/rtspd >/dev/null &
+}
+
+stop_rtsp()
+{
+    killall rtspd
+}
+
+start_alarmserver()
+{
+    ps | grep 'AlarmServer' | grep -v 'grep' | awk '{ printf $1 }' |xargs kill -CONT
+}
+
+stop_alarmserver()
+{
+    ps | grep 'AlarmServer' | grep -v 'grep' | awk '{ printf $1 }' |xargs kill -SIGSTOP
+}
+
 if [ $# -ne 1 ]; then
     exit
 fi
@@ -10,14 +30,14 @@ if [ "$1" == "on" ] || [ "$1" == "yes" ]; then
     if [ ! -f /tmp/privacy ]; then
         touch /tmp/privacy
         touch /tmp/snapshot.disabled
-        killall rtspd
-        killall AVRecorder
+        stop_rtsp
+        stop_alarmserver
     fi
 elif [ "$1" == "off" ] || [ "$1" == "no" ]; then
     if [ -f /tmp/privacy ]; then
         rm -f /tmp/snapshot.disabled
-        /mnt/mtd/ipc/app/AVRecorder >/dev/null &
-        /mnt/mtd/ipc/app/rtspd >/dev/null &
+        start_alarmserver
+        start_rtsp
         rm -f /tmp/privacy
     fi
 elif [ "$1" == "status" ] ; then

@@ -38,6 +38,15 @@ stop_rtsp()
     killall rtspd
 }
 
+start_alarmserver()
+{
+    ps | grep 'AlarmServer' | grep -v 'grep' | awk '{ printf $1 }' |xargs kill -CONT
+}
+
+stop_alarmserver()
+{
+    ps | grep 'AlarmServer' | grep -v 'grep' | awk '{ printf $1 }' |xargs kill -SIGSTOP
+}
 
 . $SONOFF_HACK_PREFIX/www/cgi-bin/validate.sh
 
@@ -65,11 +74,11 @@ if [ "$VALUE" == "on" ] ; then
     touch /tmp/privacy
     touch /tmp/snapshot.disabled
     stop_rtsp
-    killall AVRecorder
+    stop_alarmserver
     RES="on"
 elif [ "$VALUE" == "off" ] ; then
     rm -f /tmp/snapshot.disabled
-    /mnt/mtd/ipc/app/AVRecorder &
+    start_alarmserver
     start_rtsp
     rm -f /tmp/privacy
     RES="off"

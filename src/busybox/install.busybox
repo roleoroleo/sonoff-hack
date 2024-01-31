@@ -20,3 +20,5 @@ echo "#!/mnt/mmc/sonoff-hack/bin/busybox" > ../../build/sonoff-hack/usr/bin/rmdi
 chmod 0755 ../../build/sonoff-hack/usr/bin/rmdir
 echo "#!/mnt/mmc/sonoff-hack/bin/busybox" > ../../build/sonoff-hack/sbin/inotifyd
 chmod 0755 ../../build/sonoff-hack/sbin/inotifyd
+echo "#!/mnt/mmc/sonoff-hack/bin/busybox" > ../../build/sonoff-hack/sbin/httpd
+chmod 0755 ../../build/sonoff-hack/sbin/httpd

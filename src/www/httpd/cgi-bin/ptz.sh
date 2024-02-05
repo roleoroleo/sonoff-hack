@@ -13,7 +13,7 @@ if ! $(validateQueryString $QUERY_STRING); then
 fi
 
 DIR="none"
-TIME=""
+TIME="0.5"
 
 for I in 1 2
 do

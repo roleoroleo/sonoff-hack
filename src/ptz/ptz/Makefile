@@ -1,7 +1,7 @@
 OBJECTS = ptz.o config.o
 INCLUDE = -I./minilib
-LIB-P = -L./minilib -lptz
-LIB-H = -L./minilib -lhardware
+LIB-P = -L./minilib -lm -lptz
+LIB-H = -L./minilib -lm -lhardware
 
 all: libptz ptz_p ptz_h
 

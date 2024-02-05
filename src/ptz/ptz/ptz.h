@@ -28,11 +28,15 @@
 #define ACTION_DOWN            3
 #define ACTION_UP              4
 #define ACTION_GO              14
-
-#define ACTION_SET_PRESET      114
+#define ACTION_GO_REL          114
 #define ACTION_GO_PRESET       214
 
-#define ACTION_GET_COORD       300
+#define ACTION_GET_PRESETS     300
+#define ACTION_SET_PRESET      301
+#define ACTION_DEL_PRESET      302
+#define ACTION_SET_HOME        303
+
+#define ACTION_GET_COORD       400
 
 #define DEFAULT_ACTION_TIME    500
 
@@ -44,6 +48,11 @@
 #define MAX_X                  3500
 #define MIN_Y                  0
 #define MAX_Y                  1350
+
+#define MIN_X_DEG              0.0
+#define MAX_X_DEG              360.0
+#define MIN_Y_DEG              0.0
+#define MAX_Y_DEG              180.0
 
 struct preset {
     int x;

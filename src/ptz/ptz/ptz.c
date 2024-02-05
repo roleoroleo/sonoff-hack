@@ -25,6 +25,7 @@
 #include <limits.h>
 #include <errno.h>
 #include <unistd.h>
+#include <math.h>
 #include "ptz.h"
 #include "config.h"
 #include "libptz.h"
@@ -36,27 +37,29 @@ void print_usage(char *progname)
 {
     fprintf(stderr, "\nUsage: %s OPTIONS\n\n", progname);
     fprintf(stderr, "\t-a ACTION, --action ACTION\n");
-    fprintf(stderr, "\t\tset PTZ action: stop, right, left, down, up, go, go_preset, set_preset, get_coord\n");
+    fprintf(stderr, "\t\tset PTZ action: stop, right, left, down, up, go, go_rel, get_presets, go_preset, set_preset, del_preset, set_home, get_coord\n");
     fprintf(stderr, "\t-t TIME, --time TIME\n");
     fprintf(stderr, "\t\tset action duration in milliseconds (right, left, down and up)\n");
     fprintf(stderr, "\t\tdefault 500\n");
     fprintf(stderr, "\t-x X, --x X\n");
-    fprintf(stderr, "\t\tset X coordinate when using GO action\n");
+    fprintf(stderr, "\t\tset X coordinate when using GO or GO_REL action\n");
     fprintf(stderr, "\t-y Y, --y Y\n");
-    fprintf(stderr, "\t\tset Y coordinate when using GO action\n");
+    fprintf(stderr, "\t\tset Y coordinate when using GO or GO_REL action\n");
+    fprintf(stderr, "\t-X X, --X X\n");
+    fprintf(stderr, "\t\tset X coordinate (degrees) when using GO or GO_REL action\n");
+    fprintf(stderr, "\t-Y Y, --Y Y\n");
+    fprintf(stderr, "\t\tset Y coordinate (degrees) when using GO or GO_REL action\n");
     fprintf(stderr, "\t-n NUM, --preset_num NUM\n");
-    fprintf(stderr, "\t\tset preset NUM (0-14) when using GO_PRESET or SET_PRESET actions\n");
+    fprintf(stderr, "\t\tset preset NUM (0-14) when using GO_PRESET, SET_PRESET or DEL_PRESET actions\n");
     fprintf(stderr, "\t\tspecial presets: 10 center\n");
     fprintf(stderr, "\t\t                 11 upper left corner\n");
     fprintf(stderr, "\t\t                 12 upper right corner\n");
     fprintf(stderr, "\t\t                 13 lower right corner\n");
     fprintf(stderr, "\t\t                 14 lower left corner\n");
-    fprintf(stderr, "\t-c, --clear\n");
-    fprintf(stderr, "\t\tclear preset (used with SET_PRESET action)\n");
     fprintf(stderr, "\t-e DESCRIPTION, --desc DESCRIPTION\n");
-    fprintf(stderr, "\t\tset description (used with SET_PRESET action)\n");
+    fprintf(stderr, "\t\tset description (used with SET_PRESET and SET_HOME action)\n");
     fprintf(stderr, "\t-f PRESET_FILE, --file PRESET_FILE\n");
-    fprintf(stderr, "\t\tset preset configuration file (GO_PRESET and SET_PRESET actions)\n");
+    fprintf(stderr, "\t\tset preset configuration file (GET_PRESETS, GO_PRESET and SET_PRESET, DEL_PRESET, SET_HOME  actions)\n");
     fprintf(stderr, "\t-d, --debug\n");
     fprintf(stderr, "\t\tenable debug\n");
     fprintf(stderr, "\t-h, --help\n");
@@ -158,6 +161,7 @@ int main(int argc, char **argv)
     int action;
     int time;
     int x, y;
+    double X, Y;
     char preset_file[1024];
     int preset_num;
     int clear;
@@ -171,9 +175,11 @@ int main(int argc, char **argv)
 
     // Setting default
     action = ACTION_NONE;
-    time = DEFAULT_ACTION_TIME;
-    x = 0;
-    y = 0;
+    time = -1;
+    x = -1;
+    y = -1;
+    X = -1.0;
+    Y = -1.0;
     preset_file[0] = '\0';
     preset_num = -1;
     clear = 0;
@@ -186,6 +192,8 @@ int main(int argc, char **argv)
             {"time",  required_argument, 0, 't'},
             {"x",  required_argument, 0, 'x'},
             {"y",  required_argument, 0, 'y'},
+            {"X",  required_argument, 0, 'X'},
+            {"Y",  required_argument, 0, 'Y'},
             {"preset_file",  required_argument, 0, 'f'},
             {"preset_num",  required_argument, 0, 'n'},
             {"desc",  required_argument, 0, 'e'},
@@ -197,7 +205,7 @@ int main(int argc, char **argv)
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long (argc, argv, "a:t:x:y:f:n:e:cdh",
+        c = getopt_long (argc, argv, "a:t:x:y:X:Y:f:n:e:cdh",
                          long_options, &option_index);
 
         /* Detect the end of the options. */
@@ -219,8 +227,16 @@ int main(int argc, char **argv)
                 action = ACTION_UP;
             } else if (strcasecmp("go", optarg) == 0) {
                 action = ACTION_GO;
+            } else if (strcasecmp("go_rel", optarg) == 0) {
+                action = ACTION_GO_REL;
+            } else if (strcasecmp("get_presets", optarg) == 0) {
+                action = ACTION_GET_PRESETS;
             } else if (strcasecmp("set_preset", optarg) == 0) {
                 action = ACTION_SET_PRESET;
+            } else if (strcasecmp("del_preset", optarg) == 0) {
+                action = ACTION_DEL_PRESET;
+            } else if (strcasecmp("set_home", optarg) == 0) {
+                action = ACTION_SET_HOME;
             } else if (strcasecmp("go_preset", optarg) == 0) {
                 action = ACTION_GO_PRESET;
             } else if (strcasecmp("get_coord", optarg) == 0) {
@@ -241,7 +257,7 @@ int main(int argc, char **argv)
                 print_usage(argv[0]);
                 exit(EXIT_FAILURE);
             }
-            if ((time < 0) || (time > 5000)) {
+            if ((time < 0) || (time > 10000)) {
                 print_usage(argv[0]);
                 exit(EXIT_FAILURE);
             }
@@ -260,7 +276,7 @@ int main(int argc, char **argv)
                 print_usage(argv[0]);
                 exit(EXIT_FAILURE);
             }
-            if ((x < MIN_X) || (x > MAX_X)) {
+            if ((x < -MAX_X) || (x > MAX_X)) {
                 print_usage(argv[0]);
                 exit(EXIT_FAILURE);
             }
@@ -279,7 +295,45 @@ int main(int argc, char **argv)
                 print_usage(argv[0]);
                 exit(EXIT_FAILURE);
             }
-            if ((y < MIN_Y) || (y > MAX_Y)) {
+            if ((y < -MAX_Y) || (y > MAX_Y)) {
+                print_usage(argv[0]);
+                exit(EXIT_FAILURE);
+            }
+            break;
+
+        case 'X':
+            errno = 0;    /* To distinguish success/failure after call */
+            X = strtod(optarg, &endptr);
+
+            /* Check for various possible errors */
+            if (errno == ERANGE) {
+                print_usage(argv[0]);
+                exit(EXIT_FAILURE);
+            }
+            if (endptr == optarg) {
+                print_usage(argv[0]);
+                exit(EXIT_FAILURE);
+            }
+            if ((X < -MAX_X_DEG) || (X > MAX_X_DEG)) {
+                print_usage(argv[0]);
+                exit(EXIT_FAILURE);
+            }
+            break;
+
+        case 'Y':
+            errno = 0;    /* To distinguish success/failure after call */
+            Y = strtod(optarg, &endptr);
+
+            /* Check for various possible errors */
+            if (errno == ERANGE) {
+                print_usage(argv[0]);
+                exit(EXIT_FAILURE);
+            }
+            if (endptr == optarg) {
+                print_usage(argv[0]);
+                exit(EXIT_FAILURE);
+            }
+            if ((Y < -MAX_Y_DEG) || (Y > MAX_Y_DEG)) {
                 print_usage(argv[0]);
                 exit(EXIT_FAILURE);
             }
@@ -349,9 +403,17 @@ int main(int argc, char **argv)
         print_usage(argv[0]);
         return -1;
     }
-    if (((action == ACTION_SET_PRESET) || (action == ACTION_GO_PRESET)) &&
+    if (((action == ACTION_SET_PRESET) || (action == ACTION_GO_PRESET) ||
+            (action == ACTION_DEL_PRESET) || (action == ACTION_SET_HOME) ||
+            (action == ACTION_GET_PRESETS)) &&
             (preset_file[0] == '\0')) {
         fprintf(stderr, "preset_file cannot be empty.\n");
+        print_usage(argv[0]);
+        return -1;
+    }
+    if (((action == ACTION_SET_PRESET) || (action == ACTION_SET_HOME)) &&
+            (desc[0] == '\0')) {
+        fprintf(stderr, "desc cannot be empty.\n");
         print_usage(argv[0]);
         return -1;
     }
@@ -365,8 +427,28 @@ int main(int argc, char **argv)
         print_usage(argv[0]);
         return -1;
     }
+    if ((action == ACTION_DEL_PRESET) && (preset_num == -1)) {
+        fprintf(stderr, "preset_num must be specified.\n");
+        print_usage(argv[0]);
+        return -1;
+    }
+    // Check coordinates when passed as internal number
+    if ((action == ACTION_GO) && (x != -1) && (y != -1)) {
+        if ((x < MIN_X) || (x > MAX_X)) {
+            fprintf(stderr, "value x is out of range.\n");
+            print_usage(argv[0]);
+            return -1;
+        }
+        if ((action == ACTION_GO) && ((y < MIN_Y) || (y > MAX_Y))) {
+            fprintf(stderr, "value y is out of range.\n");
+            print_usage(argv[0]);
+            return -1;
+        }
+    }
+    // End of arguments checks
 
     if (action == ACTION_GET_COORD) {
+        double fx, fy;
         memset(preset_buffer, '\0', sizeof(preset_buffer));
         if (hw_ptz_pos_read(0, preset_buffer, 0, 0) != 0) {
             fprintf(stderr, "Error reading position\n");
@@ -374,11 +456,41 @@ int main(int argc, char **argv)
         }
         x = preset_buffer[3];
         y = preset_buffer[4];
-        fprintf(stderr, "Current position: (%d, %d)\n", x, y);
+
+        if (debug) {
+            fprintf(stderr, "PTZ_POS_READ:\n");
+            for (i = 0; i < sizeof(preset_buffer) / sizeof(int); i++) {
+                fprintf(stderr, "%08x\n", preset_buffer[i]);
+            }
+        }
+        fprintf(stderr, "Current x  = %d, y  = %d\n", x, y);
+        fx = ((double) x) / ((double) MAX_X) * MAX_X_DEG;
+        fy = ((double) y) / ((double) MAX_Y) * MAX_Y_DEG;
+        // Invert x otherwise 0 is right and 360 is left
+        fx = MAX_X_DEG - fx;
+
+        fprintf(stderr, "Degrees x  = %.1f, y  = %.1f\n", fx, fy);
+        fprintf(stdout, "%.1f,%.1f\n", fx, fy);
         return 0;
     }
 
     if (debug) fprintf(stderr, "Running action %d\n", action);
+
+    if (action == ACTION_GET_PRESETS) {
+        double fx, fy;
+
+        // Load presets from config file
+        ptz_init_config(preset_file);
+        for (i = 0; i < PRESET_NUM; i++) {
+            fx = ((double) presets[i].x) * MAX_X_DEG / ((double) MAX_X);
+            fy = ((double) presets[i].y) * MAX_Y_DEG / ((double) MAX_Y);
+            if (strcmp("empty", presets[i].desc) == 0) {
+                fprintf(stdout, "%d=,,\n", i);
+            } else {
+                fprintf(stdout, "%d=%s,%.1f,%.1f\n", i, presets[i].desc, fx, fy);
+            }
+        }
+    }
 
     if (action == ACTION_SET_PRESET) {
         // Load presets from config file
@@ -431,6 +543,48 @@ int main(int argc, char **argv)
         return 0;
     }
 
+    if (action == ACTION_DEL_PRESET) {
+        // Load presets from config file
+        ptz_init_config(preset_file);
+
+        presets[preset_num].x = -1;
+        presets[preset_num].y = -1;
+        strcpy(presets[preset_num].desc, "empty");
+        ptz_save_config(preset_file);
+
+        // Print the number of preset
+        if (clear != 1) {
+            printf("%d\n", preset_num);
+        }
+
+        return 0;
+    }
+
+    if (action == ACTION_SET_HOME) {
+        // Load presets from config file
+        ptz_init_config(preset_file);
+
+        memset(preset_buffer, '\0', sizeof(preset_buffer));
+        if (hw_ptz_pos_read(0, preset_buffer, 0, 0) != 0) {
+            fprintf(stderr, "Error reading position\n");
+            return -2;
+        }
+        if (x < MIN_X) x = MIN_X;
+        if (x > MAX_X) x = MAX_X;
+        if (y < MIN_Y) y = MIN_Y;
+        if (y < MAX_Y) y = MAX_Y;
+        x = preset_buffer[3];
+        y = preset_buffer[4];
+        if (debug) fprintf(stderr, "Current position: (%d, %d)\n", x, y);
+
+        presets[0].x = x;
+        presets[0].y = y;
+        strcpy(presets[0].desc, desc);
+        ptz_save_config(preset_file);
+
+        return 0;
+    }
+
     if (action == ACTION_GO_PRESET) {
         if (preset_num <= 9) {
             ptz_init_config(preset_file);
@@ -473,6 +627,96 @@ int main(int argc, char **argv)
         }
     }
 
+    if ((action == ACTION_GO) && (x != -1) && (y != -1)) {
+        // Do nothing
+    }
+
+    if ((action == ACTION_GO) && (X != -1.0) && (Y != -1.0)) {
+        double fx, fy;
+        int cur_x, cur_y;
+
+        memset(preset_buffer, '\0', sizeof(preset_buffer));
+        if (hw_ptz_pos_read(0, preset_buffer, 0, 0) != 0) {
+            fprintf(stderr, "Error reading position\n");
+            return -2;
+        }
+        cur_x = preset_buffer[3];
+        cur_y = preset_buffer[4];
+
+        fx = X * (((double) MAX_X) / MAX_X_DEG);
+        x = round(fx);
+        // Invert x otherwise 0 is right and 360 is left
+        x = MAX_X - x;
+        if (x > MAX_X) x = MAX_X;
+        if (x < MIN_X) x = MIN_X;
+        fy = Y * (((double) MAX_Y) / MAX_Y_DEG);
+        y = round(fy);
+        if (y > MAX_Y) y = MAX_Y;
+        if (y < MIN_Y) y = MIN_Y;
+
+        if (debug) fprintf(stderr, "Current x  = %d, y  = %d\n", cur_x, cur_y);
+        if (debug) fprintf(stderr, "Command xr = %d, yr = %d\n", x, y);
+    }
+
+    if ((action == ACTION_GO_REL) && (x != -1) && (y != -1)) {
+        int cur_x, cur_y;
+        int fin_x, fin_y;
+
+        memset(preset_buffer, '\0', sizeof(preset_buffer));
+        if (hw_ptz_pos_read(0, preset_buffer, 0, 0) != 0) {
+            fprintf(stderr, "Error reading position\n");
+            return -2;
+        }
+        cur_x = preset_buffer[3];
+        cur_y = preset_buffer[4];
+
+        fin_x = cur_x + x;
+        if (fin_x > MAX_X) fin_x = MAX_X;
+        if (fin_x < MIN_X) fin_x = MIN_X;
+        fin_y = cur_y + y;
+        if (fin_y > MAX_Y) fin_y = MAX_Y;
+        if (fin_y < MIN_Y) fin_y = MIN_Y;
+        x = fin_x;
+        y = fin_y;
+
+        if (debug) fprintf(stderr, "Current x  = %d, y  = %d\n", cur_x, cur_y);
+        if (debug) fprintf(stderr, "Command xr = %d, yr = %d\n", x, y);
+    }
+
+    if ((action == ACTION_GO_REL) && (X != -1) && (Y != -1)) {
+        double fx, fy;
+        int cur_x, cur_y;
+        int dx, dy;
+        int fin_x, fin_y;
+
+        memset(preset_buffer, '\0', sizeof(preset_buffer));
+        if (hw_ptz_pos_read(0, preset_buffer, 0, 0) != 0) {
+            fprintf(stderr, "Error reading position\n");
+            return -2;
+        }
+        cur_x = preset_buffer[3];
+        cur_y = preset_buffer[4];
+
+        fx = X * (((double) MAX_X) / MAX_X_DEG);
+        dx = round(fx);
+        // Invert x otherwise 0 is right and 360 is left
+        dx = -dx;
+        fy = Y * (((double) MAX_Y) / MAX_Y_DEG);
+        dy = round(fy);
+
+        fin_x = cur_x + dx;
+        if (fin_x > MAX_X) fin_x = MAX_X;
+        if (fin_x < MIN_X) fin_x = MIN_X;
+        fin_y = cur_y + dy;
+        if (fin_y > MAX_Y) fin_y = MAX_Y;
+        if (fin_y < MIN_Y) fin_y = MIN_Y;
+        x = fin_x;
+        y = fin_y;
+
+        if (debug) fprintf(stderr, "Current x  = %d, y  = %d\n", cur_x, cur_y);
+        if (debug) fprintf(stderr, "Command xr = %d, yr = %d\n", x, y);
+    }
+
     ptz_arg[0] = action % 100;
     ptz_arg[1] = 0;
     ptz_arg[2] = 1; // 1, 2 or 3
@@ -483,15 +727,18 @@ int main(int argc, char **argv)
     ptz_arg[7] = 0;
     hw_ptz_sendptz(ptz_arg);
 
-    // Send stop command
-    if ((action == ACTION_RIGHT) || (action == ACTION_LEFT) ||
-             (action == ACTION_DOWN) || (action == ACTION_UP)) {
 
-        usleep(time * 1000);
+    if (time != -1) {
+        // Send stop command
+        if ((action == ACTION_RIGHT) || (action == ACTION_LEFT) ||
+                 (action == ACTION_DOWN) || (action == ACTION_UP)) {
 
-        if (debug) fprintf(stderr, "Running stop\n");
-        ptz_arg[0] = ACTION_STOP;
-        hw_ptz_sendptz(ptz_arg);
+            usleep(time * 1000);
+
+            if (debug) fprintf(stderr, "Running stop\n");
+            ptz_arg[0] = ACTION_STOP;
+            hw_ptz_sendptz(ptz_arg);
+        }
     }
 
     return 0;

@@ -242,7 +242,7 @@ if [[ $(get_config SSHD) == "yes" ]] ; then
         dropbearkey -t ecdsa -f /tmp/dropbear_ecdsa_host_key
         mv /tmp/dropbear_ecdsa_host_key $SONOFF_HACK_PREFIX/etc/dropbear/
     fi
-    dropbear -E -r $SONOFF_HACK_PREFIX/etc/dropbear/dropbear_ecdsa_host_key
+    dropbear -r $SONOFF_HACK_PREFIX/etc/dropbear/dropbear_ecdsa_host_key
 fi
 
 if [[ $(get_config NTPD) == "yes" ]] ; then

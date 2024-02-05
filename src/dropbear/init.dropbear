@@ -1,22 +1,31 @@
 #!/bin/bash
 
-CROSSLINK_BASE=${CROSSLINK_BASE:=/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi}
-
 SCRIPT_DIR=$(cd `dirname $0` && pwd)
 cd $SCRIPT_DIR
 
+source config.dropbear
+
 rm -rf ./_install
 
-cd dropbear
-git reset --hard 
+if [ ! -f "${ARCHIVE}" ]; then
+    wget "${MAIN_URL}"
+fi
+
+tar xvf "${ARCHIVE}"
+
+cd "${BUILD_FOLDER}"
 
 autoconf; autoheader || exit 1
 
-./configure \
+./configure CC=arm-sonoff-linux-uclibcgnueabi-gcc \
     --prefix=$SCRIPT_DIR/_install \
     CFLAGS="-Os -I${CROSSLINK_BASE}/arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include -L${CROSSLINK_BASE}/arm-sonoff-linux-uclibcgnueabi/sysroot/lib" \
-    --host=arm-sonoff-linux-uclibcgnueabi \
+    AR=arm-sonoff-linux-uclibcgnueabi-ar \
+    RANLIB=arm-sonoff-linux-uclibcgnueabi-ranlib \
+    --host=arm \
     --disable-zlib \
+    --disable-harden \
+    --disable-syslog \
     || exit 1
 
 cp ../localoptions.h ./ || exit 1

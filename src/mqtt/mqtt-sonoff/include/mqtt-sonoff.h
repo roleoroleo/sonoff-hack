@@ -42,6 +42,8 @@
 #define CONF2MQTT_SCRIPT         "/mnt/mmc/sonoff-hack/script/conf2mqtt.sh"
 #define IPC_CMD                  "/mnt/mmc/sonoff-hack/bin/ipc_cmd"
 
+#define MOTION_ALARM_FILE        "/tmp/onvif_notify_server/motion_alarm"
+
 typedef struct
 {
     char    *mqtt_prefix;

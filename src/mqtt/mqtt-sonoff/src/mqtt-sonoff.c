@@ -55,6 +55,7 @@ static void *motion_start_thread()
     long int sz;
     char *bufferImage;
     mqtt_msg_t msg;
+    int fd;
 
     if (debug) fprintf(stderr, "CALLBACK MOTION START\n");
 
@@ -66,6 +67,13 @@ static void *motion_start_thread()
     sprintf(topic, "%s/%s", mqtt_sonoff_conf.mqtt_prefix, mqtt_sonoff_conf.topic_motion);
 
     mqtt_send_message(&msg, conf.retain_motion);
+
+    // Create temporary alarm file
+    fd = open(MOTION_ALARM_FILE, O_CREAT | S_IRUSR | S_IWUSR);
+    if (fd == -1) {
+        fprintf(stderr, "Unable to touch file %s\n", MOTION_ALARM_FILE);
+    }
+    close(fd);
 
     if (strlen(mqtt_sonoff_conf.topic_motion_image)) {
         // Send image
@@ -117,7 +125,7 @@ static void *motion_start_thread()
     if (debug) fprintf(stderr, "WAIT 10 S AND SEND MOTION STOP\n");
     sleep(10);
 
-    // Send start message
+    // Send stop message
     msg.msg=mqtt_sonoff_conf.motion_stop_msg;
     msg.len=strlen(msg.msg);
     msg.topic=topic;
@@ -125,6 +133,9 @@ static void *motion_start_thread()
     sprintf(topic, "%s/%s", mqtt_sonoff_conf.mqtt_prefix, mqtt_sonoff_conf.topic_motion);
 
     mqtt_send_message(&msg, conf.retain_motion);
+
+    // Remove temporary alarm file
+    remove(MOTION_ALARM_FILE);
 
     pthread_exit(NULL);
 }

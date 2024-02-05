@@ -37,12 +37,16 @@ do
     fi
 done
 
-if [ "$ACTION" != "go_preset" ] && [ "$ACTION" != "set_preset" ]; then
+if [ "$ACTION" != "go_preset" ] && [ "$ACTION" != "set_preset" ] && [ "$ACTION" != "del_preset" ] && [ "$ACTION" != "set_home" ]; then
     printf "Content-type: application/json\r\n\r\n"
     printf "{\n"
     printf "\"%s\":\"%s\"\\n" "error" "true"
     printf "}"
     exit
+fi
+
+if [ "$ACTION" == "set_home" ]; then
+    NUM = 0
 fi
 
 if [ $NUM -eq -1 ]; then
@@ -61,12 +65,19 @@ if [ "$ACTION" == "set_preset" ] && [ "$NAME" == "none" ]; then
     exit
 fi
 
+if [ "$ACTION" == "set_home" ] && [ "$NAME" == "none" ]; then
+    printf "Content-type: application/json\r\n\r\n"
+    printf "{\n"
+    printf "\"%s\":\"%s\"\\n" "error" "true"
+    printf "}"
+    exit
+fi
+
 ARG_ACTION="-a $ACTION"
-ARG_NUM="-n $NUM"
-if [ "$ACTION" == "set_preset" ] && [ "$NAME" == "" ]; then
-    # Remove entry
-    ARG_NAME="-c"
-else
+if [ $NUM -ne -1 ]; then
+    ARG_NUM="-n $NUM"
+fi
+if [ "$NAME" != "none" ]; then
     ARG_NAME="-e $NAME"
 fi
 

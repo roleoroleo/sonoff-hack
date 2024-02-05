@@ -97,18 +97,21 @@ start_onvif()
         ONVIF_PROFILE_1="name=Profile_1\nwidth=640\nheight=360\nurl=rtsp://$RTSP_USERPWD%s/av_stream/ch1\nsnapurl=http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh\ntype=H264"
     fi
 
-    ONVIF_SRVD_CONF="/tmp/onvif_srvd.conf"
+    ONVIF_SRVD_CONF="/tmp/onvif_simple_server.conf"
 
-    echo "pid_file=/var/run/onvif_srvd.pid" > $ONVIF_SRVD_CONF
-    echo "model=Sonoff Hack" >> $ONVIF_SRVD_CONF
+    echo "model=Sonoff Hack" > $ONVIF_SRVD_CONF
     echo "manufacturer=Sonoff" >> $ONVIF_SRVD_CONF
     echo "firmware_ver=$SONOFF_HACK_VER" >> $ONVIF_SRVD_CONF
     echo "hardware_id=$MODEL" >> $ONVIF_SRVD_CONF
     echo "serial_num=$DEVICE_ID" >> $ONVIF_SRVD_CONF
     echo "ifs=$ONVIF_NETIF" >> $ONVIF_SRVD_CONF
-    echo "port=$ONVIF_PORT" >> $ONVIF_SRVD_CONF
+    echo "port=$HTTPD_PORT" >> $ONVIF_SRVD_CONF
     echo "scope=onvif://www.onvif.org/Profile/Streaming" >> $ONVIF_SRVD_CONF
     echo "" >> $ONVIF_SRVD_CONF
+    if [ ! -z $ONVIF_USERPWD ]; then
+        echo -e $ONVIF_USERPWD >> $ONVIF_SRVD_CONF
+        echo "" >> $ONVIF_SRVD_CONF
+    fi
     if [ ! -z $ONVIF_PROFILE_0 ]; then
         echo "#Profile 0" >> $ONVIF_SRVD_CONF
         echo -e $ONVIF_PROFILE_0 >> $ONVIF_SRVD_CONF
@@ -119,44 +122,65 @@ start_onvif()
         echo -e $ONVIF_PROFILE_1 >> $ONVIF_SRVD_CONF
         echo "" >> $ONVIF_SRVD_CONF
     fi
-    if [ ! -z $ONVIF_USERPWD ]; then
-        echo -e $ONVIF_USERPWD >> $ONVIF_SRVD_CONF
+
+    if [[ $PTZ_PRESENT -eq 1 ]]; then
+        echo "#PTZ" >> $ONVIF_SRVD_CONF
+        echo "ptz=1" >> $ONVIF_SRVD_CONF
+        echo "get_position=/mnt/mmc/sonoff-hack/bin/ptz -a get_coord" >> $ONVIF_SRVD_CONF
+        echo "is_running=echo 0" >> $ONVIF_SRVD_CONF
+        if [ ! -f /tmp/.mirror ]; then
+            echo "move_left=/mnt/mmc/sonoff-hack/bin/ptz -a left" >> $ONVIF_SRVD_CONF
+            echo "move_right=/mnt/mmc/sonoff-hack/bin/ptz -a right" >> $ONVIF_SRVD_CONF
+            echo "move_up=/mnt/mmc/sonoff-hack/bin/ptz -a up" >> $ONVIF_SRVD_CONF
+            echo "move_down=/mnt/mmc/sonoff-hack/bin/ptz -a down" >> $ONVIF_SRVD_CONF
+        else
+            echo "move_left=/mnt/mmc/sonoff-hack/bin/ptz -a right" >> $ONVIF_SRVD_CONF
+            echo "move_right=/mnt/mmc/sonoff-hack/bin/ptz -a left" >> $ONVIF_SRVD_CONF
+            echo "move_up=/mnt/mmc/sonoff-hack/bin/ptz -a down" >> $ONVIF_SRVD_CONF
+            echo "move_down=/mnt/mmc/sonoff-hack/bin/ptz -a up" >> $ONVIF_SRVD_CONF
+        fi
+        echo "move_stop=/mnt/mmc/sonoff-hack/bin/ptz -a stop" >> $ONVIF_SRVD_CONF
+        echo "move_preset=/mnt/mmc/sonoff-hack/bin/ptz -f /mnt/mmc/sonoff-hack/etc/ptz_presets.conf -a go_preset -n %d" >> $ONVIF_SRVD_CONF
+        echo "set_preset=/mnt/mmc/sonoff-hack/bin/ptz -f /mnt/mmc/sonoff-hack/etc/ptz_presets.conf -a set_preset -e %s -n %d" >> $ONVIF_SRVD_CONF
+        echo "set_home_position=/mnt/mmc/sonoff-hack/bin/ptz -f /mnt/mmc/sonoff-hack/etc/ptz_presets.conf -a set_home -e Home" >> $ONVIF_SRVD_CONF
+        echo "remove_preset=/mnt/mmc/sonoff-hack/bin/ptz -f /mnt/mmc/sonoff-hack/etc/ptz_presets.conf -a del_preset -n %d" >> $ONVIF_SRVD_CONF
+        echo "jump_to_abs=/mnt/mmc/sonoff-hack/bin/ptz -a go -X %f -Y %f" >> $ONVIF_SRVD_CONF
+        echo "jump_to_rel=/mnt/mmc/sonoff-hack/bin/ptz -a go_rel -X %f -Y %f" >> $ONVIF_SRVD_CONF
+        echo "get_presets=/mnt/mmc/sonoff-hack/bin/ptz -f /mnt/mmc/sonoff-hack/etc/ptz_presets.conf -a get_presets" >> $ONVIF_SRVD_CONF
         echo "" >> $ONVIF_SRVD_CONF
     fi
 
-    echo "#PTZ" >> $ONVIF_SRVD_CONF
-    echo "ptz=1" >> $ONVIF_SRVD_CONF
-    if [ -f /tmp/.mirror ]; then
-        echo "move_left=/mnt/mmc/sonoff-hack/bin/ptz -a right" >> $ONVIF_SRVD_CONF
-        echo "move_right=/mnt/mmc/sonoff-hack/bin/ptz -a left" >> $ONVIF_SRVD_CONF
-        echo "move_up=/mnt/mmc/sonoff-hack/bin/ptz -a down" >> $ONVIF_SRVD_CONF
-        echo "move_down=/mnt/mmc/sonoff-hack/bin/ptz -a up" >> $ONVIF_SRVD_CONF
-    else
-        echo "move_left=/mnt/mmc/sonoff-hack/bin/ptz -a left" >> $ONVIF_SRVD_CONF
-        echo "move_right=/mnt/mmc/sonoff-hack/bin/ptz -a right" >> $ONVIF_SRVD_CONF
-        echo "move_up=/mnt/mmc/sonoff-hack/bin/ptz -a up" >> $ONVIF_SRVD_CONF
-        echo "move_down=/mnt/mmc/sonoff-hack/bin/ptz -a down" >> $ONVIF_SRVD_CONF
-    fi
-    echo "move_stop=/mnt/mmc/sonoff-hack/bin/ptz -a stop" >> $ONVIF_SRVD_CONF
-    echo "move_preset=/mnt/mmc/sonoff-hack/bin/ptz -f /mnt/mmc/sonoff-hack/etc/ptz_presets.conf -a go_preset -n %t" >> $ONVIF_SRVD_CONF
-    echo "set_preset=/mnt/mmc/sonoff-hack/bin/ptz -f /mnt/mmc/sonoff-hack/etc/ptz_presets.conf -a set_preset -e %n -n %t" >> $ONVIF_SRVD_CONF
+    echo "#EVENT" >> $ONVIF_SRVD_CONF
+    echo "events=3" >> $ONVIF_SRVD_CONF
+    echo "#Event 0" >> $ONVIF_SRVD_CONF
+    echo "topic=tns1:VideoSource/MotionAlarm" >> $ONVIF_SRVD_CONF
+    echo "source_name=VideoSourceConfigurationToken" >> $ONVIF_SRVD_CONF
+    echo "source_value=VideoSourceToken" >> $ONVIF_SRVD_CONF
+    echo "input_file=/tmp/onvif_notify_server/motion_alarm" >> $ONVIF_SRVD_CONF
 
-    onvif_srvd --conf_file $ONVIF_SRVD_CONF
+    chmod 0600 $ONVIF_SRVD_CONF
+    onvif_simple_server --conf_file $ONVIF_SRVD_CONF
+    onvif_notify_server --conf_file $ONVIF_SRVD_CONF
+
+    if [[ $(get_config ONVIF_WSDD) == "yes" ]] ; then
+        wsd_simple_server --pid_file /var/run/wsd_simple_server.pid --if_name $ONVIF_NETIF --xaddr "http://%s$D_HTTPD_PORT/onvif/device_service" -m sonoff_hack -n Sonoff
+    fi
 }
 
 stop_onvif()
 {
-    killall onvif_srvd
+    killall onvif_notify_server
+    killall onvif_simple_server
 }
 
 start_wsdd()
 {
-    wsdd --pid_file /var/run/wsdd.pid --if_name $ONVIF_NETIF --type tdn:NetworkVideoTransmitter --xaddr http://%s$D_ONVIF_PORT --scope "onvif://www.onvif.org/name/Unknown onvif://www.onvif.org/Profile/Streaming"
+    wsd_simple_server --pid_file /var/run/wsd_simple_server.pid --if_name $ONVIF_NETIF --xaddr "http://%s$D_HTTPD_PORT/onvif/device_service" -m sonoff_hack -n Sonoff
 }
 
 stop_wsdd()
 {
-    killall wsdd
+    killall wsd_simple_server
 }
 
 start_ftpd()
@@ -278,9 +302,9 @@ elif [ "$ACTION" == "status" ] ; then
     if [ "$NAME" == "rtsp" ]; then
         RES=$(ps_program rtspd)
     elif [ "$NAME" == "onvif" ]; then
-        RES=$(ps_program onvif_srvd)
+        RES=$(ps_program onvif_simple_server)
     elif [ "$NAME" == "wsdd" ]; then
-        RES=$(ps_program wsdd)
+        RES=$(ps_program wsd_simple_server)
     elif [ "$NAME" == "ftpd" ]; then
         RES=$(ps_program ftpd)
     elif [ "$NAME" == "mqtt" ]; then

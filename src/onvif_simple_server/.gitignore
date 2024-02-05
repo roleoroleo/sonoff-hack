@@ -1,0 +1,8 @@
+# Ignore the install dir
+_install/
+*.xz
+*.gz
+libtomcrypt
+libtomcrypt*/
+mbedtls
+mbedtls*/

@@ -1,0 +1,18 @@
+#!/bin/bash
+
+SCRIPT_DIR=$(cd `dirname $0` && pwd)
+cd $SCRIPT_DIR
+
+cd onvif_simple_server
+
+make clean
+
+cd ..
+
+rm -rf libtomcrypt*
+rm -f crypt*.tar.xz
+rm -rf mbedtls-3.4.0
+rm -rf mbedtls
+rm -f v3.4.0.tar.gz
+rm -f onvif_simple_server/extras/libtomcrypt
+rm -f onvif_simple_server/extras/mbedtls

@@ -16,3 +16,6 @@
 [submodule "src/cJSON/cJSON"]
 	path = src/cJSON/cJSON
 	url = https://github.com/DaveGamble/cJSON.git
+[submodule "src/onvif_simple_server/onvif_simple_server"]
+	path = src/onvif_simple_server/onvif_simple_server
+	url = https://github.com/roleoroleo/onvif_simple_server

@@ -34,8 +34,9 @@ I have no time to support the project, so feel free to clone/fork this git and m
 - [Build your own firmware](#build-your-own-firmware)
 - [Unbricking](#unbricking)
 - [Acknowledgments](#acknowledgments)
-- [Donation](#donation)
+- [License](#license)
 - [Disclaimer](#disclaimer)
+- [Donation](#donation)
 
 ## Contributing and Bug Reports
 See [CONTRIBUTING](CONTRIBUTING.md)
@@ -156,10 +157,19 @@ Special thanks to the following people for the previous projects I started from.
 - @TheCrypt0 - [https://github.com/TheCrypt0/yi-hack-v4](https://github.com/TheCrypt0/yi-hack-v4)
 - All the people who worked on the previous projects "yi-hack".
 
-## Donation
-If you like this project, you can buy me a beer :) 
-[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=JBYXDMR24FW7U&currency_code=EUR&source=url)
-
 ---
+
+## License
+[GPLv3](https://choosealicense.com/licenses/gpl-3.0/)
+
 ### DISCLAIMER
 **I AM NOT RESPONSIBLE FOR ANY USE OR DAMAGE THIS SOFTWARE MAY CAUSE. THIS IS INTENDED FOR EDUCATIONAL PURPOSES ONLY. USE AT YOUR OWN RISK.**
+
+## Donation
+If you like this project, you can buy me a beer :) 
+
+
+Click [here](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=JBYXDMR24FW7U&currency_code=EUR&source=url) or use the below QR code to donate via PayPal
+<p align="center">
+  <img src="https://github.com/roleoroleo/sonoff-hack/assets/39277388/2a9d66e2-6fbc-4125-ad86-8aa2b1be6439"/>
+</p>

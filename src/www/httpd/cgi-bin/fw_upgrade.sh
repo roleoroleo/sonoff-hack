@@ -4,6 +4,8 @@ export PATH=$PATH:/mnt/mmc/sonoff-hack/bin:/mnt/mmc/sonoff-hack/sbin:/mnt/mmc/so
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/mnt/mmc/sonoff-hack/lib
 
 SONOFF_HACK_PREFIX="/mnt/mmc/sonoff-hack"
+MODEL_CFG_FILE=/mnt/mtd/ipc/cfg/config_cst.cfg
+MODEL=$(cat $MODEL_CFG_FILE | grep model | cut -d'=' -f2 | cut -d'"' -f2)
 
 . $SONOFF_HACK_PREFIX/www/cgi-bin/validate.sh
 
@@ -27,7 +29,7 @@ if [ "$VAL" == "info" ] ; then
 
     FW_VERSION=`cat /mnt/mmc/sonoff-hack/version`
     LATEST_FW=`/mnt/mmc/sonoff-hack/usr/bin/wget -O -  https://api.github.com/repos/roleoroleo/sonoff-hack/releases/latest 2>&1 | grep '"tag_name":' | sed -r 's/.*"([^"]+)".*/\1/'`
-    if [ -f /tmp/sd/${MODEL_SUFFIX}_x.x.x.tgz ]; then
+    if [ -f /mnt/mmc/${MODEL}_x.x.x.tgz ]; then
         LOCAL_FW="true"
     else
         LOCAL_FW="false"
@@ -37,7 +39,7 @@ if [ "$VAL" == "info" ] ; then
     printf "\"%s\":\"%s\",\n" "error" "false"
     printf "\"%s\":\"%s\",\n" "fw_version"      "$FW_VERSION"
     printf "\"%s\":\"%s\",\n" "latest_fw"       "$LATEST_FW"
-    printf "\"%s\":\"%s\"\n" "local_fw"         "$LOCAL_FW"
+    printf "\"%s\":%s\n" "local_fw"             "$LOCAL_FW"
     printf "}"
 
 elif [ "$VAL" == "upgrade" ] ; then

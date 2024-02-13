@@ -83,14 +83,14 @@ if [[ $(get_config SWAP_FILE) == "yes" ]] ; then
 fi
 
 # Check libptz.so or libhardware.so
-if [ ! -f /mnt/mmc/sonoff-hack/bin/ptz ]; then
-    if [ -f /mnt/mtd/ipc/app/lib/libhardware.so ] && [ -f /mnt/mtd/ipc/app/lib/libptz.so ]; then
-        cp /mnt/mmc/sonoff-hack/bin/ptz_p /mnt/mmc/sonoff-hack/bin/ptz
-    elif [ -f /mnt/mtd/ipc/app/lib/libhardware.so ]; then
-        cp /mnt/mmc/sonoff-hack/bin/ptz_h /mnt/mmc/sonoff-hack/bin/ptz
-    else
-        cp /mnt/mmc/sonoff-hack/bin/ptz_p /mnt/mmc/sonoff-hack/bin/ptz
-    fi
+if [ -f /mnt/mtd/ipc/app/lib/libhardware.so ] && [ ! -f /mnt/mtd/ipc/app/lib/libptz.so ]; then
+    PTZ_BIN="/mnt/mmc/sonoff-hack/bin/ptz_h"
+else
+    PTZ_BIN="/mnt/mmc/sonoff-hack/bin/ptz_p"
+fi
+diff $PTZ_BIN /mnt/mmc/sonoff-hack/bin/ptz
+if [ $? -gt 0 ]; then
+    cp $PTZ_BIN /mnt/mmc/sonoff-hack/bin/ptz
 fi
 
 #10001|1|admin|12345678|

@@ -332,12 +332,12 @@ if [[ $(get_config ONVIF) == "yes" ]] ; then
             echo "move_down=/mnt/mmc/sonoff-hack/bin/ptz -a up" >> $ONVIF_SRVD_CONF
         fi
         echo "move_stop=/mnt/mmc/sonoff-hack/bin/ptz -a stop" >> $ONVIF_SRVD_CONF
-        echo "move_preset=/mnt/mmc/sonoff-hack/bin/ptz -f /mnt/mmc/sonoff-hack/etc/ptz_presets.conf -a go_preset -n %d" >> $ONVIF_SRVD_CONF
-        echo "set_preset=/mnt/mmc/sonoff-hack/bin/ptz -f /mnt/mmc/sonoff-hack/etc/ptz_presets.conf -a set_preset -e %s -n %d" >> $ONVIF_SRVD_CONF
+        echo "move_preset=/mnt/mmc/sonoff-hack/bin/ptz -f /mnt/mmc/sonoff-hack/etc/ptz_presets.conf -a go_preset -n %d > /dev/null" >> $ONVIF_SRVD_CONF
+        echo "set_preset=/mnt/mmc/sonoff-hack/bin/ptz -f /mnt/mmc/sonoff-hack/etc/ptz_presets.conf -a set_preset -e %s" >> $ONVIF_SRVD_CONF
         echo "set_home_position=/mnt/mmc/sonoff-hack/bin/ptz -f /mnt/mmc/sonoff-hack/etc/ptz_presets.conf -a set_home -e Home" >> $ONVIF_SRVD_CONF
         echo "remove_preset=/mnt/mmc/sonoff-hack/bin/ptz -f /mnt/mmc/sonoff-hack/etc/ptz_presets.conf -a del_preset -n %d" >> $ONVIF_SRVD_CONF
-        echo "jump_to_abs=/mnt/mmc/sonoff-hack/bin/ptz -a go -X %f -Y %f" >> $ONVIF_SRVD_CONF
-        echo "jump_to_rel=/mnt/mmc/sonoff-hack/bin/ptz -a go_rel -X %f -Y %f" >> $ONVIF_SRVD_CONF
+        echo "jump_to_abs=/mnt/mmc/sonoff-hack/bin/ptz -a go -X %f -Y %f > /dev/null" >> $ONVIF_SRVD_CONF
+        echo "jump_to_rel=/mnt/mmc/sonoff-hack/bin/ptz -a go_rel -X %f -Y %f > /dev/null" >> $ONVIF_SRVD_CONF
         echo "get_presets=/mnt/mmc/sonoff-hack/bin/ptz -f /mnt/mmc/sonoff-hack/etc/ptz_presets.conf -a get_presets" >> $ONVIF_SRVD_CONF
         echo "" >> $ONVIF_SRVD_CONF
     fi

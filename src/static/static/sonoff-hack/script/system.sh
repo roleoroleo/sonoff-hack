@@ -285,9 +285,19 @@ if [[ $(get_config ONVIF) == "yes" ]] ; then
     else
         ONVIF_NETIF="eth0"
     fi
+    if [[ $(get_config ONVIF_FAULT_IF_UNKNOWN) == "yes" ]] ; then
+        ONVIF_FAULT_IF_UNKNOWN=1
+    else
+        ONVIF_FAULT_IF_UNKNOWN=0
+    fi
+    if [[ $(get_config ONVIF_SYNOLOGY_NVR) == "yes" ]] ; then
+        ONVIF_SYNOLOGY_NVR=1
+    else
+        ONVIF_SYNOLOGY_NVR=0
+    fi
 
-    ONVIF_PROFILE_1="name=Profile_1\nwidth=640\nheight=360\nurl=rtsp://$RTSP_USERPWD%s/av_stream/ch1\nsnapurl=http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh\ntype=H264"
-    ONVIF_PROFILE_0="name=Profile_0\nwidth=1920\nheight=1080\nurl=rtsp://$RTSP_USERPWD%s/av_stream/ch0\nsnapurl=http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh\ntype=H264"
+    ONVIF_PROFILE_1="name=Profile_1\nwidth=640\nheight=360\nurl=rtsp://$RTSP_USERPWD%s/av_stream/ch1\nsnapurl=http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh\ntype=H264\ndecoder=NONE"
+    ONVIF_PROFILE_0="name=Profile_0\nwidth=1920\nheight=1080\nurl=rtsp://$RTSP_USERPWD%s/av_stream/ch0\nsnapurl=http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh\ntype=H264\ndecoder=NONE"
 
     ONVIF_SRVD_CONF="/tmp/onvif_simple_server.conf"
 
@@ -299,6 +309,8 @@ if [[ $(get_config ONVIF) == "yes" ]] ; then
     echo "ifs=$ONVIF_NETIF" >> $ONVIF_SRVD_CONF
     echo "port=$HTTPD_PORT" >> $ONVIF_SRVD_CONF
     echo "scope=onvif://www.onvif.org/Profile/Streaming" >> $ONVIF_SRVD_CONF
+    echo "adv_fault_if_unknown=$ONVIF_FAULT_IF_UNKNOWN" >> $ONVIF_SRVD_CONF
+    echo "adv_synology_nvr=$ONVIF_SYNOLOGY_NVR" >> $ONVIF_SRVD_CONF
     echo "" >> $ONVIF_SRVD_CONF
     if [ ! -z $ONVIF_USERPWD ]; then
         echo -e $ONVIF_USERPWD >> $ONVIF_SRVD_CONF
@@ -319,7 +331,7 @@ if [[ $(get_config ONVIF) == "yes" ]] ; then
         echo "#PTZ" >> $ONVIF_SRVD_CONF
         echo "ptz=1" >> $ONVIF_SRVD_CONF
         echo "get_position=/mnt/mmc/sonoff-hack/bin/ptz -a get_coord" >> $ONVIF_SRVD_CONF
-        echo "is_running=echo 0" >> $ONVIF_SRVD_CONF
+        echo "is_moving=echo 0" >> $ONVIF_SRVD_CONF
         if [ ! -f /tmp/.mirror ]; then
             echo "move_left=/mnt/mmc/sonoff-hack/bin/ptz -a left" >> $ONVIF_SRVD_CONF
             echo "move_right=/mnt/mmc/sonoff-hack/bin/ptz -a right" >> $ONVIF_SRVD_CONF

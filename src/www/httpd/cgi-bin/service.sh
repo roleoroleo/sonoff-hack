@@ -37,10 +37,6 @@ init_config()
         ''|*[!0-9]*) RTSP_PORT=554 ;;
         *) RTSP_PORT=$(get_config RTSP_PORT) ;;
     esac
-    case $(get_config ONVIF_PORT) in
-        ''|*[!0-9]*) ONVIF_PORT=1000 ;;
-        *) ONVIF_PORT=$(get_config ONVIF_PORT) ;;
-    esac
     case $(get_config HTTPD_PORT) in
         ''|*[!0-9]*) HTTPD_PORT=80 ;;
         *) HTTPD_PORT=$(get_config HTTPD_PORT) ;;
@@ -48,10 +44,6 @@ init_config()
 
     if [[ $RTSP_PORT != "554" ]] ; then
         D_RTSP_PORT=:$RTSP_PORT
-    fi
-
-    if [[ $ONVIF_PORT != "80" ]] ; then
-        D_ONVIF_PORT=:$ONVIF_PORT
     fi
 
     if [[ $HTTPD_PORT != "80" ]] ; then
@@ -81,20 +73,30 @@ stop_rtsp()
 
 start_onvif()
 {
+    if [[ $(get_config ONVIF_FAULT_IF_UNKNOWN) == "yes" ]] ; then
+        ONVIF_FAULT_IF_UNKNOWN=1
+    else
+        ONVIF_FAULT_IF_UNKNOWN=0
+    fi
+    if [[ $(get_config ONVIF_SYNOLOGY_NVR) == "yes" ]] ; then
+        ONVIF_SYNOLOGY_NVR=1
+    else
+        ONVIF_SYNOLOGY_NVR=0
+    fi
     if [[ "$1" == "none" ]]; then
         ONVIF_PROFILE=$(get_config ONVIF_PROFILE)
     elif [[ "$1" == "low" ]] || [[ "$1" == "high" ]] || [[ "$1" == "both" ]]; then
         ONVIF_PROFILE=$1
     fi
     if [[ $ONVIF_PROFILE == "high" ]]; then
-        ONVIF_PROFILE_0="name=Profile_0\nwidth=1920\nheight=1080\nurl=rtsp://$RTSP_USERPWD%s/av_stream/ch0\nsnapurl=http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh\ntype=H264"
+        ONVIF_PROFILE_0="name=Profile_0\nwidth=1920\nheight=1080\nurl=rtsp://$RTSP_USERPWD%s/av_stream/ch0\nsnapurl=http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh\ntype=H264\ndecoder=NONE"
     fi
     if [[ $ONVIF_PROFILE == "low" ]]; then
-        ONVIF_PROFILE_1="name=Profile_1\nwidth=640\nheight=360\nurl=rtsp://$RTSP_USERPWD%s/av_stream/ch1\nsnapurl=http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh\ntype=H264"
+        ONVIF_PROFILE_1="name=Profile_1\nwidth=640\nheight=360\nurl=rtsp://$RTSP_USERPWD%s/av_stream/ch1\nsnapurl=http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh\ntype=H264\ndecoder=NONE"
     fi
     if [[ $ONVIF_PROFILE == "both" ]]; then
-        ONVIF_PROFILE_0="name=Profile_0\nwidth=1920\nheight=1080\nurl=rtsp://$RTSP_USERPWD%s/av_stream/ch0\nsnapurl=http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh\ntype=H264"
-        ONVIF_PROFILE_1="name=Profile_1\nwidth=640\nheight=360\nurl=rtsp://$RTSP_USERPWD%s/av_stream/ch1\nsnapurl=http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh\ntype=H264"
+        ONVIF_PROFILE_0="name=Profile_0\nwidth=1920\nheight=1080\nurl=rtsp://$RTSP_USERPWD%s/av_stream/ch0\nsnapurl=http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh\ntype=H264\ndecoder=NONE"
+        ONVIF_PROFILE_1="name=Profile_1\nwidth=640\nheight=360\nurl=rtsp://$RTSP_USERPWD%s/av_stream/ch1\nsnapurl=http://%s$D_HTTPD_PORT/cgi-bin/snapshot.sh\ntype=H264\ndecoder=NONE"
     fi
 
     ONVIF_SRVD_CONF="/tmp/onvif_simple_server.conf"
@@ -107,6 +109,8 @@ start_onvif()
     echo "ifs=$ONVIF_NETIF" >> $ONVIF_SRVD_CONF
     echo "port=$HTTPD_PORT" >> $ONVIF_SRVD_CONF
     echo "scope=onvif://www.onvif.org/Profile/Streaming" >> $ONVIF_SRVD_CONF
+    echo "adv_fault_if_unknown=$ONVIF_FAULT_IF_UNKNOWN" >> $ONVIF_SRVD_CONF
+    echo "adv_synology_nvr=$ONVIF_SYNOLOGY_NVR" >> $ONVIF_SRVD_CONF
     echo "" >> $ONVIF_SRVD_CONF
     if [ ! -z $ONVIF_USERPWD ]; then
         echo -e $ONVIF_USERPWD >> $ONVIF_SRVD_CONF
@@ -127,7 +131,7 @@ start_onvif()
         echo "#PTZ" >> $ONVIF_SRVD_CONF
         echo "ptz=1" >> $ONVIF_SRVD_CONF
         echo "get_position=/mnt/mmc/sonoff-hack/bin/ptz -a get_coord" >> $ONVIF_SRVD_CONF
-        echo "is_running=echo 0" >> $ONVIF_SRVD_CONF
+        echo "is_moving=echo 0" >> $ONVIF_SRVD_CONF
         if [ ! -f /tmp/.mirror ]; then
             echo "move_left=/mnt/mmc/sonoff-hack/bin/ptz -a left" >> $ONVIF_SRVD_CONF
             echo "move_right=/mnt/mmc/sonoff-hack/bin/ptz -a right" >> $ONVIF_SRVD_CONF

@@ -179,7 +179,7 @@ stop_onvif()
 
 start_wsdd()
 {
-    wsd_simple_server --pid_file /var/run/wsd_simple_server.pid --if_name $ONVIF_NETIF --xaddr "http://%s$D_HTTPD_PORT/onvif/device_service" -m sonoff_hack -n Sonoff
+    wsd_simple_server --pid_file /var/run/wsd_simple_server.pid --if_name $ONVIF_NETIF --xaddr "http://%s$D_HTTPD_PORT/onvif/device_service" -m `hostname` -n Sonoff
 }
 
 stop_wsdd()

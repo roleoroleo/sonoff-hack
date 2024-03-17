@@ -118,8 +118,8 @@ For both streams if you've set a custom username and password on the config scre
 * High Res Stream: `rtsp://hack:hack@IP-CAM/av_stream/ch0`
 * Low Res Stream: `rtsp://hack:hack@IP-CAM/av_stream/ch1`
 * 1080p Snapshot URL: `http://IP-CAM/cgi-bin/snapshot.sh`
-* PTZ Port: 1000
-    * In Blue Iris you need to manually enable "PTZ Controls" and change it to "ONFIV (OXML)" in the camera settings. If PTZ doesn't work delete the camera and add it again, also try to set the port to "1000" manually.
+* PTZ Port: 80
+    * In Blue Iris you need to manually enable "PTZ Controls" and change it to "ONFIV (OXML)" in the camera settings. If PTZ doesn't work delete the camera and add it again, also try to set the port to "80" manually.
 
 ## PTZ not working
 If the PTZ controls aren't working at all even on the Web Interface you may have to experiment which of the PTZ control binaries you need.  

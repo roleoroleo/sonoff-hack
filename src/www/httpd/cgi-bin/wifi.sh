@@ -5,6 +5,7 @@ removedoublequotes(){
 }
 
 SONOFF_HACK_PREFIX="/mnt/mmc/sonoff-hack"
+WPA_FILE="/mnt/mtd/ipc/cfg/wpa_supplicant.conf"
 
 . $SONOFF_HACK_PREFIX/www/cgi-bin/validate.sh
 
@@ -75,6 +76,19 @@ elif [ $ACTION == "save" ]; then
             update t_sys_param set c_param_value='1' where c_param_name='wf_status'; \
             update t_sys_param set c_param_value='3' where c_param_name='wf_auth'; \
             update t_sys_param set c_param_value='1' where c_param_name='wf_enc';"
+
+        if [ -f $WPA_FILE ]; then
+            echo "ctrl_interface=/var/run/wpa_supplicant" > $WPA_FILE
+            echo "update_config=1" >> $WPA_FILE
+            echo "network={" >> $WPA_FILE
+            echo -e "\tssid=\"$ESSID\"" >> $WPA_FILE
+            echo -e "\tscan_ssid=1" >> $WPA_FILE
+            echo -e "\tkey_mgmt=WPA-EAP WPA-PSK IEEE8021X NONE" >> $WPA_FILE
+            echo -e "\tpairwise=TKIP CCMP" >> $WPA_FILE
+            echo -e "\tgroup=CCMP TKIP WEP104 WEP40" >> $WPA_FILE
+            echo -e "\tpsk=\"$PWD\"" >> $WPA_FILE
+            echo "}" >> $WPA_FILE
+        fi
 
         printf "Content-type: application/json\r\n\r\n"
         printf "{\n"

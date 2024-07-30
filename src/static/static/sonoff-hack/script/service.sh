@@ -156,6 +156,7 @@ start_onvif()
         fi
         echo "move_stop=/mnt/mmc/sonoff-hack/bin/ptz -a stop" >> $ONVIF_SRVD_CONF
         echo "move_preset=/mnt/mmc/sonoff-hack/bin/ptz -f /mnt/mmc/sonoff-hack/etc/ptz_presets.conf -a go_preset -n %d > /dev/null" >> $ONVIF_SRVD_CONF
+        echo "goto_home_position=/mnt/mmc/sonoff-hack/bin/ptz -f /mnt/mmc/sonoff-hack/etc/ptz_presets.conf -a go_preset -n 0 > /dev/null" >> $ONVIF_SRVD_CONF
         echo "set_preset=/mnt/mmc/sonoff-hack/bin/ptz -f /mnt/mmc/sonoff-hack/etc/ptz_presets.conf -a set_preset -e %s" >> $ONVIF_SRVD_CONF
         echo "set_home_position=/mnt/mmc/sonoff-hack/bin/ptz -f /mnt/mmc/sonoff-hack/etc/ptz_presets.conf -a set_home -e Home" >> $ONVIF_SRVD_CONF
         echo "remove_preset=/mnt/mmc/sonoff-hack/bin/ptz -f /mnt/mmc/sonoff-hack/etc/ptz_presets.conf -a del_preset -n %d" >> $ONVIF_SRVD_CONF

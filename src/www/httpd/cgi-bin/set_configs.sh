@@ -143,6 +143,20 @@ EOF
         fi
         let COUNTER=COUNTER+1
     done
+
+    # Add timezone to config_timezone.ini file
+    CONFIG_TIMEZONE=/mnt/mtd/ipc/cfg/config_timezone.ini
+    if [ -f /dayun/mtd/db/conf/config_timezone.ini ]; then
+        CONFIG_TIMEZONE=/dayun/mtd/db/conf/config_timezone.ini
+    fi
+
+    TZP=$(sqlite3 /mnt/mtd/db/ipcsys.db "select c_zonetime_value from t_zonetime_info where c_zonetime_name='$TIMEZONE';" | sed 's/GMT//g' | sed 's/://g')
+    TZP_SET=$(echo ${TZP:0:1} ${TZP:1:2} ${TZP:3:2} | awk '{ print ($1$2*3600+$3*60) }' | sed 's/^+//g')
+    TZP_CUR=$(cat $CONFIG_TIMEZONE | grep offset_second= | sed 's/offset_second=//g' | sed 's/\"//g')
+    if [ "$TZP_SET" != "$TZP_CUR" ]; then
+        sed "s/offset_second=\"$TZP_CUR\"/offset_second=\"$TZP_SET\"/g" -i $CONFIG_TIMEZONE
+    fi
+
 fi
 
 # Yeah, it's pretty ugly.

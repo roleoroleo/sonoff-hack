@@ -41,6 +41,8 @@
 #define MQTT_SONOFF_SNAPSHOT     "/mnt/mmc/sonoff-hack/bin/snapshot"
 #define CONF2MQTT_SCRIPT         "/mnt/mmc/sonoff-hack/script/conf2mqtt.sh"
 #define IPC_CMD                  "/mnt/mmc/sonoff-hack/bin/ipc_cmd"
+#define PTZ_CMD                  "/mnt/mmc/sonoff-hack/bin/ptz"
+
 
 #define MOTION_ALARM_FILE        "/tmp/onvif_notify_server/motion_alarm"
 

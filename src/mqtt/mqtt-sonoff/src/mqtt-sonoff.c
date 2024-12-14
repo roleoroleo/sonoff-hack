@@ -563,6 +563,43 @@ static void send_ha_discovery() {
         mqtt_send_message(&msg, retain);
         free(msg.msg);
 
+        // Send pan config
+        msg.msg=print_switch_json("pan_left", "mdi:video");
+        cJSON_Minify(msg.msg);
+        msg.len=strlen(msg.msg);
+
+        sprintf(topic, "%s/switch/%s_pan_left/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
+        mqtt_send_message(&msg, retain);
+        free(msg.msg);
+
+        // Send pan_right config
+        msg.msg=print_switch_json("pan_right", "mdi:video");
+        cJSON_Minify(msg.msg);
+        msg.len=strlen(msg.msg);
+
+        sprintf(topic, "%s/switch/%s_pan_right/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
+        mqtt_send_message(&msg, retain);
+        free(msg.msg);
+
+        // Send pan_up config
+        msg.msg=print_switch_json("pan_up", "mdi:video");
+        cJSON_Minify(msg.msg);
+        msg.len=strlen(msg.msg);
+
+        sprintf(topic, "%s/switch/%s_pan_up/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
+        mqtt_send_message(&msg, retain);
+        free(msg.msg);
+
+        // Send pan_down config
+        msg.msg=print_switch_json("pan_down", "mdi:video");
+        cJSON_Minify(msg.msg);
+        msg.len=strlen(msg.msg);
+
+        sprintf(topic, "%s/switch/%s_pan_down/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
+        mqtt_send_message(&msg, retain);
+        free(msg.msg);
+
+
         // Send motion_detection config
         msg.msg=print_switch_json("motion_detection", "mdi:motion-sensor");
         cJSON_Minify(msg.msg);

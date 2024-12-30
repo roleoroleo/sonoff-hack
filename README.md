@@ -102,15 +102,17 @@ USE AT YOUR OWN RISK.
 
 4. Decompress the file (tgz format) on root path of microSD card.
 
-5. Remove power to the camera, insert the microSD card, turn the power back ON.
+5. (Model: S-Cam) If WiFi needed but configured yet: rename microSD/wifi_init.example.txt to microSD/wifi_init.txt and fill in your ESSID and WiFi Password
 
-6. Wait a minute.
+6. Remove power to the camera, insert the microSD card, turn the power back ON.
 
-7. Go in the browser and access the web interface of the camera as a website (http://IP-CAM). Find the IP address on your router's portal (see connected devices).
+7. Wait a minute.
 
-8. Don't remove the microSD card (yes this hack requires a dedicated microSD card).
+8. Go in the browser and access the web interface of the camera as a website (http://IP-CAM). Find the IP address on your router's portal (see connected devices).
 
-9. Done.
+9. Don't remove the microSD card (yes this hack requires a dedicated microSD card).
+
+10. Done.
 
 ## URLs, Ports and Default RTSP Password
 For both streams if you've set a custom username and password on the config screen don't forget to replace "hack" at the beginning of the URLs! First one is username, second is password. If you want to view the stream in, as example, VLC and haven't set a password you need to enter "hack" for both user and pass.

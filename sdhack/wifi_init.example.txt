@@ -1,4 +1,4 @@
 # Enter your WPA2 ESSID and Key/Password
 # Rename file to wifi_init.txt
-WIFI_ESSID="Put your ESSI here"
+WIFI_ESSID="Put your ESSID here"
 WIFI_KEY="Put your password here"

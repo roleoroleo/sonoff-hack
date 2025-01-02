@@ -102,7 +102,7 @@ USE AT YOUR OWN RISK.
 
 4. Decompress the file (tgz format) on root path of microSD card.
 
-5. (Model: S-Cam) If WiFi needed but configured yet: rename microSD/wifi_init.example.txt to microSD/wifi_init.txt and fill in your ESSID and WiFi Password
+5. (Model: S-Cam) If WiFi needed, but not configured yet: rename microSD/wifi_init.example.txt to microSD/wifi_init.txt and fill in your ESSID and WiFi password
 
 6. Remove power to the camera, insert the microSD card, turn the power back ON.
 

@@ -428,6 +428,38 @@ static void message_callback(struct mosquitto *mosq, void *obj, const struct mos
             sprintf(cmd_line, "%s -t off", IPC_CMD);
             system(cmd_line);
         }
+    } else if (strcasecmp("pan_left", param) == 0) {
+        if ((strcasecmp("on", (char *) message->payload) == 0) || (strcasecmp("yes", (char *) message->payload) == 0)) {
+            sprintf(cmd_line, "%s -a stop; %s -a left", PTZ_CMD, PTZ_CMD);
+            system(cmd_line);
+        } else if ((strcasecmp("off", (char *) message->payload) == 0) || (strcasecmp("no", (char *) message->payload) == 0)) {
+            sprintf(cmd_line, "%s -a stop", PTZ_CMD);
+            system(cmd_line);
+        }
+    } else if (strcasecmp("pan_right", param) == 0) {
+        if ((strcasecmp("on", (char *) message->payload) == 0) || (strcasecmp("yes", (char *) message->payload) == 0)) {
+            sprintf(cmd_line, "%s -a stop; %s -a right", PTZ_CMD, PTZ_CMD);
+            system(cmd_line);
+        } else if ((strcasecmp("off", (char *) message->payload) == 0) || (strcasecmp("no", (char *) message->payload) == 0)) {
+            sprintf(cmd_line, "%s -a stop", PTZ_CMD);
+            system(cmd_line);
+        }
+    } else if (strcasecmp("pan_up", param) == 0) {
+        if ((strcasecmp("on", (char *) message->payload) == 0) || (strcasecmp("yes", (char *) message->payload) == 0)) {
+            sprintf(cmd_line, "%s -a stop; %s -a up", PTZ_CMD, PTZ_CMD);
+            system(cmd_line);
+        } else if ((strcasecmp("off", (char *) message->payload) == 0) || (strcasecmp("no", (char *) message->payload) == 0)) {
+            sprintf(cmd_line, "%s -a stop", PTZ_CMD);
+            system(cmd_line);
+        }
+    } else if (strcasecmp("pan_down", param) == 0) {
+        if ((strcasecmp("on", (char *) message->payload) == 0) || (strcasecmp("yes", (char *) message->payload) == 0)) {
+            sprintf(cmd_line, "%s -a stop; %s -a down", PTZ_CMD, PTZ_CMD);
+            system(cmd_line);
+        } else if ((strcasecmp("off", (char *) message->payload) == 0) || (strcasecmp("no", (char *) message->payload) == 0)) {
+            sprintf(cmd_line, "%s -a stop", PTZ_CMD);
+            system(cmd_line);
+        }
     } else if (strcasecmp("motion_detection", param) == 0) {
         if ((strcasecmp("on", (char *) message->payload) == 0) || (strcasecmp("yes", (char *) message->payload) == 0)) {
             sprintf(cmd_line, "%s -m on", IPC_CMD);

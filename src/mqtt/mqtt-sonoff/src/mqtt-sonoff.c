@@ -64,7 +64,7 @@ static void *motion_start_thread()
     msg.len=strlen(msg.msg);
     msg.topic=topic;
 
-    sprintf(topic, "%s/%s", mqtt_sonoff_conf.mqtt_prefix, mqtt_sonoff_conf.topic_motion);
+    snprintf(topic, sizeof(topic), "%s/%s", mqtt_sonoff_conf.mqtt_prefix, mqtt_sonoff_conf.topic_motion);
 
     mqtt_send_message(&msg, conf.retain_motion);
 
@@ -79,7 +79,7 @@ static void *motion_start_thread()
         // Send image
         if (debug) fprintf(stderr, "Wait %.1f seconds and take a snapshot\n", mqtt_sonoff_conf.motion_image_delay);
         tmpnam(bufferFile);
-        sprintf(cmd, "%s -f %s", MQTT_SONOFF_SNAPSHOT, bufferFile);
+        snprintf(cmd, sizeof(cmd), "%s -f %s", MQTT_SONOFF_SNAPSHOT, bufferFile);
         usleep((unsigned int) (mqtt_sonoff_conf.motion_image_delay * 1000.0 * 1000.0));
         system(cmd);
 
@@ -112,7 +112,7 @@ static void *motion_start_thread()
         msg.len=sz;
         msg.topic=topic;
 
-        sprintf(topic, "%s/%s", mqtt_sonoff_conf.mqtt_prefix, mqtt_sonoff_conf.topic_motion_image);
+        snprintf(topic, sizeof(topic), "%s/%s", mqtt_sonoff_conf.mqtt_prefix, mqtt_sonoff_conf.topic_motion_image);
 
         mqtt_send_message(&msg, conf.retain_motion_image);
 
@@ -130,7 +130,7 @@ static void *motion_start_thread()
     msg.len=strlen(msg.msg);
     msg.topic=topic;
 
-    sprintf(topic, "%s/%s", mqtt_sonoff_conf.mqtt_prefix, mqtt_sonoff_conf.topic_motion);
+    snprintf(topic, sizeof(topic), "%s/%s", mqtt_sonoff_conf.mqtt_prefix, mqtt_sonoff_conf.topic_motion);
 
     mqtt_send_message(&msg, conf.retain_motion);
 
@@ -171,7 +171,7 @@ void callback_command(void *arg)
     msg.len=strlen(msg.msg);
     msg.topic=topic;
 
-    sprintf(topic, "%s/camera/%s", mqtt_sonoff_conf.mqtt_prefix_stat, key);
+    snprintf(topic, sizeof(topic), "%s/camera/%s", mqtt_sonoff_conf.mqtt_prefix_stat, key);
 
     mqtt_send_message(&msg, 1);
 }
@@ -500,7 +500,7 @@ static void init_sonoff_colink_config(){
     if(conf.mqtt_prefix == NULL)
     {
         char prefix[128];
-        sprintf(prefix, "%s/%s", default_prefix, mqtt_sonoff_conf.device_id);
+        snprintf(prefix, sizeof(prefix), "%s/%s", default_prefix, mqtt_sonoff_conf.device_id);
         conf.mqtt_prefix=conf_set_string(prefix);
         mqtt_sonoff_conf.mqtt_prefix=conf.mqtt_prefix;
         mqtt_sonoff_conf.mqtt_prefix_stat=conf_set_strings(prefix, "/stat");
@@ -541,7 +541,7 @@ static void send_ha_discovery() {
         cJSON_Minify(msg.msg);
         msg.len=strlen(msg.msg);
 
-        sprintf(topic, "%s/binary_sensor/%s_motion/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
+        snprintf(topic, sizeof(topic), "%s/binary_sensor/%s_mot ion/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
         mqtt_send_message(&msg, retain);
         free(msg.msg);
 
@@ -550,7 +550,7 @@ static void send_ha_discovery() {
         cJSON_Minify(msg.msg);
         msg.len=strlen(msg.msg);
 
-        sprintf(topic, "%s/camera/%s_image/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
+        snprintf(topic, sizeof(topic), "%s/camera/%s_image/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
         mqtt_send_message(&msg, retain);
         free(msg.msg);
 
@@ -559,7 +559,7 @@ static void send_ha_discovery() {
         cJSON_Minify(msg.msg);
         msg.len=strlen(msg.msg);
 
-        sprintf(topic, "%s/switch/%s_switch_on/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
+        snprintf(topic, sizeof(topic), "%s/switch/%s_switch_on/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
         mqtt_send_message(&msg, retain);
         free(msg.msg);
 
@@ -568,7 +568,7 @@ static void send_ha_discovery() {
         cJSON_Minify(msg.msg);
         msg.len=strlen(msg.msg);
 
-        sprintf(topic, "%s/switch/%s_pan_left/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
+        snprintf(topic, sizeof(topic), "%s/switch/%s_pan_left/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
         mqtt_send_message(&msg, retain);
         free(msg.msg);
 
@@ -577,7 +577,7 @@ static void send_ha_discovery() {
         cJSON_Minify(msg.msg);
         msg.len=strlen(msg.msg);
 
-        sprintf(topic, "%s/switch/%s_pan_right/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
+        snprintf(topic, sizeof(topic), "%s/switch/%s_pan_right/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
         mqtt_send_message(&msg, retain);
         free(msg.msg);
 
@@ -586,7 +586,7 @@ static void send_ha_discovery() {
         cJSON_Minify(msg.msg);
         msg.len=strlen(msg.msg);
 
-        sprintf(topic, "%s/switch/%s_pan_up/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
+        snprintf(topic, sizeof(topic), "%s/switch/%s_pan_up/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
         mqtt_send_message(&msg, retain);
         free(msg.msg);
 
@@ -595,7 +595,7 @@ static void send_ha_discovery() {
         cJSON_Minify(msg.msg);
         msg.len=strlen(msg.msg);
 
-        sprintf(topic, "%s/switch/%s_pan_down/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
+        snprintf(topic, sizeof(topic), "%s/switch/%s_pan_down/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
         mqtt_send_message(&msg, retain);
         free(msg.msg);
 
@@ -605,7 +605,7 @@ static void send_ha_discovery() {
         cJSON_Minify(msg.msg);
         msg.len=strlen(msg.msg);
 
-        sprintf(topic, "%s/switch/%s_motion_detection/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
+        snprintf(topic, sizeof(topic), "%s/switch/%s_motion_detection/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
         mqtt_send_message(&msg, retain);
         free(msg.msg);
 
@@ -614,7 +614,7 @@ static void send_ha_discovery() {
         cJSON_Minify(msg.msg);
         msg.len=strlen(msg.msg);
 
-        sprintf(topic, "%s/switch/%s_local_record/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
+        snprintf(topic, sizeof(topic), "%s/switch/%s_local_record/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
         mqtt_send_message(&msg, retain);
         free(msg.msg);
 
@@ -623,7 +623,7 @@ static void send_ha_discovery() {
         cJSON_Minify(msg.msg);
         msg.len=strlen(msg.msg);
 
-        sprintf(topic, "%s/switch/%s_rotate/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
+        snprintf(topic, sizeof(topic), "%s/switch/%s_rotate/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
         mqtt_send_message(&msg, retain);
         free(msg.msg);
 
@@ -633,7 +633,7 @@ static void send_ha_discovery() {
         cJSON_Minify(msg.msg);
         msg.len=strlen(msg.msg);
 
-        sprintf(topic, "%s/select/%s_sensitivity/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
+        snprintf(topic, sizeof(topic), "%s/select/%s_sensitivity/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
         mqtt_send_message(&msg, retain);
         free(msg.msg);
 
@@ -643,7 +643,7 @@ static void send_ha_discovery() {
         cJSON_Minify(msg.msg);
         msg.len=strlen(msg.msg);
 
-        sprintf(topic, "%s/select/%s_ir/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
+        snprintf(topic, sizeof(topic), "%s/select/%s_ir/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
         mqtt_send_message(&msg, retain);
         free(msg.msg);
     }
@@ -655,7 +655,7 @@ static char *print_motion_json() {
     cJSON * confObject = cJSON_CreateObject();
 
     char stopic[128];
-    sprintf(stopic, "%s/%s", mqtt_sonoff_conf.mqtt_prefix, mqtt_sonoff_conf.topic_motion);
+    snprintf(stopic, sizeof(stopic), "%s/%s", mqtt_sonoff_conf.mqtt_prefix, mqtt_sonoff_conf.topic_motion);
     if (cJSON_AddStringToObject(confObject, "state_topic", stopic) == NULL) {
         goto end;
     }
@@ -689,7 +689,7 @@ static char *print_image_json() {
     cJSON * confObject = cJSON_CreateObject();
 
     char stopic[128];
-    sprintf(stopic, "%s/%s", mqtt_sonoff_conf.mqtt_prefix, mqtt_sonoff_conf.topic_motion_image);
+    snprintf(stopic, sizeof(stopic), "%s/%s", mqtt_sonoff_conf.mqtt_prefix, mqtt_sonoff_conf.topic_motion_image);
     if (cJSON_AddStringToObject(confObject, "topic", stopic) == NULL) {
         goto end;
     }
@@ -717,13 +717,13 @@ static char *print_switch_json(char *switch_name, char *icon_name) {
     cJSON * confObject = cJSON_CreateObject();
 
     char stopic[128];
-    strcpy(stopic, conf.mqtt_prefix_cmnd);
+    strncpy(stopic, conf.mqtt_prefix_cmnd, sizeof(stopic));
     stopic[strlen(stopic) - 2] = '\0';
-    sprintf(stopic, "%s/camera/%s", stopic, switch_name);
+    snprintf(stopic, sizeof(stopic), "%s/camera/%s", stopic, switch_name);
     if (cJSON_AddStringToObject(confObject, "command_topic", stopic) == NULL) {
         goto end;
     }
-    sprintf(stopic, "%s/camera/%s", mqtt_sonoff_conf.mqtt_prefix_stat, switch_name);
+    snprintf(stopic, sizeof(stopic), "%s/camera/%s", mqtt_sonoff_conf.mqtt_prefix_stat, switch_name);
     if (cJSON_AddStringToObject(confObject, "state_topic", stopic) == NULL) {
         goto end;
     }
@@ -753,13 +753,13 @@ static char *print_select_json(char *select_name, char **options, int noptions, 
     int i;
 
     char stopic[128];
-    strcpy(stopic, conf.mqtt_prefix_cmnd);
+    strncpy(stopic,  conf.mqtt_prefix_cmnd,  sizeof(stopic));
     stopic[strlen(stopic) - 2] = '\0';
-    sprintf(stopic, "%s/camera/%s", stopic, select_name);
+    snprintf(stopic, sizeof(stopic), "%s/camera/%s", stopic, select_name);
     if (cJSON_AddStringToObject(confObject, "command_topic", stopic) == NULL) {
         goto end;
     }
-    sprintf(stopic, "%s/camera/%s", mqtt_sonoff_conf.mqtt_prefix_stat, select_name);
+    snprintf(stopic, sizeof(stopic), "%s/camera/%s", mqtt_sonoff_conf.mqtt_prefix_stat, select_name);
     if (cJSON_AddStringToObject(confObject, "state_topic", stopic) == NULL) {
         goto end;
     }
@@ -788,7 +788,7 @@ static int json_common(cJSON *confObject, const char **suffix) {
 
     char dname[128];
 
-    strcpy(dname, *suffix);
+    strncpy(dname,  *suffix,  sizeof(dname));
 
     if (cJSON_AddStringToObject(confObject, "name", dname) == NULL) {
         goto end;
@@ -804,7 +804,7 @@ static int json_common(cJSON *confObject, const char **suffix) {
     cJSON_AddItemToArray(availArray, availObj);
 
     char bwtopic[128];
-    sprintf(bwtopic, "%s/%s", mqtt_sonoff_conf.mqtt_prefix, mqtt_sonoff_conf.topic_birth_will);
+    snprintf(bwtopic, sizeof(bwtopic), "%s/%s", mqtt_sonoff_conf.mqtt_prefix, mqtt_sonoff_conf.topic_birth_will);
     if (cJSON_AddStringToObject(availObj, "topic", bwtopic) == NULL) {
         goto end;
     }
@@ -852,7 +852,7 @@ static int json_common(cJSON *confObject, const char **suffix) {
     }
 
     char uuid[128];
-    sprintf(uuid, "%s_%s", mqtt_sonoff_conf.device_id, *suffix);
+    snprintf(uuid, sizeof(uuid), "%s_%s", mqtt_sonoff_conf.device_id, *suffix);
     if (cJSON_AddStringToObject(confObject, "unique_id", uuid) == NULL) {
         goto end;
     }

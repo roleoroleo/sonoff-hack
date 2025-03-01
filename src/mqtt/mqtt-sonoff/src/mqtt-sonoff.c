@@ -37,6 +37,9 @@ char *default_offline = "offline";
 char *default_start = "motion_start";
 char *default_stop = "motion_stop";
 char *default_topic = EMPTY_TOPIC;
+char *default_device_id = "unknown-id";
+char *default_devicemodel = "unknown-model";
+char *default_fw_version = "0.0";
 
 extern char *sql_cmd_params[][2];
 
@@ -439,13 +442,13 @@ static void init_mqtt_sonoff_config()
     if(init_config(MQTT_SONOFF_CONF_FILE)!=0)
     {
         fprintf(stderr, "Cannot open config file. Skipping.\n");
-        return;
     }
-
-    config_set_handler(&handle_config);
-    config_parse();
-    stop_config();
-
+    else {
+        config_set_handler(&handle_config);
+        config_parse();
+        stop_config();
+    }
+    
     // Setting default for all char* vars
     if(conf.topic_birth_will == NULL)
     {
@@ -481,22 +484,36 @@ static void init_mqtt_sonoff_config()
 }
 
 static void init_sonoff_colink_config(){
-    mqtt_sonoff_conf.device_id=NULL;
+    mqtt_sonoff_conf.device_id = 
+    conf.client_id = NULL;
     mqtt_sonoff_conf.device_model=NULL;
-    mqtt_sonoff_conf.fw_version=NULL;
 
     if(init_config(COLINK_CONF_FILE)!=0)
     {
         fprintf(stderr, "Cannot open config file. Skipping.\n");
-        return;
+    }
+    else
+    {
+        config_set_handler(&handle_colink_config);
+        config_parse();
+        stop_config();
     }
 
-    config_set_handler(&handle_colink_config);
-    config_parse();
-    stop_config();
-
     mqtt_sonoff_conf.fw_version=get_conf_file_single(HACK_VERSION_FILE);
-
+    
+    if(mqtt_sonoff_conf.fw_version ==NULL)
+    {
+        mqtt_sonoff_conf.fw_version =default_fw_version;
+    }
+    if (mqtt_sonoff_conf.device_id == NULL)
+    {
+        mqtt_sonoff_conf.device_id =
+        conf.client_id = default_device_id;
+    }
+    if (mqtt_sonoff_conf.device_model == NULL)
+    {
+        mqtt_sonoff_conf.device_model=default_devicemodel;
+    }
     if(conf.mqtt_prefix == NULL)
     {
         char prefix[128];

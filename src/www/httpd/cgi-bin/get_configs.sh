@@ -37,7 +37,7 @@ fi
 
 printf "{\n"
 
-sed '/^#/d; /^$/d; s/\([^=]*\)=\(.*\)/"\1":"\2",/' "$CONF_FILE"
+sed '/^#/d; /^$/d; s/\\/\\\\/g; s/\"/\\"/g; s/\([^=]*\)=\(.*\)/"\1":"\2",/' "$CONF_FILE"
 
 if [ "$CONF_TYPE" == "system" ] ; then
     printf "\"%s\":\"%s\",\n"  "HOSTNAME" "$(cat $SONOFF_HACK_PREFIX/etc/hostname | sed -r 's/\\/\\\\/g;s/"/\\"/g;')"

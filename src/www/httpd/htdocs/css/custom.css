@@ -391,12 +391,12 @@ button.icon {
 	border: 0;
 }
 /* ptz icons */
-#img-al {
+#img-al, #img-ul {
 	rotate: -90deg;
 }
-#img-ar {
+#img-ar, #img-dr {
 	rotate: 90deg;
 }
-#img-ad {
+#img-ad, #img-dl {
 	rotate: 180deg;
 }

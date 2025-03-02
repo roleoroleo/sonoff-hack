@@ -13,7 +13,6 @@ if ! $(validateQueryString $QUERY_STRING); then
 fi
 
 DIR="none"
-TIME="0.5"
 
 for I in 1 2
 do
@@ -21,21 +20,38 @@ do
     VAL="$(echo $QUERY_STRING | cut -d'&' -f$I | cut -d'=' -f2)"
 
     if [ "$CONF" == "dir" ] ; then
-        if [ -f /tmp/.mirror ]; then
-            if [ "$VAL" == "right" ]; then
-                VAL="left"
-            elif [ "$VAL" == "left" ]; then
-                VAL="right"
-            elif [ "$VAL" == "up" ]; then
-                VAL="down"
-            elif [ "$VAL" == "down" ]; then
-                VAL="up"
-            fi
+        X=0
+        Y=0
+        N_STEP=-200
+        P_STEP=200
+        if [ "$VAL" == "right" ]; then
+            X=$N_STEP
+        elif [ "$VAL" == "left" ]; then
+            X=$P_STEP
+        elif [ "$VAL" == "up" ]; then
+            Y=$P_STEP
+        elif [ "$VAL" == "down" ]; then
+            Y=$N_STEP
+        elif [ "$VAL" == "up_right" ]; then
+            X=$N_STEP
+            Y=$P_STEP
+        elif [ "$VAL" == "up_left" ]; then
+            X=$P_STEP
+            Y=$P_STEP
+        elif [ "$VAL" == "down_right" ]; then
+            X=$N_STEP
+            Y=$N_STEP
+        elif [ "$VAL" == "down_left" ]; then
+            X=$P_STEP
+            Y=$N_STEP
         fi
-        DIR="-a $VAL"
-    elif [ "$CONF" == "time" ] ; then
-        TIME="$VAL"
-    fi
+        # For mirrored movements negate values
+        if [ -f /tmp/.mirror ]; then
+            X=$(( 0 - $X ))
+            Y=$(( 0 - $Y ))
+        fi
+        DIR="-x $X -y $Y"
+    fi  
 done
 
 if ! $(validateString $DIR); then
@@ -47,23 +63,8 @@ if ! $(validateString $DIR); then
     exit
 fi
 
-if [ ! -z $TIME ]; then
-    if ! $(validateNumber $TIME); then
-        printf "Content-type: application/json\r\n\r\n"
-        printf "{\n"
-        printf "\"%s\":\"%s\",\\n" "error" "true"
-        printf "\"%s\":\"%s\"\\n" "description" "wrong time parameter"
-        printf "}"
-        exit
-    fi
-
-    # convert time to milliseconds
-    TIME=$(awk "BEGIN {print $TIME*1000}")
-    TIME="-t $TIME"
-fi
-
 if [ "$DIR" != "none" ] ; then
-    ptz $DIR $TIME
+ptz -a go_rel $DIR      
 fi
 
 printf "Content-type: application/json\r\n\r\n"

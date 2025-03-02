@@ -390,3 +390,13 @@ select {
 button.icon {
 	border: 0;
 }
+/* ptz icons */
+#img-al {
+	rotate: -90deg;
+}
+#img-ar {
+	rotate: 90deg;
+}
+#img-ad {
+	rotate: 180deg;
+}

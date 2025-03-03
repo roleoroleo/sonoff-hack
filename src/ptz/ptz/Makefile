@@ -20,13 +20,13 @@ ptz_h: $(OBJECTS)
 	$(STRIP) $@
 
 libptz:
-	make -C minilib
+	$(MAKE) -C minilib
 
 .PHONY: clean
 
 clean:
 	rm -f ptz_p ptz_h
 	rm -f $(OBJECTS)
-	make -C minilib clean
+	$(MAKE) -C minilib clean
 
 distclean: clean

@@ -112,7 +112,6 @@ for ROW in $ROWS; do
             sed -i "s/^\(${KEY}\s*=\s*\).*$/\1${VALUE}/" $CONF_FILE
         fi
     fi
-
 done
 
 if [ "$CONF_TYPE" == "system" ] && [ x$USERNAME != "xnone" ] ; then
@@ -159,19 +158,16 @@ EOF
         CONFIG_TIMEZONE=/dayun/mtd/db/conf/config_timezone.ini
     fi
 
-    TZP=$(sqlite3 /mnt/mtd/db/ipcsys.db "select c_zonetime_value from t_zonetime_info where c_zonetime_name='$TIMEZONE';" | sed 's/GMT//g' | sed 's/://g')
-    TZP_SET=$(echo ${TZP:0:1} ${TZP:1:2} ${TZP:3:2} | awk '{ print ($1$2*3600+$3*60) }' | sed 's/^+//g')
-    TZP_CUR=$(cat $CONFIG_TIMEZONE | grep offset_second= | sed 's/offset_second=//g' | sed 's/\"//g')
+    TZP=$(sqlite3 /mnt/mtd/db/ipcsys.db "select c_zonetime_value from t_zonetime_info where c_zonetime_name='$TIMEZONE';" | sed 's/GMT\([+-]\)\([0-9]\{2\}\):\([0-9]\{2\}\)/\1 \2 \3/')
+    TZP_SET=$(echo ${TZP} | awk '{ print ($1$2*3600+$3*60) }' | sed 's/^+//g')
+    TZP_CUR=$(sed 's/offset_second\s*=\s*"\([0-9]\+\)"/\1/' $CONFIG_TIMEZONE)
     if [ "$TZP_SET" != "$TZP_CUR" ]; then
-        sed "s/offset_second=\"$TZP_CUR\"/offset_second=\"$TZP_SET\"/g" -i $CONFIG_TIMEZONE
+        sed "s/offset_second.*$/offset_second=\"$TZP_SET\"/g" -i $CONFIG_TIMEZONE
     fi
-
 fi
 
 # Yeah, it's pretty ugly.
-
 printf "Content-type: application/json\r\n\r\n"
-
 printf "{\n"
 printf "\"%s\":\"%s\"\\n" "error" "false"
 printf "}"

@@ -8,6 +8,9 @@ SONOFF_HACK_PREFIX="/mnt/mmc/sonoff-hack"
 SONOFF_HACK_VER=$(cat /mnt/mmc/sonoff-hack/version)
 MODEL=$(cat /mnt/mtd/ipc/cfg/config_cst.cfg | grep model | cut -d'=' -f2 | cut -d'"' -f2)
 DEVICE_ID=$(cat /mnt/mtd/ipc/cfg/colink.conf | grep devid | cut -d'=' -f2 | cut -d'"' -f2)
+if [ -z $DEVICE_ID ]; then
+    DEVICE_ID= $(cat /mnt/mmc/sonoff-hack/etc/hostname)
+fi
 PTZ_PRESENT=$(cat /proc/modules | grep ptz_drv | grep -c ^)
 
 get_config()

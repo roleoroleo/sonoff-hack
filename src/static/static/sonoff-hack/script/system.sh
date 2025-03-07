@@ -13,6 +13,9 @@ MODEL_CFG_FILE=/mnt/mtd/ipc/cfg/config_cst.cfg
 [ -f /mnt/mtd/db/conf/config_cst.ini ] && MODEL_CFG_FILE=/mnt/mtd/db/conf/config_cst.ini
 MODEL=$(cat $MODEL_CFG_FILE | grep model | cut -d'=' -f2 | cut -d'"' -f2)
 DEVICE_ID=$(cat /mnt/mtd/ipc/cfg/colink.conf | grep devid | cut -d'=' -f2 | cut -d'"' -f2)
+if [ -z $DEVICE_ID ]; then
+    DEVICE_ID= $(cat /mnt/mmc/sonoff-hack/etc/hostname)
+fi
 
 get_config()
 {

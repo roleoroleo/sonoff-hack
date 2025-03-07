@@ -13,5 +13,4 @@
 
 #define SFTPSERVER_PATH "/mnt/mmc/sonoff-hack/usr/libexec/sftp-server"
 
-
 #endif /* DROPBEAR_LOCALOPTIONS_H */

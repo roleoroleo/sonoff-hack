@@ -11,7 +11,11 @@ INC_J = -I$(JPEGLIB_DIR)
 LIB_J = $(JPEGLIB_DIR)/.libs/libjpeg.a
 OPTS = -Os -ffunction-sections -fdata-sections
 
-all: snapshot libs imggrabber resize_jpg
+all:
+	$(MAKE) libs
+	$(MAKE) snapshot
+	$(MAKE) imggrabber
+	$(MAKE) resize_jpg
 
 %.o : %.c $(HEADERS)
 	$(CC) -c $< $(OPTS) $(INC_J) $(INC_FF) -fPIC -o $@
@@ -62,7 +66,7 @@ define build_ffmpeg
     if [ ! -f $(FFMPEG)/libavcodec/libavcodec.a ] || [ ! -f $(FFMPEG)/libavutil/libavutil.a ]; then \
          cd $(FFMPEG); \
         ./configure --enable-cross-compile --cross-prefix=$(CROSSPREFIX) --arch=armel --target-os=linux --prefix=$(CROSSPATH) --enable-small --disable-ffplay --disable-ffprobe --disable-doc  --disable-decoders --enable-decoder=h264 --disable-encoders --disable-demuxers --enable-demuxer=h264 --disable-muxers --disable-protocols --disable-parsers --enable-parser=h264 --disable-filters --disable-bsfs --disable-indevs --disable-outdevs --extra-cflags="-Os -ffunction-sections -fdata-sections" && \
-         make; \
+         $(MAKE); \
          cd ..;\
     fi
 endef
@@ -85,7 +89,7 @@ define build_jpeglib
     if [ ! -f $(JPEGLIB)/.libs/libjpeg.a ]; then \
         cd $(JPEGLIB); \
         ./configure --host=$(CROSS) --enable-shared=yes && \
-        make CFLAGS+="-Os -ffunction-sections -fdata-sections"; \
+        $(MAKE) CFLAGS+="-Os -ffunction-sections -fdata-sections"; \
         cd ..;\
     fi
 endef

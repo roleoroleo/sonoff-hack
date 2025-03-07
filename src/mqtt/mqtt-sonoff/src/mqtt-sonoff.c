@@ -500,19 +500,30 @@ static void init_sonoff_colink_config(){
     }
 
     mqtt_sonoff_conf.fw_version=get_conf_file_single(HACK_VERSION_FILE);
-    
+
     if(mqtt_sonoff_conf.fw_version ==NULL)
     {
         mqtt_sonoff_conf.fw_version =default_fw_version;
     }
     if (mqtt_sonoff_conf.device_id == NULL)
     {
-        mqtt_sonoff_conf.device_id =
-        conf.client_id = default_device_id;
+        char hostname[HOST_NAME_MAX + 1];
+        gethostname(hostname, HOST_NAME_MAX + 1);
+        if ((hostname == NULL) || (hostname[0] == '\0')) {
+            mqtt_sonoff_conf.device_id =
+            conf.client_id = default_device_id;
+        } else {
+            mqtt_sonoff_conf.device_id = conf_set_string(hostname);
+            conf.client_id = mqtt_sonoff_conf.device_id;
+        }
     }
     if (mqtt_sonoff_conf.device_model == NULL)
     {
-        mqtt_sonoff_conf.device_model=default_devicemodel;
+        mqtt_sonoff_conf.device_model = get_conf_file_single(HACK_MODEL_FILE);
+
+        if ((mqtt_sonoff_conf.device_model == NULL) || (mqtt_sonoff_conf.device_model[0] == '\0')) {
+            mqtt_sonoff_conf.device_model=default_devicemodel;
+        }
     }
     if(conf.mqtt_prefix == NULL)
     {

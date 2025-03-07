@@ -26,6 +26,7 @@
 #include <time.h>
 #include <pthread.h>
 #include <getopt.h>
+#include <limits.h>
 
 #include "config.h"
 #include "sql.h"
@@ -37,6 +38,7 @@
 #define MQTT_SONOFF_CONF_FILE    "/mnt/mmc/sonoff-hack/etc/mqtt-sonoff.conf"
 #define COLINK_CONF_FILE         "/mnt/mtd/ipc/cfg/colink.conf"
 #define HACK_VERSION_FILE        "/mnt/mmc/sonoff-hack/version"
+#define HACK_MODEL_FILE          "/mnt/mmc/sonoff-hack/model"
 
 #define MQTT_SONOFF_SNAPSHOT     "/mnt/mmc/sonoff-hack/bin/snapshot"
 #define CONF2MQTT_SCRIPT         "/mnt/mmc/sonoff-hack/script/conf2mqtt.sh"

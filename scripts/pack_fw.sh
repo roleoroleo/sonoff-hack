@@ -152,6 +152,13 @@ echo -n ">>> Creating the model suffix file... "
 echo $CAMERA_ID > $TMP_DIR/sonoff-hack/model
 echo "done!"
 
+# Motto of the day for sshd:
+# add model and version to ssh welcome screen
+echo -n ">>> Creating the motd file... "
+echo "Version:" $(head -n1 $BASE_DIR/VERSION) >> $TMP_DIR/sonoff-hack/etc/motd
+echo "Model  :" $CAMERA_ID >> $TMP_DIR/sonoff-hack/etc/motd
+echo "done!"
+
 # Copy the sdhack to the output dir
 echo ">>> Copying the sdhack contents to $TMP_DIR... "
 echo "    Copying sdhack..."

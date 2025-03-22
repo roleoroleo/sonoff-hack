@@ -238,6 +238,8 @@ if [[ $(get_config FTPD) == "yes" ]] ; then
 fi
 
 if [[ $(get_config SSHD) == "yes" ]] ; then
+    # show sonoff-hack "motto of the day"/"motd" welcome message
+    mount --bind $SONOFF_HACK_PREFIX/etc/motd /etc/motd
     mkdir -p $SONOFF_HACK_PREFIX/etc/dropbear
     if [ ! -f $SONOFF_HACK_PREFIX/etc/dropbear/dropbear_ecdsa_host_key ]; then
         dropbearkey -t ecdsa -f /tmp/dropbear_ecdsa_host_key

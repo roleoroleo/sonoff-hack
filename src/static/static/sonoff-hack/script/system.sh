@@ -283,7 +283,7 @@ if [[ $(get_config ONVIF) == "yes" ]] ; then
 fi
 
 # Run rtsp watchdog
-$SONOFF_HACK_PREFIX/script/wd_rtsp.sh &
+$SONOFF_HACK_PREFIX/script/wd.sh &
 
 # Add crontab
 CRONTAB=$(get_config CRONTAB)

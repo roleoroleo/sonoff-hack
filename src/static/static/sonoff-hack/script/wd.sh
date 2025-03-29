@@ -3,7 +3,7 @@
 SONOFF_HACK_PREFIX="/mnt/mmc/sonoff-hack"
 MODEL_SUFFIX=$(cat /mnt/mmc/sonoff-hack/model)
 
-#LOG_FILE="/mnt/mmc/wd_rtsp.log"
+#LOG_FILE="/mnt/mmc/wd.log"
 LOG_FILE="/dev/null"
 
 IS_RUNNING=0

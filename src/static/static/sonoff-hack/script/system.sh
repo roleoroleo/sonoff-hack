@@ -221,6 +221,7 @@ else
     rm /tmp/colink
 fi
 [ $(ps | grep '/mnt/mtd/ipc/app/rtspd' | grep -v grep | grep -c ^) -eq 0 ] && /mnt/mtd/ipc/app/rtspd &
+touch /mnt/mtd/ipc/cfg/guideRstpd
 
 if [[ $(get_config HTTPD) == "yes" ]] ; then
     mkdir -p /mnt/mmc/alarm_record

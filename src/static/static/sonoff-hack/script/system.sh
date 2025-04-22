@@ -282,6 +282,22 @@ if [[ $(get_config ONVIF) == "yes" ]] ; then
     fi
 fi
 
+if [[ $(get_config HTTPD) == "yes" ]] ; then
+    mkdir -p /tmp/mdns.d
+    echo -e "type _http._tcp\nport $HTTPD_PORT\n" > /tmp/mdns.d/http.service
+fi
+if [[ $(get_config SSHD) == "yes" ]] ; then
+    mkdir -p /tmp/mdns.d
+    echo -e "type _ssh._tcp\nport 22\n" > /tmp/mdns.d/ssh.service
+fi
+if [[ $(get_config MDNSD) == "yes" ]] ; then
+    # Use wifi mac as unique id
+    MAC_ADDR=$(ifconfig ra0 | awk '/HWaddr/{print substr($5,1)}')
+    mkdir -p /tmp/mdns.d
+    echo -e "type _yi-hack._tcp\nport $HTTPD_PORT\ntxt mac=$MAC_ADDR\n" > /tmp/mdns.d/yi-hack.service
+    /mnt/mmc/sonoff-hack/sbin/mdnsd /tmp/mdns.d
+fi
+
 # Run rtsp watchdog
 $SONOFF_HACK_PREFIX/script/wd.sh &
 

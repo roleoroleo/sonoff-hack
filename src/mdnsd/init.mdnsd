@@ -1,0 +1,26 @@
+#!/bin/bash
+
+SCRIPT_DIR=$(cd `dirname $0` && pwd)
+cd $SCRIPT_DIR
+
+source config.mdnsd
+
+rm -rf ./_install
+
+if [ ! -f ${ARCHIVE} ]; then
+    wget "${MAIN_URL}" || exit 1
+fi
+tar zxvf "${ARCHIVE}" || exit 1
+cd "${BUILD_FOLDER}" || exit 1
+
+./configure CC=arm-sonoff-linux-uclibcgnueabi-gcc \
+    --prefix=$SCRIPT_DIR/_install \
+    CFLAGS="-Os -I${CROSSLINK_BASE}/arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include -L${CROSSLINK_BASE}/arm-sonoff-linux-uclibcgnueabi/sysroot/lib" \
+    AR=arm-sonoff-linux-uclibcgnueabi-ar \
+    RANLIB=arm-sonoff-linux-uclibcgnueabi-ranlib \
+    --host=arm \
+    --disable-shared \
+    --disable-doc \
+    --without-mquery \
+    --without-systemd \
+    || exit 1

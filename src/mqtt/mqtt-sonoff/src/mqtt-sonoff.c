@@ -63,6 +63,7 @@ static void *motion_start_thread()
     if (debug) fprintf(stderr, "CALLBACK MOTION START\n");
 
     // Send start message
+    if (debug) fprintf(stderr, "Sending motion start message\n");
     msg.msg=mqtt_sonoff_conf.motion_start_msg;
     msg.len=strlen(msg.msg);
     msg.topic=topic;
@@ -111,6 +112,7 @@ static void *motion_start_thread()
             pthread_exit(NULL);
         }
 
+        if (debug) fprintf(stderr, "Sending motion image message\n");
         msg.msg=bufferImage;
         msg.len=sz;
         msg.topic=topic;
@@ -125,10 +127,11 @@ static void *motion_start_thread()
         remove(bufferFile);
     }
 
-    if (debug) fprintf(stderr, "WAIT 10 S AND SEND MOTION STOP\n");
+    if (debug) fprintf(stderr, "Wait 10 s and send motion stop\n");
     sleep(10);
 
     // Send stop message
+    if (debug) fprintf(stderr, "Sending motion stop message\n");
     msg.msg=mqtt_sonoff_conf.motion_stop_msg;
     msg.len=strlen(msg.msg);
     msg.topic=topic;

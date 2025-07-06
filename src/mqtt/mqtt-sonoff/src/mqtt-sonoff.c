@@ -91,40 +91,40 @@ static void *motion_start_thread()
         if (fImage == NULL) {
             fprintf(stderr, "Cannot open image file\n");
             remove(bufferFile);
-            pthread_exit(NULL);
-        }
-        fseek(fImage, 0L, SEEK_END);
-        sz = ftell(fImage);
-        fseek(fImage, 0L, SEEK_SET);
+        } else {
+            fseek(fImage, 0L, SEEK_END);
+            sz = ftell(fImage);
+            fseek(fImage, 0L, SEEK_SET);
 
-        bufferImage = (char *) malloc(sz * sizeof(char));
-        if (bufferImage == NULL) {
-            fprintf(stderr, "Cannot allocate memory\n");
-            fclose(fImage);
-            remove(bufferFile);
-            pthread_exit(NULL);
-        }
-        if (fread(bufferImage, 1, sz, fImage) != sz) {
-            fprintf(stderr, "Cannot read image file\n");
+            bufferImage = (char *) malloc(sz * sizeof(char));
+            if (bufferImage == NULL) {
+                fprintf(stderr, "Cannot allocate memory\n");
+                fclose(fImage);
+                remove(bufferFile);
+                pthread_exit(NULL);
+            }
+            if (fread(bufferImage, 1, sz, fImage) != sz) {
+                fprintf(stderr, "Cannot read image file\n");
+                free(bufferImage);
+                fclose(fImage);
+                remove(bufferFile);
+                pthread_exit(NULL);
+            }
+
+            if (debug) fprintf(stderr, "Sending motion image message\n");
+            msg.msg=bufferImage;
+            msg.len=sz;
+            msg.topic=topic;
+
+            snprintf(topic, sizeof(topic), "%s/%s", mqtt_sonoff_conf.mqtt_prefix, mqtt_sonoff_conf.topic_motion_image);
+
+            mqtt_send_message(&msg, conf.retain_motion_image);
+
+            // Clean
             free(bufferImage);
             fclose(fImage);
             remove(bufferFile);
-            pthread_exit(NULL);
         }
-
-        if (debug) fprintf(stderr, "Sending motion image message\n");
-        msg.msg=bufferImage;
-        msg.len=sz;
-        msg.topic=topic;
-
-        snprintf(topic, sizeof(topic), "%s/%s", mqtt_sonoff_conf.mqtt_prefix, mqtt_sonoff_conf.topic_motion_image);
-
-        mqtt_send_message(&msg, conf.retain_motion_image);
-
-        // Clean
-        free(bufferImage);
-        fclose(fImage);
-        remove(bufferFile);
     }
 
     if (debug) fprintf(stderr, "Wait 10 s and send motion stop\n");

@@ -44,7 +44,7 @@ void send_birth_msg()
     msg.len = strlen(msg.msg);
     msg.topic = topic;
 
-    sprintf(topic, "%s/%s", mqtt_conf->mqtt_prefix, mqtt_conf->topic_birth_will);
+    snprintf(topic, sizeof(topic), "%s/%s", mqtt_conf->mqtt_prefix, mqtt_conf->topic_birth_will);
 
     mqtt_send_message(&msg, mqtt_conf->retain_birth_will);
 }
@@ -58,7 +58,7 @@ void send_will_msg()
     msg.len = strlen(msg.msg);
     msg.topic = topic;
 
-    sprintf(topic, "%s/%s", mqtt_conf->mqtt_prefix, mqtt_conf->topic_birth_will);
+    snprintf(topic, sizeof(topic), "%s/%s", mqtt_conf->mqtt_prefix, mqtt_conf->topic_birth_will);
 
     mqtt_send_message(&msg, mqtt_conf->retain_birth_will);
 }
@@ -134,7 +134,7 @@ void mqtt_check_connection()
     char topic[128];
 
     if (conn_state != CONN_CONNECTED) {
-        sprintf(topic, "%s/%s", mqtt_conf->mqtt_prefix, mqtt_conf->topic_birth_will);
+        snprintf(topic, sizeof(topic), "%s/%s", mqtt_conf->mqtt_prefix, mqtt_conf->topic_birth_will);
         mosquitto_will_set(mosq, topic, strlen(mqtt_conf->will_msg),
                     mqtt_conf->will_msg, mqtt_conf->qos, mqtt_conf->retain_birth_will == 1);
         mqtt_connect();
@@ -163,7 +163,7 @@ int mqtt_connect()
 
 
     while (conn_state != CONN_CONNECTED) {
-        sprintf(topic, "%s/%s", mqtt_conf->mqtt_prefix, mqtt_conf->topic_birth_will);
+        snprintf(topic, sizeof(topic), "%s/%s", mqtt_conf->mqtt_prefix, mqtt_conf->topic_birth_will);
         mosquitto_will_set(mosq, topic, strlen(mqtt_conf->will_msg),
                     mqtt_conf->will_msg, mqtt_conf->qos, mqtt_conf->retain_birth_will == 1);
 
@@ -221,7 +221,8 @@ int mqtt_send_message(mqtt_msg_t *msg, int retain)
     if(conn_state != CONN_CONNECTED)
         return -1;
 
-    if (strcmp("/", &msg->topic[strlen(msg->topic)-1]) ==0 ) {
+    if ((strlen(msg->topic) >= strlen(EMPTY_TOPIC)) &&
+                (strcmp(EMPTY_TOPIC, &msg->topic[strlen(msg->topic) - strlen(EMPTY_TOPIC)]) == 0)) {
         fprintf(stderr, "No message sent: topic is empty\n");
         return -1;
     } else {

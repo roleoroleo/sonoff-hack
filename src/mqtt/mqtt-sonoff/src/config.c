@@ -53,8 +53,8 @@ void config_parse()
     if(fp==NULL)
         return;
 
-    while(fgets(buf, MAX_LINE_LENGTH, fp))
-    {
+    while (!feof(fp)) {
+        fgets(buf, MAX_LINE_LENGTH, fp);
         if(buf[0]!='#') // ignore the comments
         {
             parsed=sscanf(buf, "%[^=] = %s", key, value);

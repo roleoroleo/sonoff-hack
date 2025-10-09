@@ -572,7 +572,7 @@ static void send_ha_discovery() {
         cJSON_Minify(msg.msg);
         msg.len=strlen(msg.msg);
 
-        snprintf(topic, sizeof(topic), "%s/binary_sensor/%s_mot ion/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
+        snprintf(topic, sizeof(topic), "%s/binary_sensor/%s_motion/config", mqtt_sonoff_conf.ha_conf_prefix, mqtt_sonoff_conf.device_id);
         mqtt_send_message(&msg, retain);
         free(msg.msg);
 

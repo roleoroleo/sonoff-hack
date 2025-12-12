@@ -17,4 +17,4 @@ make install-exec
 make install-includeHEADERS
 
 arm-sonoff-linux-uclibcgnueabi-strip ../_install/bin/*
-arm-sonoff-linux-uclibcgnueabi-strip ../_install/lib/*
+arm-sonoff-linux-uclibcgnueabi-strip ../_install/lib/libsqlite3.so*

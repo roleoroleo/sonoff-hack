@@ -1,0 +1,30 @@
+#!/bin/bash
+
+SCRIPT_DIR=$(cd `dirname $0` && pwd)
+cd $SCRIPT_DIR
+
+CPWD=$(pwd)
+
+rm -rf ./_install
+
+source config.wolfssl
+
+if [ ! -f "${ARCHIVE}" ]; then
+    wget "${MAIN_URL}"
+fi
+
+tar xvf "${ARCHIVE}"
+
+cd "${BUILD_FOLDER}"
+
+./autogen.sh
+
+./configure CC=arm-sonoff-linux-uclibcgnueabi-gcc \
+    CFLAGS="-Os -I${CROSSLINK_BASE}/arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include -L${CROSSLINK_BASE}/arm-sonoff-linux-uclibcgnueabi/sysroot/lib" \
+    AR=arm-sonoff-linux-uclibcgnueabi-ar \
+    RANLIB=arm-sonoff-linux-uclibcgnueabi-ranlib \
+    --host=arm-sonoff-linux-uclibcgnueabi \
+    --prefix=$CPWD/_install \
+    || exit 1
+
+cd $CPWD

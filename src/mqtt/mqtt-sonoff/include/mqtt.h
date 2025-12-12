@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 roleo.
+ * Copyright (c) 2025 roleo.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,9 +22,25 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <errno.h>
+#include <netdb.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+
+#ifdef USE_MOSQUITTO
 #include <mosquitto.h>
+#else
+#include <wolfmqtt/mqtt_client.h>
+#include <wolfmqtt/mqtt_packet.h>
+#include <wolfmqtt/mqtt_socket.h>
+#include <wolfmqtt/mqtt_types.h>
+#endif
 
 #define EMPTY_TOPIC         ""
+#define MQTT_MAX_PACKET_SZ  2048
+#define MQTT_PING_INTERVAL  30
+#define RECONNECT_DELAY     3000
+#define DEFAULT_CON_TIMEOUT 5000
+#define DEFAULT_CMD_TIMEOUT 30000
 
 #define IR_AUTO_FILE             "/tmp/manualControl_autoIR"
 #define IR_DARK_FILE             "/tmp/manualControl_darkIR"
@@ -37,6 +53,7 @@ typedef struct
     char       *password;
     char        host[128];
     int         port;
+    int         tls;
     int         keepalive;
     char        bind_address[32];
     int         qos;

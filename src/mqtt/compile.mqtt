@@ -5,13 +5,31 @@ set -e
 SCRIPT_DIR=$(cd `dirname $0` && pwd)
 cd $SCRIPT_DIR
 
+CPWD=$(pwd)
+CJSON_DIR="../cJSON/_install"
+SQLITE_DIR="../libsqlite/_install"
+MOSQUITTO_DIR="../mosquitto/_install"
+WOLFSSL_DIR="../libwolf_01_ssl/_install"
+WOLFMQTT_DIR="../libwolf_02_mqtt/_install"
+
 cd mqtt-sonoff
 
+#export USE_MOSQUITTO=1
+export CFLAGS="-Os \
+    -I${CROSSLINK_BASE}/arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include \
+    -I${CPWD}/${CJSON_DIR}/include/cjson -I${CPWD}/${SQLITE_DIR}/include \
+    -I${CPWD}/${WOLFSSL_DIR}/include -I${CPWD}/${WOLFMQTT_DIR}/include \
+    -I${CPWD}/${MOSQUITTO_DIR}/../mosquitto/lib"
+export LIBS="-L${CROSSLINK_BASE}/arm-sonoff-linux-uclibcgnueabi/sysroot/lib \
+    -L${CPWD}/${CJSON_DIR}/lib -L${CPWD}/${SQLITE_DIR}/lib \
+    -L${CPWD}/${WOLFSSL_DIR}/lib -L${CPWD}/${WOLFMQTT_DIR}/lib \
+    -L${CPWD}/${MOSQUITTO_DIR}/lib"
+
 make clean
-make
+make -j $(nproc)
 
 mkdir -p ../_install/bin
-mkdir -p ../_install/etc
+mkdir -p ../_install/etc/mqtt
 
 cp ./mqtt-sonoff ../_install/bin
 cp ./conf/mqtt-sonoff.conf ../_install/etc

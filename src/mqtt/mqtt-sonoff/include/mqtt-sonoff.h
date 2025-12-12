@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 roleo.
+ * Copyright (c) 2025 roleo.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
 #ifndef MQTT_SONOFF_H
 #define MQTT_SONOFF_H
 
+#include <signal.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -40,11 +41,14 @@
 #define HACK_VERSION_FILE        "/mnt/mmc/sonoff-hack/version"
 #define HACK_MODEL_FILE          "/mnt/mmc/sonoff-hack/model"
 
+#define CA_CERT                  "/mnt/mmc/sonoff-hack/etc/mqtt/ca.crt"
+#define CLIENT_CERT              "/mnt/mmc/sonoff-hack/etc/mqtt/client.crt"
+#define CLIENT_KEY               "/mnt/mmc/sonoff-hack/etc/mqtt/client.key"
+
 #define MQTT_SONOFF_SNAPSHOT     "/mnt/mmc/sonoff-hack/bin/snapshot"
 #define CONF2MQTT_SCRIPT         "/mnt/mmc/sonoff-hack/script/conf2mqtt.sh"
 #define IPC_CMD                  "/mnt/mmc/sonoff-hack/bin/ipc_cmd"
 #define PTZ_CMD                  "/mnt/mmc/sonoff-hack/bin/ptz"
-
 
 #define MOTION_ALARM_FILE        "/tmp/onvif_notify_server/motion_alarm"
 

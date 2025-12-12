@@ -44,7 +44,7 @@ char *default_fw_version = "0.0";
 extern char *sql_cmd_params[][2];
 
 int debug;
-
+int run;
 
 //-----------------------------------------------------------------------------
 // READ THREAD
@@ -182,6 +182,14 @@ void callback_command(void *arg)
     mqtt_send_message(&msg, 1);
 }
 
+/*
+ * pipe signal handler
+ */
+void handle_pipe_signal(int s)
+{
+    fprintf(stderr, "Pipe Signal Handler\n");
+}
+
 void print_usage(char *progname)
 {
     fprintf(stderr, "\nUsage: %s OPTIONS\n\n", progname);
@@ -203,6 +211,7 @@ int main(int argc, char **argv)
 
     int ha_discovery = 0;
     debug = 0;
+    run = 1;
 
     while (1) {
         static struct option long_options[] =
@@ -252,6 +261,8 @@ int main(int argc, char **argv)
     setbuf(stderr, NULL);
 
     if (debug) fprintf(stderr, "Starting mqtt_sonoff v%s\n", MQTT_SONOFF_VERSION);
+
+    signal(SIGPIPE, handle_pipe_signal);
 
     mqtt_init_conf(&conf);
     mqtt_set_conf(&conf);
@@ -340,6 +351,13 @@ static void handle_config(const char *key, const char *value)
     else if(strcmp(key, "MQTT_PORT")==0)
     {
         conf_set_int(value, &conf.port);
+    }
+    else if(strcmp(key, "MQTT_TLS")==0)
+    {
+        conf_set_int(value, &conf.tls);
+#ifdef USE_MOSQUITTO
+        conf.tls = 0;
+#endif
     }
     else if(strcmp(key, "MQTT_KEEPALIVE")==0)
     {
@@ -562,7 +580,7 @@ static void handle_colink_config(const char *key, const char *value)
 
 static void send_ha_discovery() {
     char topic[128];
-    const int retain = true;
+    const int retain = 1;
     mqtt_msg_t msg;
     msg.topic=topic;
 

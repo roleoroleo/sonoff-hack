@@ -14,6 +14,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifdef USE_MOSQUITTO
 #include "config.h"
 #include "mqtt.h"
 #include "mqtt-sonoff.h"
@@ -111,6 +112,7 @@ void mqtt_init_conf(mqtt_conf_t *conf)
     strcpy(conf->bind_address, "0.0.0.0");
 
     conf->port = 1883;
+    conf->tls = 0;
     conf->keepalive = 120;
     conf->qos = 1;
     conf->retain_birth_will = 1;
@@ -221,8 +223,7 @@ int mqtt_send_message(mqtt_msg_t *msg, int retain)
     if(conn_state != CONN_CONNECTED)
         return -1;
 
-    if ((strlen(msg->topic) >= strlen(EMPTY_TOPIC)) &&
-                (strcmp(EMPTY_TOPIC, &msg->topic[strlen(msg->topic) - strlen(EMPTY_TOPIC)]) == 0)) {
+    if (strlen(msg->topic) == 0) {
         fprintf(stderr, "No message sent: topic is empty\n");
         return -1;
     } else {
@@ -509,3 +510,4 @@ static void message_callback(struct mosquitto *mosq, void *obj, const struct mos
         }
     }
 }
+#endif //USE_MOSQUITTO

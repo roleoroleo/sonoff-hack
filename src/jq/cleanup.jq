@@ -3,6 +3,7 @@
 SCRIPT_DIR=$(cd `dirname $0` && pwd)
 cd $SCRIPT_DIR
 
-cd jq-1.5
+rm -rf ./_install
 
-make clean
+rm -rf jq-1.8.1
+rm jq*.tar.gz

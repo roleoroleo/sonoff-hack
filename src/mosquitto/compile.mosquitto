@@ -2,12 +2,16 @@
 
 set -e
 
-CROSSLINK_BASE=${CROSSLINK_BASE:=/home/user/x-tools/arm-sonoff-linux-uclibcgnueabi}
+source config.mosquitto
+
+if [ "$USE_MOSQUITTO" != "1" ]; then
+    exit
+fi
 
 SCRIPT_DIR=$(cd `dirname $0` && pwd)
 cd $SCRIPT_DIR
 
-cd mosquitto
+cd "${BUILD_FOLDER}"
 
 export CXX=g++
 

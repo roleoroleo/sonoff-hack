@@ -8,11 +8,12 @@ source config.mdnsd
 rm -rf ./_install
 
 if [ ! -f ${ARCHIVE} ]; then
-    wget "${MAIN_URL}" || exit 1
+    wget "${MAIN_URL}" -O "${ARCHIVE}" || exit 1
 fi
-tar zxvf "${ARCHIVE}" || exit 1
+unzip -o "${ARCHIVE}" || exit 1
 cd "${BUILD_FOLDER}" || exit 1
 
+./autogen.sh
 ./configure CC=arm-sonoff-linux-uclibcgnueabi-gcc \
     --prefix=$SCRIPT_DIR/_install \
     CFLAGS="-Os -I${CROSSLINK_BASE}/arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include -L${CROSSLINK_BASE}/arm-sonoff-linux-uclibcgnueabi/sysroot/lib" \

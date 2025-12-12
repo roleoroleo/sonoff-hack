@@ -14,5 +14,7 @@ make clean
 make -j $(nproc) || exit 1
 
 make install-exec
+make install-includeHEADERS
 
 arm-sonoff-linux-uclibcgnueabi-strip ../_install/bin/*
+arm-sonoff-linux-uclibcgnueabi-strip ../_install/lib/*

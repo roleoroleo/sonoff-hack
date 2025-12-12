@@ -7,3 +7,4 @@ mkdir -p ../../build/sonoff-hack/bin/
 
 #rsync -a ./_install/bin/sqlite3 ../../build/sonoff-hack/bin/
 cp -f ./_install/bin/sqlite3 ../../build/sonoff-hack/bin/
+cp -f ./_install/lib/libsqlite3.so.0.8.6 ../../build/sonoff-hack/lib/libsqlite3.so.0

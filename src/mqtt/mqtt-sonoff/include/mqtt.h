@@ -36,7 +36,7 @@
 #endif
 
 #define EMPTY_TOPIC         ""
-#define MQTT_MAX_PACKET_SZ  2048
+#define MQTT_MAX_PACKET_SZ  1024
 #define MQTT_PING_INTERVAL  30
 #define RECONNECT_DELAY     3000
 #define DEFAULT_CON_TIMEOUT 5000

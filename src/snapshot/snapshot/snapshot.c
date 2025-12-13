@@ -139,6 +139,7 @@ int main(int argc, char **argv)
     // Bind the socket with the local address
     if (bind(sockfd, (const struct sockaddr *) &local_addr, sizeof(local_addr)) < 0) {
         fprintf(stderr, "Bind failed\n");
+        close(sockfd);
         return -2;
     }
 
@@ -156,21 +157,41 @@ int main(int argc, char **argv)
     if (sendto(sockfd, message, MSG_SIZE, 0,
                 (const struct sockaddr *) &avencode_addr, sizeof(avencode_addr)) < 0) {
         fprintf(stderr, "Send failed");
+        close(sockfd);
         return -1;
     }
     if (debug) fprintf(stderr, "Data successfully sent\n");
 
+    struct timeval tv;
+    tv.tv_sec = 3;
+    tv.tv_usec = 0;
+    setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
+
     n_recv = recv(sockfd, (char *)buffer, 1024, 0);
+    if (n_recv == -1) {
+        fprintf(stderr, "Error: no confirmation received\n");
+        close(sockfd);
+        return -1;
+    }
+
     if (debug) fprintf(stderr, "Confirmation received (%d bytes packet)\n", n_recv);
 
     sleep(1);
+
+    fp = fopen(filename, "r");
+    fseek(fp, 0 , SEEK_END);
+    long file_ize = ftell(fp);
+    fclose(fp);
+    if (debug) fprintf(stderr, "File saved: %d bytes\n", file_ize);
 
     // Read file and send to stdout
     if (stdout_output == 1) {
         if (debug) fprintf(stderr, "Sending file to stdout\n");
         fp = fopen(filename, "r");
-        if (fp == NULL)
+        if (fp == NULL) {
+            fprintf(stderr, "Unable to open file %s\n", filename);
             return -1;
+        }
 
         while ((n_read = fread(buffer, 1, sizeof(buffer), fp)) > 0)
             fwrite(buffer, 1, n_read, stdout);
@@ -178,6 +199,9 @@ int main(int argc, char **argv)
         fclose(fp);
         remove(filename);
     }
+
+    close(sockfd);
+
     if (debug) fprintf(stderr, "Program completed successfully\n");
 
     return 0;

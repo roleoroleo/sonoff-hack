@@ -19,7 +19,7 @@ export CFLAGS="-Os \
     -I${CROSSLINK_BASE}/arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include \
     -I${CPWD}/${CJSON_DIR}/include/cjson -I${CPWD}/${SQLITE_DIR}/include \
     -I${CPWD}/${WOLFSSL_DIR}/include -I${CPWD}/${WOLFMQTT_DIR}/include \
-    -I${CPWD}/${MOSQUITTO_DIR}/../mosquitto/lib"
+    -I${CPWD}/${MOSQUITTO_DIR}/../mosquitto/include"
 export LIBS="-L${CROSSLINK_BASE}/arm-sonoff-linux-uclibcgnueabi/sysroot/lib \
     -L${CPWD}/${CJSON_DIR}/lib -L${CPWD}/${SQLITE_DIR}/lib \
     -L${CPWD}/${WOLFSSL_DIR}/lib -L${CPWD}/${WOLFMQTT_DIR}/lib \

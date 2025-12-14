@@ -32,13 +32,12 @@ make -j$(nproc) binary \
 
 mkdir -p ../_install/bin
 mkdir -p ../_install/lib
-mkdir -p ../_install/include
 
 cp ./client/mosquitto_pub ../_install/bin
 cp ./client/mosquitto_sub ../_install/bin
 
 cp ./lib/libmosquitto.so.1 ../_install/lib
-cp ./include/mosquitto.h ../_install/include
+ln -s libmosquitto.so.1 ../_install/lib/libmosquitto.so
 
 arm-sonoff-linux-uclibcgnueabi-strip ../_install/bin/*
 arm-sonoff-linux-uclibcgnueabi-strip ../_install/lib/*

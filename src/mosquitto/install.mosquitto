@@ -14,4 +14,4 @@ cd $SCRIPT_DIR
 mkdir -p ../../build/sonoff-hack/bin/
 mkdir -p ../../build/sonoff-hack/lib/
 
-rsync -av --exclude include ./_install/* ../../build/sonoff-hack/
+rsync -av --no-links ./_install/* ../../build/sonoff-hack/

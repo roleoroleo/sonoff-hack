@@ -49,6 +49,9 @@ void print_usage(char *progname)
     fprintf(stderr, "\t\tset X coordinate (degrees) when using GO or GO_REL action\n");
     fprintf(stderr, "\t-Y Y, --Y Y\n");
     fprintf(stderr, "\t\tset Y coordinate (degrees) when using GO or GO_REL action\n");
+    fprintf(stderr, "\t-s RATE, --speed-raw RATE\n");
+    fprintf(stderr, "\t\tset movement speed raw rate (0-65535)");
+    fprintf(stderr, "\t\t0=fastest, higher=slower, default 0\n");
     fprintf(stderr, "\t-n NUM, --preset_num NUM\n");
     fprintf(stderr, "\t\tset preset NUM (0-14) when using GO_PRESET, SET_PRESET or DEL_PRESET actions\n");
     fprintf(stderr, "\t\tspecial presets: 10 center\n");
@@ -164,6 +167,7 @@ int main(int argc, char **argv)
     double X, Y;
     char preset_file[1024];
     int preset_num;
+    int speed;
     int clear;
     int c;
     char desc[256];
@@ -182,6 +186,7 @@ int main(int argc, char **argv)
     Y = -1.0;
     preset_file[0] = '\0';
     preset_num = -1;
+    speed = 0;
     clear = 0;
     debug = 0;
 
@@ -194,6 +199,7 @@ int main(int argc, char **argv)
             {"y",  required_argument, 0, 'y'},
             {"X",  required_argument, 0, 'X'},
             {"Y",  required_argument, 0, 'Y'},
+            {"speed-raw",  required_argument, 0, 's'},
             {"preset_file",  required_argument, 0, 'f'},
             {"preset_num",  required_argument, 0, 'n'},
             {"desc",  required_argument, 0, 'e'},
@@ -205,7 +211,7 @@ int main(int argc, char **argv)
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long (argc, argv, "a:t:x:y:X:Y:f:n:e:cdh",
+        c = getopt_long (argc, argv, "a:t:x:y:X:Y:s:f:n:e:cdh",
                          long_options, &option_index);
 
         /* Detect the end of the options. */
@@ -334,6 +340,25 @@ int main(int argc, char **argv)
                 exit(EXIT_FAILURE);
             }
             if ((Y < -MAX_Y_DEG) || (Y > MAX_Y_DEG)) {
+                print_usage(argv[0]);
+                exit(EXIT_FAILURE);
+            }
+            break;
+
+        case 's':
+            errno = 0;    /* To distinguish success/failure after call */
+            speed = strtol(optarg, &endptr, 10);
+
+            /* Check for various possible errors */
+            if ((errno == ERANGE) && (speed == LONG_MAX || speed == LONG_MIN)) {
+                print_usage(argv[0]);
+                exit(EXIT_FAILURE);
+            }
+            if (endptr == optarg) {
+                print_usage(argv[0]);
+                exit(EXIT_FAILURE);
+            }
+            if ((speed < 0) || (speed > 65535)) {
                 print_usage(argv[0]);
                 exit(EXIT_FAILURE);
             }
@@ -721,7 +746,7 @@ int main(int argc, char **argv)
 
     ptz_arg[0] = action % 100;
     ptz_arg[1] = 0;
-    ptz_arg[2] = 1; // 1, 2 or 3
+    ptz_arg[2] = speed; // 1, 2 or 3
     ptz_arg[3] = x; // absolute position x
     ptz_arg[4] = y; // absolute position y
     ptz_arg[5] = 0; // ptz crz

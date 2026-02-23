@@ -45,8 +45,8 @@ int hw_ptz_sendptz(int *ptz_arg) {
         printf("    errno = %s\n", strerror(errno));
         error = 1;
     }
-    if ((ptz_arg[2] > 1) && (ptz_arg[2] < 4)) {
-        value = 5 - ptz_arg[2];
+    if ((ptz_arg[2] > 0) && (ptz_arg[2] < 65535)) {
+        value = ptz_arg[2];
 	    if (!error && ioctl(fd_driver, 0x9, &value) < 0) {
 			printf("Error ioctl 0x9\n");
             printf("    errno = %s\n", strerror(errno));

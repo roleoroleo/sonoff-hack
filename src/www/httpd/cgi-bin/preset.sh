@@ -46,7 +46,7 @@ if [ "$ACTION" != "go_preset" ] && [ "$ACTION" != "set_preset" ] && [ "$ACTION" 
 fi
 
 if [ "$ACTION" == "set_home" ]; then
-    NUM = 0
+    NUM=0
 fi
 
 if [ $NUM -eq -1 ]; then
@@ -81,7 +81,7 @@ if [ "$NAME" != "none" ]; then
     ARG_NAME="-e $NAME"
 fi
 
-$SONOFF_HACK_PREFIX/bin/ptz -f $SONOFF_HACK_PREFIX/etc/ptz_presets.conf $ARG_ACTION $ARG_NUM $ARG_NAME
+$SONOFF_HACK_PREFIX/bin/ptz -f $SONOFF_HACK_PREFIX/etc/ptz_presets.conf $ARG_ACTION $ARG_NUM $ARG_NAME >/dev/null 2>&1
 
 printf "Content-type: application/json\r\n\r\n"
 printf "{\n"

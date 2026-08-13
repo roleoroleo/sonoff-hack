@@ -5,10 +5,12 @@ FFMPEG = ffmpeg-4.0.4
 FFMPEG_DIR = ./$(FFMPEG)
 INC_FF = -I$(FFMPEG_DIR)
 LIB_FF = $(FFMPEG_DIR)/libavcodec/libavcodec.a $(FFMPEG_DIR)/libavutil/libavutil.a -lpthread -lm
-JPEGLIB = jpeg-9c
+JPEGLIB_VERSION = 3.1.4.1
+JPEGLIB = libjpeg-turbo-$(JPEGLIB_VERSION)
 JPEGLIB_DIR = ./$(JPEGLIB)
-INC_J = -I$(JPEGLIB_DIR)
-LIB_J = $(JPEGLIB_DIR)/.libs/libjpeg.a
+INSTALL_LIB_J = $(JPEGLIB_DIR)/_install
+INC_J = -I$(INSTALL_LIB_J)/include
+LIB_J = $(INSTALL_LIB_J)/lib/libjpeg.a
 OPTS = -Os -ffunction-sections -fdata-sections
 
 all:
@@ -26,7 +28,7 @@ snapshot: $(OBJECTS_1)
 
 libs:
 	@$(build_ffmpeg)
-	@$(build_jpeglib)
+	@$(build_jpeglib_turbo)
 
 imggrabber: $(OBJECTS_2)
 	$(CC) -Os -Wl,--gc-sections $(OBJECTS_2) $(LIB_J) $(LIB_FF) -fPIC -o $@
@@ -44,10 +46,11 @@ clean:
 	rm -f resize_jpg
 	rm -f $(OBJECTS_1) $(OBJECTS_2)
 	rm -rf $(FFMPEG)
+	rm -rf $(JPEGLIB)
 
 distclean: clean
 	rm -rf SDK
-	rm -rf jpeg-9c
+	rm -rf $(JPEGLIB)
 
 define build_ffmpeg
     # get archive
@@ -71,12 +74,11 @@ define build_ffmpeg
     fi
 endef
 
-define build_jpeglib
-
+define build_jpeglib_turbo
     # get archive
     if [ ! -f SDK/jpeg.tar.gz ]; then \
         mkdir -p SDK; \
-        wget -O ./SDK/jpeg.tar.gz.tmp "https://www.ijg.org/files/jpegsrc.v9c.tar.gz"; \
+        wget -O ./SDK/jpeg.tar.gz.tmp "https://github.com/libjpeg-turbo/libjpeg-turbo/archive/refs/tags/$(JPEGLIB_VERSION).tar.gz"; \
         mv ./SDK/jpeg.tar.gz.tmp ./SDK/jpeg.tar.gz; \
     fi
 
@@ -86,10 +88,13 @@ define build_jpeglib
     fi
 
     # build
-    if [ ! -f $(JPEGLIB)/.libs/libjpeg.a ]; then \
-        cd $(JPEGLIB); \
-        ./configure --host=$(CROSS) --enable-shared=yes && \
-        $(MAKE) CFLAGS+="-Os -ffunction-sections -fdata-sections"; \
+    if [ ! -f $(LIB_J) ]; then \
+        cd ./$(JPEGLIB); \
+        patch -p1 < ../../fix_HWCAP_ARM.patch; \
+        cmake -DCMAKE_TOOLCHAIN_FILE="../arm-sonoff-linux-uclibcgnueabi-toolchain.cmake" -DCMAKE_INSTALL_PREFIX="../$(INSTALL_LIB_J)" -DWITH_JPEG7=1 -DWITH_JPEG8=1 -DNEON_INTRINSICS=1 -DWITH_SIMD=1; \
+        make -j$(nproc); \
+        make install; \
         cd ..;\
     fi
 endef
+        # $(MAKE) CFLAGS+="-m32 -Os -ffunction-sections -fdata-sections "; \

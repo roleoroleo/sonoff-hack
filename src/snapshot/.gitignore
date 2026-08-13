@@ -4,5 +4,6 @@ snapshot/snapshot
 snapshot/imggrabber
 snapshot/resize_jpg
 snapshot/jpeg-9c
-snapshot/ffmpeg-4.0.4
 snapshot/SDK
+snapshot/ffmpeg-*
+snapshot/libjpeg-turbo-*

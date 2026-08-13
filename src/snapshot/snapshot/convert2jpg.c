@@ -26,7 +26,7 @@ extern int camera_dbg_en;
  * Converts a YUYV raw buffer to a JPEG buffer.
  * Input is YUYV (YUV 420SP NV12). Output is JPEG binary.
  */
-int YUVtoJPG(char *output_file, unsigned char *input, const int width, const int height, const int dest_width, const int dest_height, const int quality)
+int YUVtoJPG(char *output_file, unsigned char *input, const int width, const int height, const int dest_width, const int dest_height)
 {
     struct jpeg_compress_struct cinfo;
     struct jpeg_error_mgr jerr;
@@ -68,11 +68,7 @@ int YUVtoJPG(char *output_file, unsigned char *input, const int width, const int
     cinfo.in_color_space = JCS_YCbCr; //libJPEG expects YUV 3bytes, 24bit
 
     jpeg_set_defaults(&cinfo);
-    if (quality == -1) {
-        jpeg_set_quality(&cinfo, JPEG_QUALITY, TRUE);
-    } else {
-        jpeg_set_quality(&cinfo, quality, TRUE);
-    }
+    jpeg_set_quality(&cinfo, JPEG_QUALITY, TRUE);
     jpeg_start_compress(&cinfo, TRUE);
 
     uint8_t tmprowbuf[dest_width * 3];
@@ -111,7 +107,7 @@ int YUVtoJPG(char *output_file, unsigned char *input, const int width, const int
     return outlen;
 }
 
-int convert2jpg(char *output_file, char *input_file, const int width, const int height, const int dest_width, const int dest_height, const int quality)
+int convert2jpg(char *output_file, char *input_file, const int width, const int height, const int dest_width, const int dest_height)
 {
     FILE *fp;
     char *buffer;
@@ -126,7 +122,7 @@ int convert2jpg(char *output_file, char *input_file, const int width, const int 
     if (fread(buffer, 1, size, fp) != size)
         return -2;
 
-    YUVtoJPG(output_file, buffer, width, height, dest_width, dest_height, quality);
+    YUVtoJPG(output_file, buffer, width, height, dest_width, dest_height);
     free(buffer);
 
     fclose(fp);

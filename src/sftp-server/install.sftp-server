@@ -5,5 +5,4 @@ cd $SCRIPT_DIR
 
 mkdir -p ../../build/sonoff-hack/usr/libexec/
 
-arm-sonoff-linux-uclibcgnueabi-strip ./_install/sftp-server
 cp -a ./_install/sftp-server ../../build/sonoff-hack/usr/libexec/

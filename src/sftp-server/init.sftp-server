@@ -12,6 +12,9 @@ autoreconf || exit 1
 
 ./configure \
     --prefix=$SCRIPT_DIR/_install \
+    CFLAGS="-std=gnu99 -Os -I${CROSSLINK_BASE}/arm-sonoff-linux-uclibcgnueabi/sysroot/usr/include -L${CROSSLINK_BASE}/arm-sonoff-linux-uclibcgnueabi/sysroot/lib" \
+    AR=arm-sonoff-linux-uclibcgnueabi-ar \
+    RANLIB=arm-sonoff-linux-uclibcgnueabi-ranlib \
     --host=arm-sonoff-linux-uclibcgnueabi \
     --without-openssl \
     --without-zlib \

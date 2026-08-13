@@ -3,7 +3,6 @@
 SCRIPT_DIR=$(cd `dirname $0` && pwd)
 cd $SCRIPT_DIR
 
-
 cd openssh-portable
 
 make clean
@@ -14,5 +13,4 @@ make -j$(nproc) \
 mkdir -p ../_install
 
 cp ./sftp-server ../_install/
-
-#make install || exit 1
+arm-sonoff-linux-uclibcgnueabi-strip ../_install/sftp-server

@@ -100,6 +100,10 @@ void mqtt_loop(void)
         mosquitto_loop(mosq, -1, 1);
 }
 
+void mqtt_ping(void)
+{
+}
+
 //-----------------------------------------------------------------------------
 
 void mqtt_init_conf(mqtt_conf_t *conf)

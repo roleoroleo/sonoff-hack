@@ -44,7 +44,7 @@ char *default_fw_version = "0.0";
 extern char *sql_cmd_params[][2];
 
 int debug;
-int run;
+volatile sig_atomic_t run;
 
 //-----------------------------------------------------------------------------
 // READ THREAD
@@ -80,6 +80,9 @@ static void *motion_start_thread()
     close(fd);
 
     if (strlen(mqtt_sonoff_conf.topic_motion_image)) {
+        // Ping the broker before snapshot
+        if (debug) fprintf(stderr, "Ping the broker before snapshot\n");
+        mqtt_ping();
         // Send image
         if (debug) fprintf(stderr, "Wait %.1f seconds and take a snapshot\n", mqtt_sonoff_conf.motion_image_delay);
         tmpnam(bufferFile);
@@ -183,9 +186,18 @@ void callback_command(void *arg)
 }
 
 /*
+ * int/term signal handler
+ */
+static void handle_term(int sig)
+{
+    (void) sig;
+    run = 0;
+}
+
+/*
  * pipe signal handler
  */
-void handle_pipe_signal(int s)
+static void handle_pipe_signal(int s)
 {
     fprintf(stderr, "Pipe Signal Handler\n");
 }
@@ -262,6 +274,8 @@ int main(int argc, char **argv)
 
     if (debug) fprintf(stderr, "Starting mqtt_sonoff v%s\n", MQTT_SONOFF_VERSION);
 
+    signal(SIGINT,  handle_term);
+    signal(SIGTERM, handle_term);
     signal(SIGPIPE, handle_pipe_signal);
 
     mqtt_init_conf(&conf);
@@ -298,7 +312,7 @@ int main(int argc, char **argv)
     }
     sql_set_callback(SQL_MSG_COMMAND, &callback_command);
 
-    while(1)
+    while(run)
     {
         mqtt_check_connection();
         mqtt_loop();

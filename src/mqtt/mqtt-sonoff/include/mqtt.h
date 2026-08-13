@@ -80,6 +80,7 @@ int init_mqtt(void);
 void stop_mqtt(void);
 
 void mqtt_loop(void);
+void mqtt_ping(void);
 
 void mqtt_init_conf(mqtt_conf_t *conf);
 void mqtt_set_conf(mqtt_conf_t *conf);

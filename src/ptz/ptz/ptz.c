@@ -553,7 +553,7 @@ int main(int argc, char **argv)
             if (x < MIN_X) x = MIN_X;
             if (x > MAX_X) x = MAX_X;
             if (y < MIN_Y) y = MIN_Y;
-            if (y < MAX_Y) y = MAX_Y;
+            if (y > MAX_Y) y = MAX_Y;
         }
 
         presets[preset_num].x = x;
